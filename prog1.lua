@@ -23,7 +23,10 @@ for i, fname in ipairs(imgs) do loadImage(fname) end
 --Define menu of point process operations
 imageMenu("Point Processes",
   {
-    {"Grayscale", pointProc.grayscale}
+    {"Grayscale", pointProc.grayscale},
+    {"Grayscale - Weiss", il.grayscale},
+    {"Negate", pointProc.negate},
+    {"Negate - Weiss", il.negate}
   }
 )
 
