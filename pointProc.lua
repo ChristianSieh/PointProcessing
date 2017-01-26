@@ -21,7 +21,7 @@ local pointProc = {};
 
 --------------------------------------------------------------------------------
 --
--- Function Name: grayscale
+-- Function Name: Grayscale
 --
 -- Description:
 --
@@ -39,7 +39,7 @@ pointProc.grayscale = grayscale;
 
 --------------------------------------------------------------------------------
 --
--- Function Name: negate
+-- Function Name: Negate
 --
 -- Description: This function negates the given image. It does so by applying a
 --   function which will invert each color component to each pixel in the image.
@@ -60,6 +60,159 @@ local function negate( img )
 end
 pointProc.negate = negate;
 
+--------------------------------------------------------------------------------
+--
+-- Function Name: Posterize
+--
+-- Description: 
+--
+-- Parameters:
+--   img - An image object from ip.lua representing the image to process
+--
+-- Return: 
+--   img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function posterize( img )
+  return img:mapPixels(
+    function( r, g, b )
+      return 255 - r, 255 - g, 255 - b;
+    end
+  );
+end
+pointProc.posterize = posterize;
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: Brightness
+--
+-- Description: 
+--
+-- Parameters:
+--   img - An image object from ip.lua representing the image to process
+--
+-- Return: 
+--   img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function brightness( img )
+  return img:mapPixels(
+    function( r, g, b )
+      return 255 - r, 255 - g, 255 - b;
+    end
+  );
+end
+pointProc.brightness = brightness;
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: Gamma
+--
+-- Description: 
+--
+-- Parameters:
+--   img - An image object from ip.lua representing the image to process
+--
+-- Return: 
+--   img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function gamma( img )
+  return img:mapPixels(
+    function( r, g, b )
+      return 255 - r, 255 - g, 255 - b;
+    end
+  );
+end
+pointProc.gamma = gamma;
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: Log Scale
+--
+-- Description: 
+--
+-- Parameters:
+--   img - An image object from ip.lua representing the image to process
+--
+-- Return: 
+--   img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function logScale( img )
+  return img:mapPixels(
+    function( r, g, b )
+      return 255 - r, 255 - g, 255 - b;
+    end
+  );
+end
+pointProc.logScale = logScale;
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: Bitplane Slice
+--
+-- Description: 
+--
+-- Parameters:
+--   img - An image object from ip.lua representing the image to process
+--
+-- Return: 
+--   img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function slice( img )
+  return img:mapPixels(
+    function( r, g, b )
+      return 255 - r, 255 - g, 255 - b;
+    end
+  );
+end
+pointProc.slice = slice;
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: Discrete Psuedocolor
+--
+-- Description: 
+--
+-- Parameters:
+--   img - An image object from ip.lua representing the image to process
+--
+-- Return: 
+--   img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function distPsuedocolor( img )
+  return img:mapPixels(
+    function( r, g, b )
+      return 255 - r, 255 - g, 255 - b;
+    end
+  );
+end
+pointProc.distPsuedocolor = distPsuedocolor;
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: Continuous Psuedocolor
+--
+-- Description: 
+--
+-- Parameters:
+--   img - An image object from ip.lua representing the image to process
+--
+-- Return: 
+--   img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function contPsuedocolor( img )
+  return img:mapPixels(
+    function( r, g, b )
+      return 255 - r, 255 - g, 255 - b;
+    end
+  );
+end
+pointProc.contPsuedocolor = contPsuedocolor;
 
 --Return table of point process functions
 return pointProc;  
