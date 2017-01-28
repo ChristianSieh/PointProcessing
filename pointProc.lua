@@ -23,7 +23,8 @@ local pointProc = {};
 --
 -- Function Name: Grayscale
 --
--- Description:
+-- Description: This function converts the given image to grayscale, using a 
+--   ratio of 30% red, 59% green, and 11% blue.
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
@@ -33,7 +34,19 @@ local pointProc = {};
 --
 --------------------------------------------------------------------------------
 local function grayscale( img )
-  return image.flat( img.width, img.height );
+  --Loop over all pixels
+  for r,c in img:pixels() do
+    --Get intensity at current pixel with specified weights
+    local intensity = img:at(r,c).r * 0.3
+                    + img:at(r,c).g * 0.59
+                    + img:at(r,c).b * 0.11;
+    
+    --Assign to all three color components
+    img:at(r,c).r = intensity;
+    img:at(r,c).g = intensity;
+    img:at(r,c).b = intensity; 
+  end  
+  return img;
 end
 pointProc.grayscale = grayscale;
 
