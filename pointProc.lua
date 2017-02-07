@@ -142,26 +142,12 @@ pointProc.brightness = brightness;
 --
 --------------------------------------------------------------------------------
 local function contrastStretch( img, low, high )
-  local max = 0;
-  local min = 300;
-  
   -- Convert to IHS so we can use intensity
   img = il.RGB2IHS(img);
-      
-  -- Get min and max
-  for r,c in img:pixels() do
-    if(img:at(r,c).i > max) then
-      max = img:at(r,c).i
-    end
-    
-    if(img:at(r,c).i < min) then
-      min = img:at(r,c).i
-    end
-  end
   
-  -- Contrast stretch each pixel to it's new intensity
+  -- Contrast stretch each pixel to its new intensity
   for r,c in img:pixels() do
-    local temp = (high - low / (max - min)) * (img:at(r,c).i - min) + low;
+    local temp = ( 255 / ( high - low ) ) * ( img:at(r,c).i - low );
     
     if temp > 255 then
       temp = 255
