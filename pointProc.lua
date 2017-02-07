@@ -130,6 +130,58 @@ pointProc.brightness = brightness;
 
 --------------------------------------------------------------------------------
 --
+-- Function Name: Contrast
+--
+-- Description: 
+--
+-- Parameters:
+--   img - An image object from ip.lua representing the image to process
+--
+-- Return: 
+--   img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function contrastStretch( img, low, high )
+  local max = 0;
+  local min = 300;
+  
+  -- Convert to IHS so we can use intensity
+  img = il.RGB2IHS(img);
+      
+  -- Get min and max
+  for r,c in img:pixels() do
+    if(img:at(r,c).i > max) then
+      max = img:at(r,c).i
+    end
+    
+    if(img:at(r,c).i < min) then
+      min = img:at(r,c).i
+    end
+  end
+  
+  -- Contrast stretch each pixel to it's new intensity
+  for r,c in img:pixels() do
+    local temp = (high - low / (max - min)) * (img:at(r,c).i - min) + low;
+    
+    if temp > 255 then
+      temp = 255
+    end
+    if temp < 0 then
+      temp = 0
+    end
+    
+    img:at(r,c).i = temp;
+  end
+  
+  -- Convert back to rgb
+  img = il.IHS2RGB(img);
+  
+  return img;
+end
+pointProc.contrastStretch = contrastStretch;
+
+--------------------------------------------------------------------------------
+--
 -- Function Name: Gamma
 --
 -- Description: 
