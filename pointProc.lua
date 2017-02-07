@@ -108,13 +108,24 @@ pointProc.posterize = posterize;
 --   img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function brightness( img )
+local function brightness( img, lvl )
   return img:mapPixels(
     function( r, g, b )
-      return 255 - r, 255 - g, 255 - b;
+      local temp = { r + lvl, g + lvl, b + lvl };
+      
+      for i = 1, 3 do
+          if temp[i] > 255 then
+            temp[i] = 255
+          end
+          if temp[i] < 0 then
+            temp[i] = 0
+          end
+        end
+        
+        return temp[1], temp[2], temp[3]
     end
   );
-end
+  end
 pointProc.brightness = brightness;
 
 --------------------------------------------------------------------------------
