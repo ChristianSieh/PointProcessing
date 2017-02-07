@@ -16,6 +16,8 @@
 --Define already loaded il file
 local il = require("il");
 
+local helper = require("helper");
+
 --Table to hold the point process functions
 local pointProc = {};
 
@@ -130,41 +132,33 @@ pointProc.brightness = brightness;
 
 --------------------------------------------------------------------------------
 --
--- Function Name: Contrast
+-- Function Name: manualContrast
 --
 -- Description: 
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
+--   low - User selected lower endpoint for contrast stretch
+--   high - User selected upper endpoint for contrast stretch
 --
 -- Return: 
 --   img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function contrastStretch( img, low, high )
-  -- Convert to IHS so we can use intensity
+local function manualContrast( img, low, high )
+  --Convert to IHS so we can use intensity
   img = il.RGB2IHS(img);
   
-  -- Contrast stretch each pixel to its new intensity
-  for r,c in img:pixels() do
-    local temp = ( 255 / ( high - low ) ) * ( img:at(r,c).i - low );
-    
-    if temp > 255 then
-      temp = 255
-    end
-    if temp < 0 then
-      temp = 0
-    end
-    
-    img:at(r,c).i = temp;
-  end
+  --Call helper function to perform contrast stretching with specified endpoints
+  img = helper.performContrastStretch( img, low, high );
   
-  -- Convert back to rgb
+  --Convert back to RGB
   img = il.IHS2RGB(img);
   
   return img;
 end
-pointProc.contrastStretch = contrastStretch;
+pointProc.manualContrast = manualContrast;
+
 
 --------------------------------------------------------------------------------
 --
