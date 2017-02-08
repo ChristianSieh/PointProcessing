@@ -303,9 +303,55 @@ pointProc.distPsuedocolor = distPsuedocolor;
 --
 --------------------------------------------------------------------------------
 local function contPsuedocolor( img )
+  -- Little hacky since I just threw an extra value on the end
+  local rVal = {0, 255, 255, 0, 0, 0, 255, 255, 255};
+  local gVal = {0, 0, 255, 255, 255, 0, 0, 255, 255};
+  local bVal = {0, 0, 0, 0, 255, 255, 255, 255, 255};
+  local rLUT = {};
+  local gLUT = {};
+  local bLUT = {};
+  
+  -- Compute LUT
+  -- Since we are doing 8 colors, each color will have 32 values between it and the next color
+  for i = 1, 9 do
+    for j = 0, 32 do
+      if rVal[i + 1] ~= nil then
+        if rVal[i + 1] > rVal[i] then
+          rLUT[j + ((i - 1) * 32)] = (8 * (j + 1)) - 1; -- If we are increasing then we add 8
+        elseif rVal[i + 1] < rVal[i] then
+          rLUT[j + ((i - 1) * 32)] = 255 - (8 * j); -- If we are decreasing then we add 8
+        else
+          rLUT[j + ((i - 1) * 32)] = rVal[i]; -- If we aren't changing then we can just set the value
+        end
+      end
+      
+      if gVal[i + 1] ~= nil then
+        if gVal[i + 1] > gVal[i] then
+          gLUT[j + ((i - 1) * 32)] = (8 * (j + 1)) - 1;
+        elseif gVal[i + 1] < gVal[i] then
+          gLUT[j + ((i - 1) * 32)] = 255 - (8 * j);
+        else
+          gLUT[j + ((i - 1) * 32)] = gVal[i];
+        end
+      end
+      
+      if bVal[i + 1] ~= nil then
+        if bVal[i + 1] > bVal[i] then
+          bLUT[j + ((i - 1) * 32)] = (8 * (j + 1)) - 1;
+        elseif bVal[i + 1] < bVal[i] then
+          bLUT[j + ((i - 1) * 32)] = 255 - (8 * j);
+        else
+          bLUT[j + ((i - 1) * 32)] = bVal[i];
+        end
+      end
+      
+    end
+  end
+  
+  -- Update Image
   return img:mapPixels(
     function( r, g, b )
-      return 255 - r, 255 - g, 255 - b;
+      return rLUT[r], gLUT[g], bLUT[b];
     end
   );
 end
