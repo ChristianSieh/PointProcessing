@@ -49,6 +49,7 @@ imageMenu("Point Processes",
     {"Disc Pseudocolor - Weiss", il.pseudocolor2},
     {"Cont Pseudocolor", pointProc.contPsuedocolor},
     {"Cont Pseudocolor - Weiss", il.pseudocolor1},
+    {"Looks Cool", pointProc.looksCool}
   }
 )
 

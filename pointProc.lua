@@ -357,5 +357,35 @@ local function contPsuedocolor( img )
 end
 pointProc.contPsuedocolor = contPsuedocolor;
 
+--------------------------------------------------------------------------------
+--
+-- Function Name: Looks Cool
+--
+-- Description: 
+--
+-- Parameters:
+--   img - An image object from ip.lua representing the image to process
+--
+-- Return: 
+--   img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function looksCool( img )
+    
+  img = il.RGB2YIQ(img);
+    
+  local c = 10
+    
+  for r,c in img:pixels() do
+    img:at(r,c).y = c * math.log(1 + img:at(r,c).y);
+  end
+  
+  img = il.YIQ2RGB(img);
+  
+  return img;
+  
+end
+pointProc.looksCool = looksCool;
+
 --Return table of point process functions
 return pointProc;  
