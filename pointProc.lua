@@ -87,10 +87,35 @@ pointProc.negate = negate;
 --   img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function posterize( img )
+local function posterize( img, lvl )
+
+  -- Set Ranges
+  local inputRange = 256 / lvl;
+  inputRange = math.ceil(inputRange);
+  
+  local outputRange = 256 / (lvl - 1)
+  outputRange = math.ceil(outputRange);
+  
+  local LUT = {};
+  local temp = 0
+  
+  -- Compute LUT
+  for i = 0, lvl - 1 do
+    for j = (inputRange * i ), inputRange * (i + 1) do
+      if (outputRange * i) - 1 > 255 then
+        LUT[j] = 255;
+      elseif i > 0 then
+        LUT[j] = (outputRange * i);
+      else
+        LUT[j] = 0;
+      end
+    end
+  end
+  
+  -- Update Image
   return img:mapPixels(
     function( r, g, b )
-      return 255 - r, 255 - g, 255 - b;
+      return LUT[r], LUT[g], LUT[b];
     end
   );
 end
@@ -239,9 +264,26 @@ pointProc.slice = slice;
 --
 --------------------------------------------------------------------------------
 local function distPsuedocolor( img )
+  local rVal = {0, 255, 255, 0, 0, 0, 255, 255};
+  local gVal = {0, 0, 255, 255, 255, 0, 0, 255};
+  local bVal = {0, 0, 0, 0, 255, 255, 255, 255};
+  local rLUT = {};
+  local gLUT = {};
+  local bLUT = {};
+  
+  -- Compute LUT
+  for i = 0, 7 do
+    for j = 0, 32 do
+      rLUT[j + (i * 32)] = rVal[i + 1];
+      gLUT[j + (i * 32)] = gVal[i + 1]; 
+      bLUT[j + (i * 32)] = bVal[i + 1]; 
+    end
+  end
+  
+  -- Update Image
   return img:mapPixels(
     function( r, g, b )
-      return 255 - r, 255 - g, 255 - b;
+      return rLUT[r], gLUT[g], bLUT[b];
     end
   );
 end

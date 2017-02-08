@@ -32,8 +32,30 @@ local misc = {};
 --   img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function threshold( img )
-  return image.flat( img.width, img.height );
+local function threshold( img, lvl )
+  -- Compute LUT
+  local LUT = {};
+  
+  for i = 0, 255 do
+    if i < lvl then
+      LUT[i] = 0;
+    else
+      LUT[i] = 255;
+    end
+  end
+  
+  img = il.RGB2IHS(img);
+  
+  --Loop over all pixels
+  for r,c in img:pixels() do
+    img:at(r,c).i = LUT[img:at(r,c).i];
+    img:at(r,c).s = 0;
+  end
+  
+  img = il.IHS2RGB(img);
+  
+  return img;
+  
 end
 misc.threshold = threshold;
 
