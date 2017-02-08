@@ -33,21 +33,26 @@ local helper = {};
 --
 --------------------------------------------------------------------------------
 local function performContrastStretch( img, low, high )
-  --Loop over each pixel
-  for r,c in img:pixels() do
+  local lookUp = {};
+  
+  --Create look up table
+  for i = 0, 255 do
     --Calculate pixel value after contrast stretching, using formula from book
-    local temp = ( 255 / ( high - low ) ) * ( img:at(r,c).i - low );
+    lookUp[i] = ( 255 / ( high - low ) ) * ( i - low );
     
     --Clip high and low pixel values that are out of bounds
-    if temp > 255 then
-      temp = 255;
+    if lookUp[i] > 255 then
+      lookUp[i] = 255;
     end
-    if temp < 0 then
-      temp = 0;
+    if lookUp[i] < 0 then
+      lookUp[i] = 0;
     end
-    
+  end
+  
+  --Loop over each pixel
+  for r,c in img:pixels() do    
     --Assign new pixel value
-    img:at(r,c).i = temp;
+    img:at(r,c).y = lookUp[img:at(r,c).y];
   end
   
   return img;

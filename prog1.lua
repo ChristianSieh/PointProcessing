@@ -54,8 +54,8 @@ imageMenu("Point Processes",
 
 imageMenu("Histogram processes",
   {
-    {"Contrast Stretch", hist.contrastStretch},
-    {"Contrast Stretch - Weiss", il.stretch},
+    {"Automated Contrast Stretch", hist.automatedContrast},
+    {"Automated Contrast Stretch - Weiss", il.stretch},
     {"Contrast Specify\tCtrl-H", hist.contrastSpecify, hotkey = "C-H",
       {{name = "lp", type = "number", displaytype = "spin", default = 1, min = 0, max = 100},
         {name = "rp", type = "number", displaytype = "spin", default = 99, min = 0, max = 100}}},

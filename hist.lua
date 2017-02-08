@@ -13,17 +13,18 @@
 --  
 --------------------------------------------------------------------------------
 
---Define already loaded il file
+--Define already loaded files
 local il = require("il");
+local helper = require("helper");
 
 --Table to hold the point process functions
 local hist = {};
 
 --------------------------------------------------------------------------------
 --
--- Function Name: Contrast Stretch
+-- Function Name: automatedContrast
 --
--- Description:
+-- Description: 
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
@@ -32,10 +33,37 @@ local hist = {};
 --   img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function contrastStretch( img )
-  return image.flat( img.width, img.height );
+local function automatedContrast( img )
+  --Convert to YIQ so we can use intensity
+  img = il.RGB2YIQ(img);
+  
+  --Get historgram of converted image
+  local histogram = il.histogram( img, "yiq" );
+  
+  --Find minimum value in histogram
+  local temp = 0;
+  while( histogram[temp] == 0 and temp < 255) do
+    temp = temp + 1;
+  end  
+  local low = temp;
+  
+  --Find maximum value in histogram
+  temp = 255;
+  while( histogram[temp] == 0 and temp > 0) do
+    temp = temp - 1;
+  end  
+  local high = temp;  
+  
+  --Call helper function to perform contrast stretching with specified endpoints
+  img = helper.performContrastStretch( img, low, high );
+  
+  --Convert back to RGB
+  img = il.YIQ2RGB(img);
+  
+  return img;
 end
-hist.contrastStretch = contrastStretch;
+hist.automatedContrast = automatedContrast;
+
 
 --------------------------------------------------------------------------------
 --

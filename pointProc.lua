@@ -13,9 +13,8 @@
 --  
 --------------------------------------------------------------------------------
 
---Define already loaded il file
+--Define already loaded files
 local il = require("il");
-
 local helper = require("helper");
 
 --Table to hold the point process functions
@@ -146,14 +145,14 @@ pointProc.brightness = brightness;
 --
 --------------------------------------------------------------------------------
 local function manualContrast( img, low, high )
-  --Convert to IHS so we can use intensity
-  img = il.RGB2IHS(img);
+  --Convert to YIQ so we can use intensity
+  img = il.RGB2YIQ(img);
   
   --Call helper function to perform contrast stretching with specified endpoints
   img = helper.performContrastStretch( img, low, high );
   
   --Convert back to RGB
-  img = il.IHS2RGB(img);
+  img = il.YIQ2RGB(img);
   
   return img;
 end
