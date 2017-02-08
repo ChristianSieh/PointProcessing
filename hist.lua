@@ -115,7 +115,41 @@ hist.histDisplay = histDisplay;
 --
 --------------------------------------------------------------------------------
 local function equalizeRGB( img )
-  return image.flat( img.width, img.height );
+  --Convert to YIQ so we can use intensity
+  img = il.RGB2YIQ(img);
+  
+  --Get historgram of converted image
+  local histogram = il.histogram( img, "yiq" );
+  
+  --Get intensity counts
+  local counts = {};
+  for i = 0, 255 do
+    counts[i] = 0;
+  end
+  for r, c in img:pixels() do
+    counts[img:at(r,c).y] = counts[img:at(r,c).y] + 1;
+  end
+  
+  --Create equalization transformation
+  local lookUp = {};
+  lookUp[0] = counts[0];
+  for i = 1, 255 do
+    lookUp[i] = lookUp[i-1] + counts[i];
+  end
+  for i = 0, 255 do
+    lookUp[i] = lookUp[i] * 255 / ( img.height * img.width );
+    lookUp[i] = math.floor( lookUp[i] + 0.5 );
+  end
+  
+  --Apply equalization transformation
+  for r,c in img:pixels() do
+    img:at(r,c).y = lookUp[img:at(r,c).y];
+  end
+  
+  --Convert back to RGB
+  img = il.YIQ2RGB(img);
+  
+  return img;
 end
 hist.equalizeRGB = equalizeRGB;
 
