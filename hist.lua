@@ -37,9 +37,6 @@ local function automatedContrast( img )
   --Get historgram of converted image
   local histogram = il.histogram( img, "yiq" );
   
-  --Convert to YIQ so we can use intensity
-  img = il.RGB2YIQ(img);
-  
   --Find minimum value in histogram
   local temp = 0;
   while( histogram[temp] == 0 and temp < 255) do
@@ -53,6 +50,9 @@ local function automatedContrast( img )
     temp = temp - 1;
   end  
   local high = temp;  
+  
+  --Convert to YIQ so we can use intensity
+  img = il.RGB2YIQ(img);
   
   --Call helper function to perform contrast stretching with specified endpoints
   img = helper.performContrastStretch( img, low, high );
@@ -97,7 +97,7 @@ hist.contrastSpecify = contrastSpecify;
 --
 --------------------------------------------------------------------------------
 local function histDisplay( img )
-  return image.flat( img.width, img.height );
+  return il.showHistogram( img );
 end
 hist.histDisplay = histDisplay;
 
