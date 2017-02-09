@@ -23,7 +23,9 @@ local misc = {};
 --
 -- Function Name: Binary Threshold
 --
--- Description:
+-- Description: Binary thresholding take a threshold specified by the user
+--              and every intensity below the threshold gets converted
+--              to black and every value above gets converted to white.
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
@@ -58,24 +60,6 @@ local function threshold( img, lvl )
   
 end
 misc.threshold = threshold;
-
---------------------------------------------------------------------------------
---
--- Function Name: Automatic Threshold
---
--- Description:
---
--- Parameters:
---   img - An image object from ip.lua representing the image to process
---
--- Return: 
---   img - The image object after having the point process performed upon it
---
---------------------------------------------------------------------------------
-local function autoThreshold( img )
-  return image.flat( img.width, img.height );
-end
-misc.autoThreshold = autoThreshold;
 
 --Return table of histogram functions
 return misc;  
