@@ -115,26 +115,17 @@ hist.histDisplay = histDisplay;
 --
 --------------------------------------------------------------------------------
 local function equalizeRGB( img )
-  --Convert to YIQ so we can use intensity
-  img = il.RGB2YIQ(img);
-  
   --Get historgram of converted image
   local histogram = il.histogram( img, "yiq" );
   
-  --Get intensity counts
-  local counts = {};
-  for i = 0, 255 do
-    counts[i] = 0;
-  end
-  for r, c in img:pixels() do
-    counts[img:at(r,c).y] = counts[img:at(r,c).y] + 1;
-  end
+  --Convert to YIQ so we can use intensity
+  img = il.RGB2YIQ(img);
   
   --Create equalization transformation
   local lookUp = {};
-  lookUp[0] = counts[0];
+  lookUp[0] = histogram[0];
   for i = 1, 255 do
-    lookUp[i] = lookUp[i-1] + counts[i];
+    lookUp[i] = lookUp[i-1] + histogram[i];
   end
   for i = 0, 255 do
     lookUp[i] = lookUp[i] * 255 / ( img.height * img.width );
@@ -167,11 +158,11 @@ hist.equalizeRGB = equalizeRGB;
 --
 --------------------------------------------------------------------------------
 local function equalizeClip( img, clipPercentage )
-  --Convert to YIQ so we can use intensity
-  img = il.RGB2YIQ(img);
-  
   --Get historgram of converted image
   local histogram = il.histogram( img, "yiq" );
+  
+  --Convert to YIQ so we can use intensity
+  img = il.RGB2YIQ(img);
   
   --Get intensity counts
   local counts = {};
