@@ -79,10 +79,12 @@ pointProc.negate = negate;
 --
 -- Function Name: Posterize
 --
--- Description: 
+-- Description: This function reduces the numbers of colors in the image to
+--              the number specified by the lvl parameter. 
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
+--   lvl - The number of colors to have in the image for each rgb channel
 --
 -- Return: 
 --   img - The image object after having the point process performed upon it
@@ -126,7 +128,7 @@ pointProc.posterize = posterize;
 --
 -- Function Name: Brightness
 --
--- Description: 
+-- Description: This function adds the level specified to each rgb value.
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
@@ -259,7 +261,9 @@ pointProc.logScale = logScale;
 --
 -- Function Name: Bitplane Slice
 --
--- Description: 
+-- Description: This function take the bit specified (0 - 7) and checks that bit
+--              in each intensity value. If the bit is a 1 then the value
+--              maps to black otherwise it maps to white.
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
@@ -294,7 +298,10 @@ pointProc.slice = slice;
 --
 -- Function Name: Discrete Psuedocolor
 --
--- Description: 
+-- Description: This function starts at black and walks the color cube for
+--              each pixel in the image. It maps these pixels to black, red,
+--              yellow, green, cyan, blue, magenta, and white depending on
+--              which level (sections of 32 pixels) they fall in.
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
@@ -312,6 +319,8 @@ local function distPsuedocolor( img )
   local bLUT = {};
   
   -- Compute LUT
+  -- For each of the 8 color values, map each level (32 pixels) to that
+  -- color
   for i = 0, 7 do
     for j = 0, 32 do
       rLUT[j + (i * 32)] = rVal[i + 1];
@@ -333,7 +342,14 @@ pointProc.distPsuedocolor = distPsuedocolor;
 --
 -- Function Name: Continuous Psuedocolor
 --
--- Description: 
+-- Description: This function starts at black and walks the color cube for
+--              each pixel in the image. It maps these pixels the same as
+--              in the discrete function but each rgb value from 0 - 255
+--              increases or decreases by 8. For example, the red channel
+--              is at 0 for black and 255 for red so to go from red to
+--              black you need to increase by 8 for each 32 steps. There are
+--              32 steps since there are 256 values and 8 colors on the color
+--              cube.
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
@@ -399,9 +415,10 @@ pointProc.contPsuedocolor = contPsuedocolor;
 
 --------------------------------------------------------------------------------
 --
--- Function Name: Looks Cool
+-- Function Name: Solarize
 --
--- Description: 
+-- Description: This function negates intensities that are below the threshold
+--              using the IHS color model.
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
@@ -410,22 +427,54 @@ pointProc.contPsuedocolor = contPsuedocolor;
 --   img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function looksCool( img )
-    
-  img = il.RGB2YIQ(img);
-    
-  local c = 10
-    
+local function solarize( img, lvl )
+  --Convert to IHS so we can use intensity
+  img = il.RGB2IHS(img);
+  
   for r,c in img:pixels() do
-    img:at(r,c).y = c * math.log(1 + img:at(r,c).y);
+    local val = img:at(r,c).y;
+    if val < lvl then
+      img:at(r,c).i =  255 - val;
+    end
   end
   
-  img = il.YIQ2RGB(img);
+  --Convert back to RGB
+  img = il.IHS2RGB(img);
   
   return img;
-  
 end
-pointProc.looksCool = looksCool;
+pointProc.solarize = solarize;
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: Inverse Solarize
+--
+-- Description: This function negates intensities that are above the threshold
+--              using the IHS color model.
+-- Parameters:
+--   img - An image object from ip.lua representing the image to process
+--
+-- Return: 
+--   img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function inverseSolarize( img, lvl )
+  --Convert to IHS so we can use intensity
+  img = il.RGB2IHS(img);
+  
+  for r,c in img:pixels() do
+    local val = img:at(r,c).y;
+    if val > lvl then
+      img:at(r,c).i =  255 - val;
+    end
+  end
+  
+  --Convert back to RGB
+  img = il.IHS2RGB(img);
+  
+  return img;
+end
+pointProc.inverseSolarize = inverseSolarize;
 
 --Return table of point process functions
 return pointProc;  

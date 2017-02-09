@@ -49,7 +49,10 @@ imageMenu("Point Processes",
     {"Disc Pseudocolor - Weiss", il.pseudocolor2},
     {"Cont Pseudocolor", pointProc.contPsuedocolor},
     {"Cont Pseudocolor - Weiss", il.pseudocolor1},
-    {"Looks Cool", pointProc.looksCool}
+    {"Solarize", pointProc.solarize,       
+      {{name = "Threshold", type = "number", displaytype = "spin", default = 128, min = 0, max = 255}}},
+    {"Inverse Solarize", pointProc.inverseSolarize,       
+      {{name = "Threshold", type = "number", displaytype = "spin", default = 128, min = 0, max = 255}}},
   }
 )
 
