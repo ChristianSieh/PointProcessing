@@ -164,31 +164,24 @@ local function equalizeClip( img, clipPercentage )
   --Convert to YIQ so we can use intensity
   img = il.RGB2YIQ(img);
   
-  --Get intensity counts
-  local counts = {};
-  local max = math.floor( img.height * img.width * clipPercentage );
-  local diff = 0;
+  --Clip histogram values
+  local max = math.floor( img.height * img.width * ( clipPercentage / 100 ) );
+  local num_pixels = 0;
   for i = 0, 255 do
-    counts[i] = 0;
-  end
-  for r, c in img:pixels() do
-    counts[img:at(r,c).y] = counts[img:at(r,c).y] + 1;
-  end
-  for i = 0, 255 do
-    if counts[i] > max then
-      diff = diff + ( counts[i] - max );
-      counts[i] = max;
+    if histogram[i] > max then
+      histogram[i] = max;
     end
+    num_pixels = num_pixels + histogram[i];
   end
   
   --Create equalization transformation
   local lookUp = {};
-  lookUp[0] = counts[0];
+  lookUp[0] = histogram[0];
   for i = 1, 255 do
-    lookUp[i] = lookUp[i-1] + counts[i];
+    lookUp[i] = lookUp[i-1] + histogram[i];
   end
   for i = 0, 255 do
-    lookUp[i] = lookUp[i] * 255 / ( ( img.height * img.width ) - diff );
+    lookUp[i] = lookUp[i] * 255 / num_pixels;
     lookUp[i] = math.floor( lookUp[i] + 0.5 );
   end
   
