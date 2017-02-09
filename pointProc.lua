@@ -254,8 +254,9 @@ pointProc.gamma = gamma;
 --------------------------------------------------------------------------------
 local function logScale( img )
   local lookUp = {};
+  local c = 255 / math.log( 1 + 255 );
   for i = 0, 255 do
-    lookUp[i] = math.log( 1 + ( i / 255 ) ) * 255;
+    lookUp[i] = c * math.log( 1 + i );
     lookUp[i] = math.floor( lookUp[i] + 0.5 );
   end
   
