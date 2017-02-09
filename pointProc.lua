@@ -93,14 +93,18 @@ pointProc.negate = negate;
 local function posterize( img, lvl )
 
   -- Set Ranges
+  -- Input range is the pixels coming in so 256 / 8 for example means that
+  -- every 32 pixels is a color
   local inputRange = 256 / lvl;
   inputRange = math.ceil(inputRange);
   
+  -- The output range is used to change the level for the new pixels so 
+  -- if we use 8 as our lvl again we will get 256/7 so for every 37
+  -- pixels we need to change colors
   local outputRange = 256 / (lvl - 1)
   outputRange = math.ceil(outputRange);
   
   local LUT = {};
-  local temp = 0
   
   -- Compute LUT
   for i = 0, lvl - 1 do
@@ -115,12 +119,15 @@ local function posterize( img, lvl )
     end
   end
   
-  -- Update Image
-  return img:mapPixels(
-    function( r, g, b )
-      return LUT[r], LUT[g], LUT[b];
-    end
-  );
+  img = il.RGB2YIQ(img);
+  
+  for r,c in img:pixels() do
+    img:at(r,c).y = LUT[img:at(r,c).y];
+  end
+  
+  img = il.YIQ2RGB(img);
+  
+  return img;
 end
 pointProc.posterize = posterize;
 
