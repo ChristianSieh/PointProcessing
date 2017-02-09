@@ -78,8 +78,42 @@ hist.automatedContrast = automatedContrast;
 --   img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function contrastSpecify( img )
-  return image.flat( img.width, img.height );
+local function contrastSpecify( img, lowerBound, upperBound )
+  --Get historgram of converted image
+  local histogram = helper.computeHistogram( img, "yiq" );
+  
+  --Find number of pixels to skip
+  local lowerPixel = img.height * img.width * lowerBound / 100;
+  local upperPixel = img.height * img.width * ( 100 - upperBound  ) / 100;
+  
+  --Find minimum value in histogram
+  local temp = 0;
+  local lowerSum = 0;
+  while( lowerSum < lowerPixel and temp < 255) do
+    lowerSum = lowerSum + histogram[temp];
+    temp = temp + 1;
+  end  
+  local low = temp;
+  
+  --Find maximum value in histogram
+  temp = 255;
+  local upperSum = 0;
+  while( upperSum < upperPixel and temp > 0) do
+    upperSum = upperSum + histogram[temp];
+    temp = temp - 1;
+  end  
+  local high = temp;  
+  
+  --Convert to YIQ so we can use intensity
+  img = il.RGB2YIQ(img);
+  
+  --Call helper function to perform contrast stretching with specified endpoints
+  img = helper.performContrastStretch( img, low, high );
+  
+  --Convert back to RGB
+  img = il.YIQ2RGB(img);
+  
+  return img;
 end
 hist.contrastSpecify = contrastSpecify;
 
