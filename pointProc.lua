@@ -199,24 +199,29 @@ pointProc.manualContrast = manualContrast;
 --
 --------------------------------------------------------------------------------
 local function gamma( img, lvl )
-  return img:mapPixels(
-    function( r, g, b )
-      
-      local c = 2;
-      local temp = { c * math.pow(r, lvl), c * math.pow(g, lvl), c * math.pow(b, lvl) };
-      
-      for i = 1, 3 do
-        if temp[i] > 255 then
-          temp[i] = 255
-        end
-        if temp[i] < 0 then
-          temp[i] = 0
-        end
-      end
-      
-      return temp[1], temp[2], temp[3]
+  local lookUp = {};
+  for i = 0, 255 do
+    lookUp[i] = math.pow( i / 256, lvl ) * 256;
+    lookUp[i] = math.floor( lookUp[i] + 0.5 );
+  end
+  
+  for i = 0, 255 do
+    if lookUp[i] > 255 then
+      lookUp[i] = 255;
+    elseif lookUp[i] < 0 then
+      lookUp[i] = 0;
     end
-  );
+  end
+  
+  il.RGB2YIQ( img );
+  
+  for r,c in img:pixels() do
+    img:at(r,c).y = lookUp[img:at(r,c).y];
+  end
+  
+  il.YIQ2RGB( img );
+  
+  return img;
 end
 pointProc.gamma = gamma;
 
@@ -234,24 +239,29 @@ pointProc.gamma = gamma;
 --
 --------------------------------------------------------------------------------
 local function logScale( img )
-  return img:mapPixels(
-    function( r, g, b )
-      local c = 50;
-
-      local temp = { c * math.log(1 + r), c * math.log(1 + g), c * math.log(1 + b) };
-      
-      for i = 1, 3 do
-        if temp[i] > 255 then
-          temp[i] = 255
-        end
-        if temp[i] < 0 then
-          temp[i] = 0
-        end
-      end
-      
-      return temp[1], temp[2], temp[3]
+  local lookUp = {};
+  for i = 0, 255 do
+    lookUp[i] = math.log( 1 + ( i / 255 ) ) * 255;
+    lookUp[i] = math.floor( lookUp[i] + 0.5 );
+  end
+  
+  for i = 0, 255 do
+    if lookUp[i] > 255 then
+      lookUp[i] = 255;
+    elseif lookUp[i] < 0 then
+      lookUp[i] = 0;
     end
-  );
+  end
+  
+  il.RGB2YIQ( img );
+  
+  for r,c in img:pixels() do
+    img:at(r,c).y = lookUp[img:at(r,c).y];
+  end
+  
+  il.YIQ2RGB( img );
+  
+  return img;
 end
 pointProc.logScale = logScale;
 
