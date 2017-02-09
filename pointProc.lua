@@ -102,7 +102,7 @@ local function posterize( img, lvl )
   -- Compute LUT
   for i = 0, lvl - 1 do
     for j = (inputRange * i ), inputRange * (i + 1) do
-      if (outputRange * i) - 1 > 255 then
+      if (outputRange * i) > 255 then
         LUT[j] = 255;
       elseif i > 0 then
         LUT[j] = (outputRange * i);
@@ -267,12 +267,25 @@ pointProc.logScale = logScale;
 --   img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function slice( img )
-  return img:mapPixels(
-    function( r, g, b )
-      return 255 - r, 255 - g, 255 - b;
+local function slice( img, bitVal )
+  --Convert to IHS so we can use intensity
+  img = il.RGB2IHS(img);
+  
+  for r,c in img:pixels() do
+    local val = img:at(r,c).y + 1;
+    local test = bit32.extract(val, bitVal);
+    if test > 0 then
+      img:at(r,c).i = 0;
+    else
+      img:at(r,c).i = 255;
     end
-  );
+    img:at(r,c).s = 0;
+  end
+  
+  --Convert back to RGB
+  img = il.IHS2RGB(img);
+  
+  return img;
 end
 pointProc.slice = slice;
 
