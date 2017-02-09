@@ -145,22 +145,27 @@ pointProc.posterize = posterize;
 --
 --------------------------------------------------------------------------------
 local function brightness( img, lvl )
-  return img:mapPixels(
-    function( r, g, b )
-      local temp = { r + lvl, g + lvl, b + lvl };
-      
-      for i = 1, 3 do
-        if temp[i] > 255 then
-          temp[i] = 255
-        end
-        if temp[i] < 0 then
-          temp[i] = 0
-        end
-      end
-        
-      return temp[1], temp[2], temp[3]
+  local lookUp = {};
+  for i = 0, 255 do
+    lookUp[i] = i + lvl;
+    
+    if lookUp[i] > 255 then
+      lookUp[i] = 255;
+    elseif lookUp[i] < 0 then
+      lookUp[i] = 0;
     end
-  );
+  end
+  
+  il.RGB2YIQ( img );
+  
+  for r,c in img:pixels() do
+    img:at(r,c).y = lookUp[img:at(r,c).y];
+  end
+  
+  il.YIQ2RGB( img );
+  
+  return img;
+  
   end
 pointProc.brightness = brightness;
 
