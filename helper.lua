@@ -39,6 +39,7 @@ local function performContrastStretch( img, low, high )
   for i = 0, 255 do
     --Calculate pixel value after contrast stretching, using formula from book
     lookUp[i] = ( 255 / ( high - low ) ) * ( i - low );
+    lookUp[i] = math.floor( lookUp[i] + 0.5 );
 
     --Clip high and low pixel values that are out of bounds
     if lookUp[i] > 255 then

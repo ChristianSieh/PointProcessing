@@ -41,6 +41,7 @@ local function grayscale( img )
     local intensity = img:at(r,c).r * 0.3
                     + img:at(r,c).g * 0.59
                     + img:at(r,c).b * 0.11;
+    intensity = math.floor( intensity + 0.5 );
     
     --Assign to all three color components
     img:at(r,c).r = intensity;
