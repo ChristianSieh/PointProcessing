@@ -35,7 +35,7 @@ local hist = {};
 --------------------------------------------------------------------------------
 local function automatedContrast( img )
   --Get historgram of converted image
-  local histogram = il.histogram( img, "yiq" );
+  local histogram = helper.computeHistogram( img, "yiq" );
   
   --Find minimum value in histogram
   local temp = 0;
@@ -116,7 +116,7 @@ hist.histDisplay = histDisplay;
 --------------------------------------------------------------------------------
 local function equalizeRGB( img )
   --Get historgram of converted image
-  local histogram = il.histogram( img, "yiq" );
+  local histogram = helper.computeHistogram( img, "yiq" );
   
   --Convert to YIQ so we can use intensity
   img = il.RGB2YIQ(img);
@@ -159,7 +159,7 @@ hist.equalizeRGB = equalizeRGB;
 --------------------------------------------------------------------------------
 local function equalizeClip( img, clipPercentage )
   --Get historgram of converted image
-  local histogram = il.histogram( img, "yiq" );
+  local histogram = helper.computeHistogram( img, "yiq" );
   
   --Convert to YIQ so we can use intensity
   img = il.RGB2YIQ(img);
