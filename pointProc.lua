@@ -294,12 +294,12 @@ local function slice( img, bitVal )
   img = il.RGB2IHS(img);
   
   for r,c in img:pixels() do
-    local val = img:at(r,c).y + 1;
+    local val = img:at(r,c).i;
     local test = bit32.extract(val, bitVal);
     if test > 0 then
-      img:at(r,c).i = 0;
-    else
       img:at(r,c).i = 255;
+    else
+      img:at(r,c).i = 0;
     end
     img:at(r,c).s = 0;
   end
