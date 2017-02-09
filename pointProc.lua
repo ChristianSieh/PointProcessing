@@ -140,15 +140,15 @@ local function brightness( img, lvl )
       local temp = { r + lvl, g + lvl, b + lvl };
       
       for i = 1, 3 do
-          if temp[i] > 255 then
-            temp[i] = 255
-          end
-          if temp[i] < 0 then
-            temp[i] = 0
-          end
+        if temp[i] > 255 then
+          temp[i] = 255
         end
+        if temp[i] < 0 then
+          temp[i] = 0
+        end
+      end
         
-        return temp[1], temp[2], temp[3]
+      return temp[1], temp[2], temp[3]
     end
   );
   end
@@ -197,10 +197,23 @@ pointProc.manualContrast = manualContrast;
 --   img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function gamma( img )
+local function gamma( img, lvl )
   return img:mapPixels(
     function( r, g, b )
-      return 255 - r, 255 - g, 255 - b;
+      
+      local c = 2;
+      local temp = { c * math.pow(r, lvl), c * math.pow(g, lvl), c * math.pow(b, lvl) };
+      
+      for i = 1, 3 do
+        if temp[i] > 255 then
+          temp[i] = 255
+        end
+        if temp[i] < 0 then
+          temp[i] = 0
+        end
+      end
+      
+      return temp[1], temp[2], temp[3]
     end
   );
 end
@@ -222,7 +235,20 @@ pointProc.gamma = gamma;
 local function logScale( img )
   return img:mapPixels(
     function( r, g, b )
-      return 255 - r, 255 - g, 255 - b;
+      local c = 50;
+
+      local temp = { c * math.log(1 + r), c * math.log(1 + g), c * math.log(1 + b) };
+      
+      for i = 1, 3 do
+        if temp[i] > 255 then
+          temp[i] = 255
+        end
+        if temp[i] < 0 then
+          temp[i] = 0
+        end
+      end
+      
+      return temp[1], temp[2], temp[3]
     end
   );
 end
