@@ -26,6 +26,9 @@ local pointProc = require "pointProc"
 local hist = require "hist"
 local segment = require "segment"
 local helper = require "helper"
+local misc = require "misc"
+local edge = require "edge"
+local neighborhood = require "neighborhood"
 
 --Load images listed on command line
 local imgs = {...}
@@ -72,11 +75,68 @@ imageMenu("Histogram processes",
   }
 )
 
+imageMenu("Neigborhood ops",
+  {
+    {"Smooth", neighborhood.smooth},
+    {"Smooth - Weiss", il.smooth},
+    {"Sharpen", neighborhood.sharpen},
+    {"Sharpen - Weiss", il.sharpen},
+    {"Mean", neighborhood.mean,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 3, max = 65}}},
+    {"Mean - Weiss", il.mean,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 3, max = 65}}},
+    {"Minimum", neighborhood.minimum},
+    {"Minimum - Weiss", il.minimum},
+    {"Maximum", neighborhood.maximum},
+    {"Maximum - Weiss", il.maximum},
+    {"Median+", neighborhood.medianPlus},
+    {"Median+ - Weiss", il.medianPlus},
+    {"Median", il.timed(neighborhood.median),
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Median - Weiss", il.timed(il.median),
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Emboss", neighborhood.emboss},
+    {"Emboss - Weiss", il.emboss},
+  }
+)
+
+imageMenu("Edge detection",
+  {
+    {"Sobel Edge Mag\tCtrl-E", edge.sobelMag, hotkey = "C-E"},
+    {"Sobel Edge Mag\tCtrl-E - Weiss", il.sobelMag, hotkey = "C-E"},
+    {"Sobel Edge Mag/Dir", edge.sobelDir},
+    {"Sobel Edge Mag/Dir - Weiss", il.sobel},
+    {"Kirsch Edge Mag/Dir", edge.kirsch},
+    {"Kirsch Edge Mag/Dir - Weiss", il.kirsch},
+    {"Laplacian", edge.laplacian},
+    {"Laplacian - Weiss", il.laplacian},
+    {"Range", edge.range},
+    {"Range - Weiss", il.range},
+    {"Std Dev", edge.stdDev,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Std Dev - Weiss", il.stdDev,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}}
+  }
+)
+
 --Define menu of segment operations
 imageMenu("Segment",
   {
     {"Binary Threshold", segment.threshold,
-      {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}},
+      {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}}
+  }
+)
+
+imageMenu("Misc",
+  {
+    {"Impulse Noise", misc.impulseNoise,
+      {{name = "probability", type = "number", displaytype = "slider", default = 64, min = 0, max = 1000}}},
+    {"Impulse Noise - Weiss", il.impulseNoise,
+      {{name = "probability", type = "number", displaytype = "slider", default = 64, min = 0, max = 1000}}},
+    {"Gaussian noise", misc.gaussNoise,
+      {{name = "sigma", type = "number", displaytype = "textbox", default = "16.0"}}},
+    {"Gaussian noise - Weiss", il.gaussianNoise,
+      {{name = "sigma", type = "number", displaytype = "textbox", default = "16.0"}}}
   }
 )
 
