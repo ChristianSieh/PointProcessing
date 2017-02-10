@@ -135,10 +135,11 @@ pointProc.posterize = posterize;
 --
 -- Function Name: Brightness
 --
--- Description: This function adds the level specified to each rgb value.
+-- Description: This function adds the level specified to each intensity.
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
+--   lvl - The amount of brightness to add to the intensity
 --
 -- Return: 
 --   img - The image object after having the point process performed upon it
@@ -290,6 +291,7 @@ pointProc.logScale = logScale;
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
+--   bitVal - Which bit in the intensity value that we are selecting
 --
 -- Return: 
 --   img - The image object after having the point process performed upon it
@@ -394,36 +396,11 @@ local function contPsuedocolor( img )
   -- Since we are doing 8 colors, each color will have 32 values between it and the next color
   for i = 1, 9 do
     for j = 0, 32 do
-      if rVal[i + 1] ~= nil then
-        if rVal[i + 1] > rVal[i] then
-          rLUT[j + ((i - 1) * 32)] = (8 * (j + 1)) - 1; -- If we are increasing then we add 8
-        elseif rVal[i + 1] < rVal[i] then
-          rLUT[j + ((i - 1) * 32)] = 255 - (8 * j); -- If we are decreasing then we add 8
-        else
-          rLUT[j + ((i - 1) * 32)] = rVal[i]; -- If we aren't changing then we can just set the value
-        end
-      end
+      rLUT = helper.contPseudoLUT( rVal, rLUT, i, j )
       
-      if gVal[i + 1] ~= nil then
-        if gVal[i + 1] > gVal[i] then
-          gLUT[j + ((i - 1) * 32)] = (8 * (j + 1)) - 1;
-        elseif gVal[i + 1] < gVal[i] then
-          gLUT[j + ((i - 1) * 32)] = 255 - (8 * j);
-        else
-          gLUT[j + ((i - 1) * 32)] = gVal[i];
-        end
-      end
+      gLUT = helper.contPseudoLUT( gVal, gLUT, i, j )
       
-      if bVal[i + 1] ~= nil then
-        if bVal[i + 1] > bVal[i] then
-          bLUT[j + ((i - 1) * 32)] = (8 * (j + 1)) - 1;
-        elseif bVal[i + 1] < bVal[i] then
-          bLUT[j + ((i - 1) * 32)] = 255 - (8 * j);
-        else
-          bLUT[j + ((i - 1) * 32)] = bVal[i];
-        end
-      end
-      
+      bLUT = helper.contPseudoLUT( bVal, bLUT, i, j )
     end
   end
   
@@ -445,6 +422,8 @@ pointProc.contPsuedocolor = contPsuedocolor;
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
+--   lvl - The threshold specified by the user. Anything below the threshold
+--         is negated.
 --
 -- Return: 
 --   img - The image object after having the point process performed upon it
@@ -476,6 +455,8 @@ pointProc.solarize = solarize;
 --              using the IHS color model.
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
+--   lvl - The threshold specified by the user. Anything above the threshold
+--         is negated.
 --
 -- Return: 
 --   img - The image object after having the point process performed upon it

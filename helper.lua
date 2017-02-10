@@ -134,5 +134,41 @@ local function computeHistogram( img, model )
 end
 helper.computeHistogram = computeHistogram;
 
+--------------------------------------------------------------------------------
+--
+-- Function Name: contPseudoLUT
+--
+-- Description: This function is just meant to clean up the continiuous pseudocolor
+--              function. It takes the next value we are going for and if it's
+--              greater than the current color value we increase by 8, if it's
+--              less than we decrease by 8, otherwise it stays the same.
+--
+-- Parameters:
+--   val - The current r, g, or b value
+--   LUT - The look up table where we will store our values
+--   i - The level we are on
+--   j - The pixel in the level we are on
+--
+-- Return: 
+--   LUT - An updated look up table for either the r, g, or b channel
+--
+--------------------------------------------------------------------------------
+local function contPseudoLUT( val, LUT, i, j )
+
+  if val[i + 1] ~= nil then
+    if val[i + 1] > val[i] then
+      LUT[j + ((i - 1) * 32)] = (8 * (j + 1)) - 1; -- If we are increasing then we add 8
+    elseif val[i + 1] < val[i] then
+      LUT[j + ((i - 1) * 32)] = 255 - (8 * j); -- If we are decreasing then we add 8
+    else
+      LUT[j + ((i - 1) * 32)] = val[i]; -- If we aren't changing then we can just set the value
+    end
+  end
+
+  --Return look up table
+  return LUT;
+end
+helper.contPseudoLUT = contPseudoLUT;
+
 --Return table of helper functions
 return helper;  

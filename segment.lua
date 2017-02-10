@@ -17,7 +17,7 @@
 local il = require("il");
 
 --Table to hold the point process functions
-local misc = {};
+local segment = {};
 
 --------------------------------------------------------------------------------
 --
@@ -29,6 +29,8 @@ local misc = {};
 --
 -- Parameters:
 --   img - An image object from ip.lua representing the image to process
+--   lvl - The threshold specified by the user. Any intensity below the threshold
+--         is set to black while anything above is set to white.
 --
 -- Return: 
 --   img - The image object after having the point process performed upon it
@@ -59,7 +61,7 @@ local function threshold( img, lvl )
   return img;
   
 end
-misc.threshold = threshold;
+segment.threshold = threshold;
 
 --Return table of histogram functions
-return misc;  
+return segment;  

@@ -16,7 +16,7 @@ local viz = require "visual"
 local il = require "il"
 local pointProc = require "pointProc"
 local hist = require "hist"
-local misc = require "misc"
+local segment = require "segment"
 
 --Load images listed on command line
 local imgs = {...}
@@ -79,17 +79,17 @@ imageMenu("Histogram processes",
   }
 )
 
-imageMenu("Misc",
+imageMenu("Segment",
   {
-    {"Binary Threshold", misc.threshold, {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}},
-    {"Binary Threshold - Wiess", il.threshold, {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}},
+    {"Binary Threshold", segment.threshold, {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}},
+    {"Binary Threshold - Weiss", il.threshold, {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}},
   }
 )
 
 imageMenu("Help",
   {
     { "Help", viz.imageMessage( "Help", "Abandon all hope, ye who enter here..." ) },
-    { "About", viz.imageMessage( "LuaIP Demo " .. viz.VERSION, "Authors: JMW and AI\nClass: CSC442/542 Digital Image Processing\nDate: Spring 2017" ) },
+    { "About", viz.imageMessage( "Point Processing Program", "Authors: Matt Dyke and Christian Sieh\nClass: CSC442/542 Digital Image Processing\nDate: Spring 2017" ) },
     {"Debug Console", viz.imageDebug}
   }
 )
