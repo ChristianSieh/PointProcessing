@@ -25,6 +25,7 @@ local il = require "il"
 local pointProc = require "pointProc"
 local hist = require "hist"
 local segment = require "segment"
+local helper = require "helper"
 
 --Load images listed on command line
 local imgs = {...}
@@ -82,7 +83,7 @@ imageMenu("Segment",
 --Define help menu
 imageMenu("Help",
   {
-    { "Help", viz.imageMessage( "Help", "Abandon all hope, ye who enter here..." ) },
+    { "Help", viz.imageMessage( "Help", helper.HelpMessage ) },
     { "About", viz.imageMessage( "Point Processing Program", "Authors: Matt Dyke and Christian Sieh\nClass: CSC442/542 Digital Image Processing\nDate: Spring 2017" ) },
     {"Debug Console", viz.imageDebug}
   }

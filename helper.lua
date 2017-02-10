@@ -185,5 +185,27 @@ end
 helper.contPseudoLUT = contPseudoLUT;
 
 
+--Define help message
+helper.HelpMessage = "The following image processing techniques can be applied by selecting them from the menus.\n" ..
+"Grayscale - Converts image to grayscale image\n" ..
+"Negate - Negates the image, inverting color channels\n" ..
+"Posterize - Splits image into specified number of intensities\n" ..
+"Brightness - Increase or decrease image brightness\n" ..
+"Contrast Stretch - Stretch image contrast between endpoints\n" ..
+"Gamma - Perform gamma transformation with specified gamma\n" ..
+"Log - Perform log transformation\n" ..
+"Bit-plane Slice - Set pixel intensity based on binary value\n" ..
+"Discrete Pseudocolor - Split image into 8 colors based on intensity\n" ..
+"Continuous Pseudocolor - Split image into 256 colors based on intensity\n" ..
+"Solarize - Negate pixels below threshold\n" ..
+"Inverse Solarize - Negate pixels above threshold\n" ..
+"Automated Contrast Stretch - Stretches image contrast between brightest and darkest pixels\n" ..
+"Contrast Specify - Stretches image contrast between brightest and darkest pixels, ignoring percentage\n" ..
+"Histogram Display - Display image histogram of intensities\n" ..
+"Histogram Display RGB - Display image histogram of color channels\n" ..
+"Histogram Equalization - Spread out image intensities based on histogram\n" ..
+"Histogram Equalize Clip - Spread out image intensities based on histogram, ingoring percentage\n" ..
+"Binary Threshold - Any pixel above threshold is set to white, any below is set to black\n";
+
 --Return table of helper functions
 return helper;  
