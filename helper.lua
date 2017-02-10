@@ -4,9 +4,14 @@
 --  Authors: Matt Dyke & Christian Sieh
 --  Course: CSC 442 - Digital Image Processing
 --  Instructor: Dr. Weiss
---  Date: 1/22/2017
+--  Date: 2/3/2017
 --  
---  Description: 
+--  Description: This file contains the helper functions that are used in other
+--    modules in the program. These functions are not used directly in the 
+--    program menus, but are small functions that help promote code reuse in
+--    the rest of the program. The functions are stored in a table as they are 
+--    created. This table is then returned at the end of the file, allowing
+--    them to be called from the main part of the program, prog1.
 --  
 --------------------------------------------------------------------------------
 
@@ -19,21 +24,24 @@ local helper = {};
 
 --------------------------------------------------------------------------------
 --
--- Function Name: performContrastStretch
+--  Function Name: performContrastStretch
 --
--- Description: 
+--  Description: This function provides contrast stretching on the given image 
+--    from the lower endpoint to the upper endpoint. It creates a lookup table
+--    to store the transformation, and then loops over the image, applying the
+--    transformation.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
---   low - User selected lower endpoint for contrast stretch
---   high - User selected upper endpoint for contrast stretch
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    low - User selected lower endpoint for contrast stretch
+--    high - User selected upper endpoint for contrast stretch
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function performContrastStretch( img, low, high )
-  local lookUp = {};
+  local lookUp = {};    --Lookup Table to store transformation information
 
   --Create look up table
   for i = 0, 255 do
@@ -63,16 +71,21 @@ helper.performContrastStretch = performContrastStretch;
 
 --------------------------------------------------------------------------------
 --
--- Function Name: computeHistogram
+--  Function Name: computeHistogram
 --
--- Description: 
+--  Description: This function computes the histogram of a given image. It 
+--    supports multiple image color models, such as RGB, YIQ, YUV, and IHS. It
+--    begins by converting the image if necessary to the correct model. It then
+--    steps through each pixel in the image, tallying up the total number of
+--    pixels for each intensity. Finally, the image is converted back and the
+--    histogram is returned.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
---   model - What color model to produce the histogram for
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    model - What color model to produce the histogram for
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    histogram - Table with counts the pixels for each intensity value
 --
 --------------------------------------------------------------------------------
 local function computeHistogram( img, model )
@@ -88,7 +101,7 @@ local function computeHistogram( img, model )
     return nil;
   end
 
-  local histogram = {};
+  local histogram = {};    --Table to store histogram counts
 
   --If RGB histograms requested
   if( model == "rgb" or model == "RGB" ) then
@@ -134,6 +147,7 @@ local function computeHistogram( img, model )
 end
 helper.computeHistogram = computeHistogram;
 
+
 --------------------------------------------------------------------------------
 --
 -- Function Name: contPseudoLUT
@@ -169,6 +183,7 @@ local function contPseudoLUT( val, LUT, i, j )
   return LUT;
 end
 helper.contPseudoLUT = contPseudoLUT;
+
 
 --Return table of helper functions
 return helper;  
