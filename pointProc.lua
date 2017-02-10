@@ -20,18 +20,19 @@ local helper = require("helper");
 --Table to hold the point process functions
 local pointProc = {};
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Grayscale
+--  Function Name: Grayscale
 --
--- Description: This function converts the given image to grayscale, using a 
---   ratio of 30% red, 59% green, and 11% blue.
+--  Description: This function converts the given image to grayscale, using a 
+--    ratio of 30% red, 59% green, and 11% blue.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function grayscale( img )
@@ -48,46 +49,51 @@ local function grayscale( img )
     img:at(r,c).g = intensity;
     img:at(r,c).b = intensity; 
   end  
+  
   return img;
 end
 pointProc.grayscale = grayscale;
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Negate
+--  Function Name: Negate
 --
--- Description: This function negates the given image. It does so by applying a
---   function which will invert each color component to each pixel in the image.
+--  Description: This function negates the given image. It does so by applying a
+--    function which will invert each color component to each pixel in the
+--    image.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function negate( img )
   return img:mapPixels(
     function( r, g, b )
+      --Negate each color channel individually
       return 255 - r, 255 - g, 255 - b;
     end
   );
 end
 pointProc.negate = negate;
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Posterize
+--  Function Name: Posterize
 --
--- Description: This function reduces the numbers of colors in the image to
---              the number specified by the lvl parameter. 
+--  Description: This function reduces the numbers of colors in the image to
+--    the number specified by the lvl parameter. 
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
---   lvl - The number of colors to have in the image for each rgb channel
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    lvl - The number of colors to have in the image for each rgb channel
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function posterize( img, lvl )
@@ -119,6 +125,7 @@ local function posterize( img, lvl )
     end
   end
   
+  --Convert image and apply transformation
   img = il.RGB2YIQ(img);
   
   for r,c in img:pixels() do
@@ -131,22 +138,25 @@ local function posterize( img, lvl )
 end
 pointProc.posterize = posterize;
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Brightness
+--  Function Name: Brightness
 --
--- Description: This function adds the level specified to each intensity.
+--  Description: This function adds the level specified to each intensity.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
---   lvl - The amount of brightness to add to the intensity
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    lvl - The amount of brightness to add to the intensity
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function brightness( img, lvl )
-  local lookUp = {};
+  local lookUp = {};    --Lookup Table to store transformation information
+  
+  --Create lookup table
   for i = 0, 255 do
     lookUp[i] = i + lvl;
     
@@ -157,6 +167,7 @@ local function brightness( img, lvl )
     end
   end
   
+  --Convert image and apply transformation
   il.RGB2YIQ( img );
   
   for r,c in img:pixels() do
@@ -167,22 +178,24 @@ local function brightness( img, lvl )
   
   return img;
   
-  end
+end
 pointProc.brightness = brightness;
+
 
 --------------------------------------------------------------------------------
 --
--- Function Name: manualContrast
+--  Function Name: manualContrast
 --
--- Description: 
+--  Description: This function performs contrast stretching on the given
+--    image, between the lower and upper bounds that are provided by the user.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
---   low - User selected lower endpoint for contrast stretch
---   high - User selected upper endpoint for contrast stretch
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    low - User selected lower endpoint for contrast stretch
+--    high - User selected upper endpoint for contrast stretch
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function manualContrast( img, low, high )
@@ -202,25 +215,29 @@ pointProc.manualContrast = manualContrast;
 
 --------------------------------------------------------------------------------
 --
--- Function Name: Gamma
+--  Function Name: Gamma
 --
--- Description: 
+--  Description: This function applies a gamma transformation to the given
+--    image. A positive gamma reduces the values of dark pixels while expanding
+--    the range of light pixels in an image. A negative gamma produces the
+--    opposite effect.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    lvl - Gamma level to implement
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function gamma( img, lvl )
-  local lookUp = {};
+  local lookUp = {};    --Lookup Table to store transformation information
+  
+  --Create lookup table
   for i = 0, 255 do
     lookUp[i] = math.pow( i / 256, lvl ) * 256;
     lookUp[i] = math.floor( lookUp[i] + 0.5 );
-  end
-  
-  for i = 0, 255 do
+    
     if lookUp[i] > 255 then
       lookUp[i] = 255;
     elseif lookUp[i] < 0 then
@@ -228,6 +245,7 @@ local function gamma( img, lvl )
     end
   end
   
+  --Convert image and apply transformation
   il.RGB2YIQ( img );
   
   for r,c in img:pixels() do
@@ -240,28 +258,31 @@ local function gamma( img, lvl )
 end
 pointProc.gamma = gamma;
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Log Scale
+--  Function Name: Log Scale
 --
--- Description: 
+--  Description: This function applies a log transformation to the given
+--    image. This transformation expands the values of dark pixels while
+--    compressing the range of light pixels in an image.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function logScale( img )
-  local lookUp = {};
-  local c = 255 / math.log( 1 + 255 );
+  local lookUp = {};    --Lookup Table to store transformation information
+  local c = 255 / math.log( 1 + 255 );      --Constant used in transformation
+  
+  --Create lookup table
   for i = 0, 255 do
     lookUp[i] = c * math.log( 1 + i );
     lookUp[i] = math.floor( lookUp[i] + 0.5 );
-  end
-  
-  for i = 0, 255 do
+    
     if lookUp[i] > 255 then
       lookUp[i] = 255;
     elseif lookUp[i] < 0 then
@@ -269,6 +290,7 @@ local function logScale( img )
     end
   end
   
+  --Convert image and apply transformation
   il.RGB2YIQ( img );
   
   for r,c in img:pixels() do
@@ -281,26 +303,28 @@ local function logScale( img )
 end
 pointProc.logScale = logScale;
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Bitplane Slice
+--  Function Name: Bitplane Slice
 --
--- Description: This function take the bit specified (0 - 7) and checks that bit
---              in each intensity value. If the bit is a 1 then the value
---              maps to black otherwise it maps to white.
+--  Description: This function take the bit specified (0 - 7) and checks that bit
+--    in each intensity value. If the bit is a 1 then the value maps to black,
+--    otherwise it maps to white.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
---   bitVal - Which bit in the intensity value that we are selecting
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    bitVal - Which bit in the intensity value that we are selecting
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function slice( img, bitVal )
   --Convert to IHS so we can use intensity
   img = il.RGB2IHS(img);
   
+  --Loop over pixels and apply transformation
   for r,c in img:pixels() do
     local val = img:at(r,c).i;
     local test = bit32.extract(val, bitVal);
@@ -319,20 +343,21 @@ local function slice( img, bitVal )
 end
 pointProc.slice = slice;
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Discrete Psuedocolor
+--  Function Name: Discrete Psuedocolor
 --
--- Description: This function starts at black and walks the color cube for
---              each pixel in the image. It maps these pixels to black, red,
---              yellow, green, cyan, blue, magenta, and white depending on
---              which level (sections of 32 pixels) they fall in.
+--  Description: This function starts at black and walks the color cube for
+--    each pixel in the image. It maps these pixels to black, red, yellow, 
+--    green, cyan, blue, magenta, and white depending on which level (sections
+--    of 32 pixels) they fall in.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function distPsuedocolor( img )
@@ -363,24 +388,23 @@ local function distPsuedocolor( img )
 end
 pointProc.distPsuedocolor = distPsuedocolor;
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Continuous Psuedocolor
+--  Function Name: Continuous Psuedocolor
 --
--- Description: This function starts at black and walks the color cube for
---              each pixel in the image. It maps these pixels the same as
---              in the discrete function but each rgb value from 0 - 255
---              increases or decreases by 8. For example, the red channel
---              is at 0 for black and 255 for red so to go from red to
---              black you need to increase by 8 for each 32 steps. There are
---              32 steps since there are 256 values and 8 colors on the color
---              cube.
+--  Description: This function starts at black and walks the color cube for each
+--    pixel in the image. It maps these pixels the same as in the discrete
+--    function but each rgb value from 0 - 255 increases or decreases by 8. For
+--    example, the red channel is at 0 for black and 255 for red so to go from
+--    red to black you need to increase by 8 for each 32 steps. There are 32
+--    steps since there are 256 values and 8 colors on the color cube.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function contPsuedocolor( img )
@@ -413,20 +437,21 @@ local function contPsuedocolor( img )
 end
 pointProc.contPsuedocolor = contPsuedocolor;
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Solarize
+--  Function Name: Solarize
 --
--- Description: This function negates intensities that are below the threshold
---              using the IHS color model.
+--  Description: This function negates intensities that are below the threshold
+--    using the IHS color model.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
---   lvl - The threshold specified by the user. Anything below the threshold
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    lvl - The threshold specified by the user. Anything below the threshold
 --         is negated.
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function solarize( img, lvl )
@@ -447,19 +472,21 @@ local function solarize( img, lvl )
 end
 pointProc.solarize = solarize;
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Inverse Solarize
+--  Function Name: Inverse Solarize
+-- 
+--  Description: This function negates intensities that are above the threshold
+--    using the IHS color model.
 --
--- Description: This function negates intensities that are above the threshold
---              using the IHS color model.
--- Parameters:
---   img - An image object from ip.lua representing the image to process
---   lvl - The threshold specified by the user. Anything above the threshold
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    lvl - The threshold specified by the user. Anything above the threshold
 --         is negated.
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function inverseSolarize( img, lvl )
@@ -479,6 +506,7 @@ local function inverseSolarize( img, lvl )
   return img;
 end
 pointProc.inverseSolarize = inverseSolarize;
+
 
 --Return table of point process functions
 return pointProc;  
