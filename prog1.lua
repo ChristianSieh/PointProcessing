@@ -6,7 +6,15 @@
 --  Instructor: Dr. Weiss
 --  Date: 1/22/2017
 --  
---  Description:
+--  Description: This program implements basic image processing routines. It
+--    provides a GUI where users can open, duplicate, and save images. Various
+--    image processing routines can be applied to these images, such as 
+--    adjusting brightness, contrast, and colors.
+--
+--    This file is used as the start file for the program. It defines the 
+--    various menus used in the program, including one each for point processes,
+--    histogram operations, segmenting operations, and a help menu. Once these
+--    menus have been set up, it launches the program.
 --  
 --------------------------------------------------------------------------------
 
@@ -27,14 +35,18 @@ imageMenu("Point Processes",
   {
     {"Grayscale", pointProc.grayscale},
     {"Negate", pointProc.negate},
-    {"Posterize", pointProc.posterize, {{name = "levels", type = "number", displaytype = "spin", default = 8, min = 2, max = 64}}},
-    {"Brightness", pointProc.brightness, {{name = "levels", type = "number", displaytype = "spin", default = 0, min = -256, max = 256}}},
+    {"Posterize", pointProc.posterize,
+      {{name = "levels", type = "number", displaytype = "spin", default = 8, min = 2, max = 64}}},
+    {"Brightness", pointProc.brightness, 
+      {{name = "levels", type = "number", displaytype = "spin", default = 0, min = -256, max = 256}}},
     {"Contrast Stretch", pointProc.manualContrast,
       {{name = "min", type = "number", displaytype = "spin", default = 64, min = 0, max = 255},
        {name = "max", type = "number", displaytype = "spin", default = 191, min = 0, max = 255}}},
-    {"Gamma", pointProc.gamma, {{name = "gamma", type = "string", default = "1.0"}}},
+    {"Gamma", pointProc.gamma,
+      {{name = "gamma", type = "string", default = "1.0"}}},
     {"Log", pointProc.logScale},
-    {"Bitplane Slice", pointProc.slice, {{name = "plane", type = "number", displaytype = "spin", default = 7, min = 0, max = 7}}},
+    {"Bitplane Slice", pointProc.slice,
+      {{name = "plane", type = "number", displaytype = "spin", default = 7, min = 0, max = 7}}},
     {"Disc Pseudocolor", pointProc.distPsuedocolor},
     {"Cont Pseudocolor", pointProc.contPsuedocolor},
     {"Solarize", pointProc.solarize,       
@@ -50,18 +62,20 @@ imageMenu("Histogram processes",
     {"Automated Contrast Stretch", hist.automatedContrast},
     {"Contrast Specify", hist.contrastSpecify,
       {{name = "lp", type = "number", displaytype = "spin", default = 1, min = 0, max = 100},
-        {name = "rp", type = "number", displaytype = "spin", default = 99, min = 0, max = 100}}},
+       {name = "rp", type = "number", displaytype = "spin", default = 99, min = 0, max = 100}}},
     {"Histogram Display\tCtrl-H", il.showHistogram, hotkey = "C-H"},
     {"Histogram Display RGB\tCtrl-J", il.showHistogramRGB, hotkey = "C-J"},
     {"Histogram Equalization", hist.equalizeRGB},
-    {"Histogram Equalize Clip", hist.equalizeClip, {{name = "clip %", type = "number", displaytype = "textbox", default = "1.0"}}},
+    {"Histogram Equalize Clip", hist.equalizeClip,
+      {{name = "clip %", type = "number", displaytype = "textbox", default = "1.0"}}},
   }
 )
 
 --Define menu of segment operations
 imageMenu("Segment",
   {
-    {"Binary Threshold", segment.threshold, {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}},
+    {"Binary Threshold", segment.threshold,
+      {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}},
   }
 )
 
