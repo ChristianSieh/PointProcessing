@@ -20,17 +20,20 @@ local helper = require("helper");
 --Table to hold the point process functions
 local hist = {};
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: automatedContrast
+--  Function Name: automatedContrast
 --
--- Description: 
+--  Description: This function performs contrast stretching on the given
+--    image. The stretching is applied between an upper and lower bounds, which 
+--    correspond the highest and lowest pixel intensity values in the image.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
 local function automatedContrast( img )
@@ -67,15 +70,20 @@ hist.automatedContrast = automatedContrast;
 
 --------------------------------------------------------------------------------
 --
--- Function Name: Contrast Specify
+--  Function Name: Contrast Specify
 --
--- Description:
+--  Description: This function performs contrast stretching on the given
+--    image. The stretching is applied between an upper and lower bounds, which 
+--    correspond the highest and lowest pixel intensity values in the image, 
+--    ignoring a percentage of the total pixels, as specified by the user.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
+--    lowerBound - Percentage of dark pixels to ignore when finding lower bound
+--    upperBound - Percentage of light pixels to ignore when finding upper bound
 --
 --------------------------------------------------------------------------------
 local function contrastSpecify( img, lowerBound, upperBound )
@@ -117,20 +125,23 @@ local function contrastSpecify( img, lowerBound, upperBound )
 end
 hist.contrastSpecify = contrastSpecify;
 
+
 --------------------------------------------------------------------------------
 --
--- Function Name: Histogram Equalize RGB
+--  Function Name: histogramEqualize
 --
--- Description:
+--  Description: This function performs histogram equalization. This involves 
+--    trying to flatten the image's histogram of intensities as much as possible
+--    by spreading out the most prevalent intensities to a wider output range.
 --
--- Parameters:
+--  Parameters:
 --   img - An image object from ip.lua representing the image to process
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function equalizeRGB( img )
+local function histogramEqualize( img )
   --Get historgram of converted image
   local histogram = helper.computeHistogram( img, "yiq" );
   
@@ -158,22 +169,28 @@ local function equalizeRGB( img )
   
   return img;
 end
-hist.equalizeRGB = equalizeRGB;
+hist.histogramEqualize = histogramEqualize;
+
 
 --------------------------------------------------------------------------------
 --
--- Function Name: Histogram Equalize Clip
+--  Function Name: histogramClipping
 --
--- Description:
+--  Description: This function performs histogram equalization with clipping. 
+--    This involves trying to flatten the image's histogram of intensities as
+--    much as possible by spreading out the most prevalent intensities to a
+--    wider output range. A certain percentage of pixels is ignored in order
+--    to reduce the effect of noise on the image.
 --
--- Parameters:
---   img - An image object from ip.lua representing the image to process
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    clipPercentage - Percent of pixels to ignore when finding the min and max
 --
--- Return: 
---   img - The image object after having the point process performed upon it
+--  Return: 
+--    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function equalizeClip( img, clipPercentage )
+local function histogramClipping( img, clipPercentage )
   --Get historgram of converted image
   local histogram = helper.computeHistogram( img, "yiq" );
   
@@ -211,7 +228,7 @@ local function equalizeClip( img, clipPercentage )
   
   return img;
 end
-hist.equalizeClip = equalizeClip;
+hist.histogramClipping = histogramClipping;
 
 
 --Return table of histogram functions

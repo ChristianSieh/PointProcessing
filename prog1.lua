@@ -65,8 +65,8 @@ imageMenu("Histogram processes",
        {name = "rp", type = "number", displaytype = "spin", default = 99, min = 0, max = 100}}},
     {"Histogram Display\tCtrl-H", il.showHistogram, hotkey = "C-H"},
     {"Histogram Display RGB\tCtrl-J", il.showHistogramRGB, hotkey = "C-J"},
-    {"Histogram Equalization", hist.equalizeRGB},
-    {"Histogram Equalize Clip", hist.equalizeClip,
+    {"Histogram Equalization", hist.histogramEqualize},
+    {"Histogram Equalize Clip", hist.histogramClipping,
       {{name = "clip %", type = "number", displaytype = "textbox", default = "1.0"}}},
   }
 )
