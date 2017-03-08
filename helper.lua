@@ -184,6 +184,22 @@ local function contPseudoLUT( val, LUT, i, j )
 end
 helper.contPseudoLUT = contPseudoLUT;
 
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: eightWay
+--
+-- Description: 
+--
+-- Parameters:
+--   img - 
+--   filter - 
+--   num - 
+--
+-- Return: 
+--   img - 
+--
+--------------------------------------------------------------------------------
 local function eightWay( img, filter, num)
   local temp;
 
@@ -225,6 +241,61 @@ local function eightWay( img, filter, num)
   return img;
 end
 helper.eightWay = eightWay;
+
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: applyConvolutionFilterapplyConvolutionFilter
+--
+-- Description: 
+--
+-- Parameters:
+--   img - 
+--   filter - 
+--   num - 
+--
+-- Return: 
+--   img - 
+--
+--------------------------------------------------------------------------------
+local function applyConvolutionFilter( img, filter, filterSize )
+  --New blank image to save results as processed
+  local newImg = image.flat(img.width, img.height);
+  
+  --Indexing array for looping over filter
+  local index = {};
+  for i = 1, filterSize do
+    index[i] = i - 1 - ( ( filterSize - 1 ) / 2 );
+  end
+  
+  --Loop over all pixels, ignoring border due to filter size
+  for r,c in newImg:pixels( ( filterSize - 1 ) / 2 ) do
+    local temp = 0;
+    
+    --At each pixel, loop over and add neighbors
+    for x = 1, filterSize do
+      for y = 1, filterSize do
+        temp = temp + ( img:at(r + index[x], c + index[y] ).i * filter[x][y] );
+      end
+    end
+    
+    --Trim result
+    if(temp > 255) then
+      temp = 255;
+    elseif(temp < 0) then
+      temp = 0;
+    end
+    
+    --Copy new intensity and old chromaticities to new image
+    newImg:at(r,c).i = temp;
+    newImg:at(r,c).h = img:at(r,c).h;
+    newImg:at(r,c).s = img:at(r,c).s;
+  end
+  
+  --Return new image
+  return newImg;
+end
+helper.applyConvolutionFilter = applyConvolutionFilter;
 
 --Define help message
 helper.HelpMessage = "The following image processing techniques can be applied by selecting them from the menus.\n" ..
