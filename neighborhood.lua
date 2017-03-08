@@ -34,11 +34,18 @@ local neighborhood = {};
 --
 --------------------------------------------------------------------------------
 local function smooth( img )
-  local filter = {1, 2, 1, 2, 4, 2, 1, 2, 1};
+  local filter = { { 1/16, 2/16, 1/16 }, { 2/16, 4/16, 2/16 }, { 1/16, 2/16, 1/16 } };
   
-  img = helper.eightWay(img, filter, (1 / 16));
+  --Covert to grayscale before applying filter
+  il.RGB2IHS( img );
   
-  return img;
+  --Apply convolution filter
+  newImg = helper.applyConvolutionFilter( img, filter, 3 );
+  
+  --Covert back to color
+  il.IHS2RGB( newImg );
+  
+  return newImg;
 end
 neighborhood.smooth = smooth;
 
