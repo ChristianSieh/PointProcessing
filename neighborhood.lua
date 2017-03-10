@@ -66,11 +66,19 @@ neighborhood.smooth = smooth;
 --
 --------------------------------------------------------------------------------
 local function sharpen( img, lvl )
-  filter = {0, -1, 0, -1, 5, -1, 0, -1, 0};
+  --Sharpening filter
+  local filter = { { 0, -1, 0 }, { -1, 5, -1 }, { 0, -1, 0 } };
   
-  img = helper.eightWay(img, filter, 1);
+  --Covert to grayscale before applying filter
+  il.RGB2IHS( img );
   
-  return img;
+  --Apply convolution filter
+  newImg = helper.applyConvolutionFilter( img, filter, 3 );
+  
+  --Covert back to color
+  il.IHS2RGB( newImg );
+  
+  return newImg;
 end
 neighborhood.sharpen = sharpen;
 
