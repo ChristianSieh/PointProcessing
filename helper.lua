@@ -114,7 +114,7 @@ local function computeHistogram( img, model )
     end
     
     --Loop over pixels
-    for r,c in mig:pixels() do
+    for r,c in img:pixels() do
       histogram[0][img:at(r,c).r] = histogram[0][img:at(r,c).r] + 1;
       histogram[1][img:at(r,c).g] = histogram[1][img:at(r,c).g] + 1;
       histogram[2][img:at(r,c).b] = histogram[2][img:at(r,c).b] + 1;
@@ -245,22 +245,18 @@ helper.eightWay = eightWay;
 
 --------------------------------------------------------------------------------
 --
--- Function Name: applyConvolutionFilterapplyConvolutionFilter
+-- Function Name: applyConvolutionFilter
 --
 -- Description: 
 --
 -- Parameters:
---   img - 
---   filter - 
---   num - 
 --
 -- Return: 
---   img - 
 --
 --------------------------------------------------------------------------------
 local function applyConvolutionFilter( img, filter, filterSize )
   --New blank image to save results as processed
-  local newImg = image.flat(img.width, img.height);
+  local newImg = img:clone();
   
   --Indexing array for looping over filter
   local index = {};
@@ -288,14 +284,60 @@ local function applyConvolutionFilter( img, filter, filterSize )
     
     --Copy new intensity and old chromaticities to new image
     newImg:at(r,c).i = temp;
-    newImg:at(r,c).h = img:at(r,c).h;
-    newImg:at(r,c).s = img:at(r,c).s;
   end
   
   --Return new image
   return newImg;
 end
 helper.applyConvolutionFilter = applyConvolutionFilter;
+
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: applyRankOrderFilter
+--
+-- Description: 
+--
+-- Parameters:
+--
+-- Return:
+--
+--------------------------------------------------------------------------------
+local function applyRankOrderFilter( img, filter, filterSize )
+  --New blank image to save results as processed
+  local newImg = img:clone();
+  
+  --Indexing array for looping over filter
+  local index = {};
+  for i = 1, filterSize do
+    index[i] = i - 1 - ( ( filterSize - 1 ) / 2 );
+  end
+  
+  --Loop over all pixels, ignoring border due to filter size
+  for r,c in newImg:pixels( ( filterSize - 1 ) / 2 ) do
+    local neighbors = {};
+    local i = 1;
+    
+    --At each pixel, loop over and collect neighbors
+    for x = 1, filterSize do
+      for y = 1, filterSize do
+        for _ = 1, filter[x][y] do
+          neighbors[i] = img:at(r + index[x], c + index[y] ).i;
+          i = i + 1;
+        end
+      end
+    end
+    
+    --Apply specified transformation (currently only median)
+    table.sort( neighbors );
+    newImg:at(r,c).i = neighbors[i/2];
+  end
+  
+  --Return new image
+  return newImg;
+end
+helper.applyRankOrderFilter = applyRankOrderFilter;
+
 
 --Define help message
 helper.HelpMessage = "The following image processing techniques can be applied by selecting them from the menus.\n" ..
