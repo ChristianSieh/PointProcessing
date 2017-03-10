@@ -20,6 +20,7 @@ local helper = require("helper");
 --Table to hold the point process functions
 local neighborhood = {};
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: Smooth
@@ -30,10 +31,11 @@ local neighborhood = {};
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    newImg - The image object after being smoothed
 --
 --------------------------------------------------------------------------------
 local function smooth( img )
+  --Smoothing filter
   local filter = { { 1/16, 2/16, 1/16 }, { 2/16, 4/16, 2/16 }, { 1/16, 2/16, 1/16 } };
   
   --Covert to grayscale before applying filter
@@ -49,6 +51,7 @@ local function smooth( img )
 end
 neighborhood.smooth = smooth;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: Sharpen
@@ -59,7 +62,7 @@ neighborhood.smooth = smooth;
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    newImg - The image object after being sharpened
 --
 --------------------------------------------------------------------------------
 local function sharpen( img, lvl )
@@ -71,6 +74,7 @@ local function sharpen( img, lvl )
 end
 neighborhood.sharpen = sharpen;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: Mean
@@ -81,7 +85,7 @@ neighborhood.sharpen = sharpen;
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    newImg - The image object after having the process performed upon it
 --
 --------------------------------------------------------------------------------
 local function mean( img, num )
@@ -111,6 +115,7 @@ local function mean( img, num )
 end
 neighborhood.mean = mean;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: Minimum
@@ -121,7 +126,7 @@ neighborhood.mean = mean;
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    newImg - The image object after having the process performed upon it
 --
 --------------------------------------------------------------------------------
 local function minimum( img, lvl )
@@ -165,6 +170,7 @@ local function minimum( img, lvl )
 end
 neighborhood.minimum = minimum;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: Maximum
@@ -175,7 +181,7 @@ neighborhood.minimum = minimum;
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    newImg - The image object after having the process performed upon it
 --
 --------------------------------------------------------------------------------
 local function maximum( img, lvl )
@@ -218,6 +224,7 @@ local function maximum( img, lvl )
 end
 neighborhood.maximum = maximum;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: Median Plus
@@ -228,16 +235,16 @@ neighborhood.maximum = maximum;
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    newImg - The image object after having the process performed upon it
 --
 --------------------------------------------------------------------------------
-local function medianPlus( img, lvl )
+local function medianPlus( img )
   local filter = { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } };
   
   --Covert to grayscale before applying filter
   il.RGB2IHS( img );
   
-  --Apply convolution filter
+  --Apply rank-order filter
   newImg = helper.applyRankOrderFilter( img, filter, 3 );
   
   --Covert back to color
@@ -247,6 +254,7 @@ local function medianPlus( img, lvl )
 end
 neighborhood.medianPlus = medianPlus;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: Median
@@ -255,9 +263,10 @@ neighborhood.medianPlus = medianPlus;
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
+--    filterSize - width & height of the filter to be applied
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    newImg - The image object after having the process performed upon it
 --
 --------------------------------------------------------------------------------
 local function median( img, filterSize )
@@ -273,7 +282,7 @@ local function median( img, filterSize )
   --Covert to grayscale before applying filter
   il.RGB2IHS( img );
   
-  --Apply convolution filter
+  --Apply rank-order filter
   newImg = helper.applyRankOrderFilter( img, filter, filterSize );
   
   --Covert back to color
@@ -282,6 +291,7 @@ local function median( img, filterSize )
   return newImg;
 end
 neighborhood.median = median;
+
 
 --------------------------------------------------------------------------------
 --
@@ -293,7 +303,7 @@ neighborhood.median = median;
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    newImg - The image object after having the process performed upon it
 --
 --------------------------------------------------------------------------------
 local function emboss( img, lvl )
@@ -347,6 +357,7 @@ local function emboss( img, lvl )
   return img;
 end
 neighborhood.emboss = emboss;
+
 
 --Return table of miscellaneous functions
 return neighborhood;  
