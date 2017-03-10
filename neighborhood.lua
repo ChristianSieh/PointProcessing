@@ -232,31 +232,18 @@ neighborhood.maximum = maximum;
 --
 --------------------------------------------------------------------------------
 local function medianPlus( img, lvl )
-  filter = {0, 1, 0, 1, 1, 1, 0, 1, 0};
-  local list = {};
-
-  img = il.RGB2YIQ(img);
-
-  for r,c in img:pixels(1) do
-    -- UP
-    list[1] = img:at(r - 1, c).y;
-    -- RIGHT
-    list[2] = img:at(r, c + 1).y;
-    -- MIDDLE
-    list[3] = img:at(r, c).y;
-    -- DOWN
-    list[4] = img:at(r + 1, c).y;
-    -- LEFT
-    list[5] = img:at(r, c - 1).y;
-    
-    table.sort(list);
-    
-    img:at(r, c).y = list[3];
-  end
-
-  img = il.YIQ2RGB(img);
+  local filter = { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } };
   
-  return img;
+  --Covert to grayscale before applying filter
+  il.RGB2IHS( img );
+  
+  --Apply convolution filter
+  newImg = helper.applyRankOrderFilter( img, filter, 3 );
+  
+  --Covert back to color
+  il.IHS2RGB( newImg );
+  
+  return newImg;
 end
 neighborhood.medianPlus = medianPlus;
 
