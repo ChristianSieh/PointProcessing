@@ -260,9 +260,26 @@ neighborhood.medianPlus = medianPlus;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function median( img )
-
-  return img;
+local function median( img, filterSize )
+  --Create filter
+  local filter = {};
+  for i = 1, filterSize do
+    filter[i] = {};
+    for j = 1, filterSize do
+      filter[i][j] = 1;
+    end
+  end
+  
+  --Covert to grayscale before applying filter
+  il.RGB2IHS( img );
+  
+  --Apply convolution filter
+  newImg = helper.applyRankOrderFilter( img, filter, filterSize );
+  
+  --Covert back to color
+  il.IHS2RGB( newImg );
+  
+  return newImg;
 end
 neighborhood.median = median;
 
