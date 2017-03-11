@@ -26,7 +26,6 @@ local pointProc = require "pointProc"
 local hist = require "hist"
 local segment = require "segment"
 local helper = require "helper"
-local misc = require "misc"
 local edge = require "edge"
 local neighborhood = require "neighborhood"
 
@@ -131,16 +130,12 @@ imageMenu("Segment",
   }
 )
 
-imageMenu("Misc",
+imageMenu("Noise",
   {
-    {"Impulse Noise", misc.impulseNoise,
+    {"Add Impulse Noise", il.impulseNoise,
       {{name = "probability", type = "number", displaytype = "slider", default = 64, min = 0, max = 1000}}},
-    {"Impulse Noise - Weiss", il.impulseNoise,
-      {{name = "probability", type = "number", displaytype = "slider", default = 64, min = 0, max = 1000}}},
-    {"Gaussian noise", misc.gaussNoise,
+    {"Add Gaussian noise", il.gaussianNoise,
       {{name = "sigma", type = "number", displaytype = "textbox", default = "16.0"}}},
-    {"Gaussian noise - Weiss", il.gaussianNoise,
-      {{name = "sigma", type = "number", displaytype = "textbox", default = "16.0"}}}
   }
 )
 
