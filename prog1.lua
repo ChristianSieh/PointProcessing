@@ -28,6 +28,7 @@ local segment = require "segment"
 local helper = require "helper"
 local edge = require "edge"
 local neighborhood = require "neighborhood"
+local noise = require "noise"
 
 --Load images listed on command line
 local imgs = {...}
@@ -136,6 +137,10 @@ imageMenu("Noise",
       {{name = "probability", type = "number", displaytype = "slider", default = 64, min = 0, max = 1000}}},
     {"Add Gaussian noise", il.gaussianNoise,
       {{name = "sigma", type = "number", displaytype = "textbox", default = "16.0"}}},
+    {"Out-of-Range Noise Cleaning", noise.noiseClean,
+      {{name = "threshold", type = "number", displaytype = "slider", default = 64, min = 0, max = 256}}},
+    {"Out-of-Range Noise Cleaning - Weiss", il.noiseClean,
+      {{name = "threshold", type = "number", displaytype = "slider", default = 64, min = 0, max = 256}}}
   }
 )
 
