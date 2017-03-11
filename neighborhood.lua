@@ -96,30 +96,35 @@ neighborhood.sharpen = sharpen;
 --    newImg - The image object after having the process performed upon it
 --
 --------------------------------------------------------------------------------
-local function mean( img, num )
+local function mean( img, filterSize )
+  --Convert to grayscale to find mean intensity
+  il.RGB2YIQ( img );
   
-  local temp = 0;
-  local dup = image.flat(img.width, img.height);
-  local test = math.floor(num / 2);
-
-  img = il.RGB2YIQ(img);
-  dup = il.RGB2YIQ(dup);
-
-  for r,c in img:pixels(num) do
-    for i = -test, test do
-      for j = - test, test do
-        temp = temp + img:at(r + i, c + j).y;
+  --New blank image to save results as processed
+  local newImg = img:clone();
+  
+  --Indexing for traversing neighbors
+  local index = ( filterSize - 1 ) / 2;
+  
+  --Loop over all pixels, ignoring border due to filter size
+  for r,c in newImg:pixels( index ) do
+    local mean = 0;
+    
+    --Loop over each neighbor pixel
+    for x = -index, index do
+      for y = -index, index do
+        mean = mean + img:at( r + x, c + y ).i;
       end
     end
-  
-  temp = temp * (1 / math.pow(num, 2))
-
-    dup:at(r, c).y = temp;
+    
+    --Apply mean transformation
+    newImg:at(r,c).i = mean / ( filterSize * filterSize );
   end
-
-  dup = il.YIQ2RGB(dup);
   
-  return dup;
+  --Covert back to color
+  il.YIQ2RGB( newImg );
+  
+  return newImg;
 end
 neighborhood.mean = mean;
 
@@ -186,7 +191,7 @@ neighborhood.minimum = minimum;
 --
 --------------------------------------------------------------------------------
 local function maximum( img, filterSize )
-  --Convert to grayscale to find minimum intensity
+  --Convert to grayscale to find maximum intensity
   il.RGB2YIQ( img );
   
   --New blank image to save results as processed
@@ -208,7 +213,7 @@ local function maximum( img, filterSize )
       end
     end
     
-    --Apply minimum transformation
+    --Apply maximum transformation
     newImg:at(r,c).i = max;
   end
   
