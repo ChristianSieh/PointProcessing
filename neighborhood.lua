@@ -185,43 +185,37 @@ neighborhood.minimum = minimum;
 --    newImg - The image object after having the process performed upon it
 --
 --------------------------------------------------------------------------------
-local function maximum( img, lvl )
-  local list = {};
-  local dup = image.flat(img.width, img.height);
+local function maximum( img, filterSize )
+  --Convert to grayscale to find minimum intensity
+  il.RGB2YIQ( img );
   
-  img = il.RGB2YIQ(img);
-  dup = il.RGB2YIQ(dup);
-
-  for r,c in img:pixels(1) do
-    -- UP LEFT
-    list[1] = img:at(r - 1, c - 1).y;
-    -- UP
-    list[2] = img:at(r - 1, c).y;
-    -- UP RIGHT
-    list[3] = img:at(r - 1, c).y;
-    -- RIGHT
-    list[4] = img:at(r, c + 1).y;
-    -- MIDDLE
-    list[5] = img:at(r, c).y;
-    -- DOWN RIGHT
-    list[6] = img:at(r + 1, c + 1).y;
-    -- DOWN
-    list[7] = img:at(r + 1, c).y;
-    -- DOWN LEFT
-    list[8] = img:at(r + 1, c - 1).y;
-    -- LEFT
-    list[9] = img:at(r, c - 1).y;
+  --New blank image to save results as processed
+  local newImg = img:clone();
+  
+  --Indexing for traversing neighbors
+  local index = ( filterSize - 1 ) / 2;
+  
+  --Loop over all pixels, ignoring border due to filter size
+  for r,c in newImg:pixels( index ) do
+    local max = -1;
     
-    table.sort(list);
+    --Loop over each neighbor pixel
+    for x = -index, index do
+      for y = -index, index do
+        if img:at( r + x, c + y ).i > max then
+          max = img:at( r + x, c + y ).i;
+        end
+      end
+    end
     
-    dup:at(r, c).y = list[9];
-    --dup:at(r, c).i = img:at(r, c).i;
-    --dup:at(r, c).q = img:at(r, c).q;
+    --Apply minimum transformation
+    newImg:at(r,c).i = max;
   end
-
-  dup = il.YIQ2RGB(dup);
   
-  return dup;
+  --Covert back to color
+  il.YIQ2RGB( newImg );
+  
+  return newImg;
 end
 neighborhood.maximum = maximum;
 
