@@ -254,7 +254,7 @@ helper.eightWay = eightWay;
 -- Return: 
 --
 --------------------------------------------------------------------------------
-local function applyConvolutionFilter( img, filter, filterSize )
+local function applyConvolutionFilter( img, filter, filterSize, recenter )
   --New blank image to save results as processed
   local newImg = img:clone();
   
@@ -273,6 +273,11 @@ local function applyConvolutionFilter( img, filter, filterSize )
       for y = 1, filterSize do
         temp = temp + ( img:at(r + index[x], c + index[y] ).i * filter[x][y] );
       end
+    end
+    
+    --Recenter to gray (128) if specified
+    if recenter then
+      temp = temp + 128;
     end
     
     --Trim result

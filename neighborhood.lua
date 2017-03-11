@@ -306,55 +306,20 @@ neighborhood.median = median;
 --    newImg - The image object after having the process performed upon it
 --
 --------------------------------------------------------------------------------
-local function emboss( img, lvl )
-  filter = {-1, -1, 0, -1, 0, 1, 0, 1, 1};
+local function emboss( img )
+  --Embossing filter
+  local filter = { { 0, 0, 0 }, { 0, 1, 0 }, { 0, 0, -1 } };
   
-  local rTemp, gTemp, bTemp;
-
-  for r,c in img:pixels(1) do
-    -- UP LEFT
-    rTemp = filter[1] * img:at(r - 1, c - 1).r;
-    gTemp = filter[1] * img:at(r - 1, c - 1).g;
-    bTemp = filter[1] * img:at(r - 1, c - 1).b;
-    -- UP
-    rTemp = rTemp + filter[2] * img:at(r - 1, c).r;
-    gTemp = gTemp + filter[2] * img:at(r - 1, c).g;
-    bTemp = bTemp + filter[2] * img:at(r - 1, c).b;
-    -- UP RIGHT
-    rTemp = rTemp + filter[3] * img:at(r - 1, c).r;
-    gTemp = gTemp + filter[3] * img:at(r - 1, c).g;
-    bTemp = bTemp + filter[3] * img:at(r - 1, c).b;
-    -- RIGHT
-    rTemp = rTemp + filter[4] * img:at(r, c + 1).r;
-    gTemp = gTemp + filter[4] * img:at(r, c + 1).g;
-    bTemp = bTemp + filter[4] * img:at(r, c + 1).b;
-    -- MIDDLE
-    rTemp = rTemp + filter[5] * img:at(r, c).r;
-    gTemp = gTemp + filter[5] * img:at(r, c).g;
-    bTemp = bTemp + filter[5] * img:at(r, c).b;
-    -- DOWN RIGHT
-    rTemp = rTemp + filter[6] * img:at(r + 1, c + 1).r;
-    gTemp = gTemp + filter[6] * img:at(r + 1, c + 1).g;
-    bTemp = bTemp + filter[6] * img:at(r + 1, c + 1).b;
-    -- DOWN
-    rTemp = rTemp + filter[7] * img:at(r + 1, c).r;
-    gTemp = gTemp + filter[7] * img:at(r + 1, c).g;
-    bTemp = bTemp + filter[7] * img:at(r + 1, c).b;
-    -- DOWN LEFT
-    rTemp = rTemp + filter[8] * img:at(r + 1, c - 1).r;
-    gTemp = gTemp + filter[8] * img:at(r + 1, c - 1).g;
-    bTemp = bTemp + filter[8] * img:at(r + 1, c - 1).b;
-    -- LEFT
-    rTemp = rTemp + filter[9] * img:at(r, c - 1).r;
-    gTemp = gTemp + filter[9] * img:at(r, c - 1).g;
-    bTemp = bTemp + filter[9] * img:at(r, c - 1).b;
-    
-    img:at(r, c).r = rTemp;
-    img:at(r, c).r = gTemp;
-    img:at(r, c).r = bTemp;
-  end
+  --Covert to grayscale before applying filter
+  il.RGB2IHS( img );
   
-  return img;
+  --Apply convolution filter
+  newImg = helper.applyConvolutionFilter( img, filter, 3, true );
+  
+  --Covert back to color
+  il.IHS2RGB( newImg );
+  
+  return newImg;
 end
 neighborhood.emboss = emboss;
 
