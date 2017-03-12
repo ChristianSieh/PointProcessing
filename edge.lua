@@ -15,6 +15,7 @@
 
 --Define already loaded il file
 local il = require("il");
+local helper = require("helper");
 
 --Table to hold the point process functions
 local edge = {};
@@ -33,9 +34,45 @@ local edge = {};
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function sobelMag( img, lvl )
+local function sobelMag( img )  
+  --Sobel filters
+  local gxPosFilter = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
+  local gyPosFilter = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
+  local gxNegFilter = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
+  local gyNegFilter = { { 1, 0, -1 }, { 2, 0, -2 }, { 1, 0, -1 } };
   
-  return img;
+  --Covert to grayscale before applying filters
+  il.RGB2YIQ( img );
+  
+  --Apply Sobel edge detectors as convolution filters
+  local gxPos = helper.applyConvolutionFilter( img, gxPosFilter, 3 );
+  local gyPos = helper.applyConvolutionFilter( img, gyPosFilter, 3 );
+  local gxNeg = helper.applyConvolutionFilter( img, gxNegFilter, 3 );
+  local gyNeg = helper.applyConvolutionFilter( img, gyNegFilter, 3 );
+  
+  --Loop over each pixel in the image
+  local mag = img:clone();
+  for r,c in mag:pixels() do
+    --Combine results from Sobel filters
+    local temp = math.sqrt( gxPos:at(r,c).r * gxPos:at(r,c).r
+                          + gyPos:at(r,c).r * gyPos:at(r,c).r
+                          + gxNeg:at(r,c).r * gxNeg:at(r,c).r
+                          + gyNeg:at(r,c).r * gyNeg:at(r,c).r );
+    
+    --Trim result
+    if(temp > 255) then
+      temp = 255;
+    elseif(temp < 0) then
+      temp = 0;
+    end
+    
+    mag:at(r,c).y = temp;
+  end
+  
+  --Covert back to color
+  il.YIQ2RGB( mag );
+  
+  return mag;
 end
 edge.sobelMag = sobelMag;
 

@@ -107,7 +107,7 @@ imageMenu("Neigborhood ops",
 imageMenu("Edge detection",
   {
     {"Sobel Edge Mag\tCtrl-E", edge.sobelMag, hotkey = "C-E"},
-    {"Sobel Edge Mag\tCtrl-E - Weiss", il.sobelMag, hotkey = "C-E"},
+    {"Sobel Edge Mag - Weiss\tCtrl-E", il.sobelMag, hotkey = "C-E"},
     {"Sobel Edge Mag/Dir", edge.sobelDir},
     {"Sobel Edge Mag/Dir - Weiss", il.sobel},
     {"Kirsch Edge Mag/Dir", edge.kirsch},
