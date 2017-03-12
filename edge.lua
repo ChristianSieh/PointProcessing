@@ -177,10 +177,48 @@ edge.range = range;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function stdDev( img, lvl )
+local function stdDev( img, filterSize )
+  --Convert to grayscale to find mean intensity
+  il.RGB2YIQ( img );
   
-  return img;
+  --New blank image to save results as processed
+  local newImg = img:clone();
   
+  --Indexing for traversing neighbors
+  local index = ( filterSize - 1 ) / 2;
+  
+  --Loop over all pixels, ignoring border due to filter size
+  for r,c in img:pixels( index ) do
+    local mean = 0;
+    local diff = 0;
+    local sqDiff = 0;
+    local variance = 0;
+    
+    --Loop over each neighbor pixel to calculate sample mean for neighborhood
+    for x = -index, index do
+      for y = -index, index do
+        mean = mean + img:at( r + x, c + y ).i;
+      end
+    end
+    mean = mean / ( filterSize * filterSize );
+    
+    --Loop over each neighbor pixel
+    for x = -index, index do
+      for y = -index, index do
+        diff = img:at( r + x, c + y ).i - mean;
+        sqDiff = sqDiff + ( diff * diff );
+      end
+    end
+    
+    --Calculate standard deviation
+    variance = sqDiff / ( filterSize * filterSize );
+    newImg:at(r,c).i = math.sqrt( variance );
+  end
+  
+  --Covert back to color
+  il.YIQ2RGB( newImg );
+  
+  return newImg;
 end
 edge.stdDev = stdDev;
 
