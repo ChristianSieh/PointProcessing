@@ -117,9 +117,49 @@ edge.laplacian = laplacian;
 --
 --------------------------------------------------------------------------------
 local function range( img, filterSize )
+  --New blank image to save results as processed
+  local newImg = img:clone();
   
-  return img;
+  --Convert to grayscale to find intensities
+  il.RGB2YIQ( img );
   
+  --Indexing for traversing neighbors
+  local index = ( filterSize - 1 ) / 2;
+  
+  --Loop over all pixels, ignoring border due to filter size
+  for r,c in newImg:pixels( index ) do
+    local max = -1;
+    local min = 1000;
+    
+    --Loop over each neighbor pixel
+    for x = -index, index do
+      for y = -index, index do
+        --Check if current neighbor is larger than current max
+        if img:at( r + x, c + y ).i > max then
+          max = img:at( r + x, c + y ).i;
+        end
+        --Check if current neighbor is smaller than current min
+        if img:at( r + x, c + y ).i < min then
+          min = img:at( r + x, c + y ).i;
+        end
+      end
+    end
+    
+    --Trim result
+    local temp = max - min;
+    if(temp > 255) then
+      temp = 255;
+    elseif(temp < 0) then
+      temp = 0;
+    end
+    
+    --Apply range transformation
+    newImg:at(r,c).r = temp;
+    newImg:at(r,c).g = temp;
+    newImg:at(r,c).b = temp;
+  end
+  
+  return newImg;
 end
 edge.range = range;
 
