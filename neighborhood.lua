@@ -39,13 +39,13 @@ local function smooth( img )
   local filter = { { 1/16, 2/16, 1/16 }, { 2/16, 4/16, 2/16 }, { 1/16, 2/16, 1/16 } };
   
   --Covert to grayscale before applying filter
-  il.RGB2IHS( img );
+  il.RGB2YIQ( img );
   
   --Apply convolution filter
   newImg = helper.applyConvolutionFilter( img, filter, 3 );
   
   --Covert back to color
-  il.IHS2RGB( newImg );
+  il.YIQ2RGB( newImg );
   
   return newImg;
 end
@@ -70,13 +70,13 @@ local function sharpen( img, lvl )
   local filter = { { 0, -1, 0 }, { -1, 5, -1 }, { 0, -1, 0 } };
   
   --Covert to grayscale before applying filter
-  il.RGB2IHS( img );
+  il.RGB2YIQ( img );
   
   --Apply convolution filter
   newImg = helper.applyConvolutionFilter( img, filter, 3 );
   
   --Covert back to color
-  il.IHS2RGB( newImg );
+  il.YIQ2RGB( newImg );
   
   return newImg;
 end
@@ -242,13 +242,13 @@ local function medianPlus( img )
   local filter = { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } };
   
   --Covert to grayscale before applying filter
-  il.RGB2IHS( img );
+  il.RGB2YIQ( img );
   
   --Apply rank-order filter
   newImg = helper.applyRankOrderFilter( img, filter, 3 );
   
   --Covert back to color
-  il.IHS2RGB( newImg );
+  il.YIQ2RGB( newImg );
   
   return newImg;
 end
@@ -280,13 +280,13 @@ local function median( img, filterSize )
   end
   
   --Covert to grayscale before applying filter
-  il.RGB2IHS( img );
+  il.RGB2YIQ( img );
   
   --Apply rank-order filter
   newImg = helper.applyRankOrderFilter( img, filter, filterSize );
   
   --Covert back to color
-  il.IHS2RGB( newImg );
+  il.YIQ2RGB( newImg );
   
   return newImg;
 end
@@ -311,13 +311,13 @@ local function emboss( img )
   local filter = { { 0, 0, 0 }, { 0, 1, 0 }, { 0, 0, -1 } };
   
   --Covert to grayscale before applying filter
-  il.RGB2IHS( img );
+  il.RGB2YIQ( img );
   
   --Apply convolution filter
   newImg = helper.applyConvolutionFilter( img, filter, 3, true );
   
   --Covert back to color
-  il.IHS2RGB( newImg );
+  il.YIQ2RGB( newImg );
   
   return newImg;
 end

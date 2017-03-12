@@ -39,6 +39,7 @@ local function sobelMag( img, lvl )
 end
 edge.sobelMag = sobelMag;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: Sobel Edge Direction
@@ -58,6 +59,7 @@ local function sobelDir( img, lvl )
   
 end
 edge.sobelDir = sobelDir;
+
 
 --------------------------------------------------------------------------------
 --
@@ -79,6 +81,7 @@ local function kirsch( img, lvl )
 end
 edge.kirsch = kirsch;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: Laplacian
@@ -99,9 +102,10 @@ local function laplacian( img, lvl )
 end
 edge.laplacian = laplacian;
 
+
 --------------------------------------------------------------------------------
 --
---  Function Name: Range
+--  Function Name: range
 --
 --  Description: 
 --
@@ -109,35 +113,16 @@ edge.laplacian = laplacian;
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    newImg - The image object after having the process performed upon it
 --
 --------------------------------------------------------------------------------
-local function range( img, lvl )
+local function range( img, filterSize )
   
   return img;
   
 end
 edge.range = range;
 
---------------------------------------------------------------------------------
---
---  Function Name: Range
---
---  Description: 
---
---  Parameters:
---    img - An image object from ip.lua representing the image to process
---
---  Return: 
---    img - The image object after having the point process performed upon it
---
---------------------------------------------------------------------------------
-local function range( img, lvl )
-  
-  return img;
-  
-end
-edge.range = range;
 
 --------------------------------------------------------------------------------
 --
@@ -158,6 +143,7 @@ local function stdDev( img, lvl )
   
 end
 edge.stdDev = stdDev;
+
 
 --Return table of edge functions
 return edge;
