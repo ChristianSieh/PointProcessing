@@ -180,9 +180,19 @@ edge.kirsch = kirsch;
 --
 --------------------------------------------------------------------------------
 local function laplacian( img, lvl )
+  --Smoothing filter
+  local filter = { { -1, -1, -1 }, { -1, 8, -1 }, { -1, -1, -1 } };
   
-  return img;
+  --Covert to grayscale before applying filter
+  il.RGB2YIQ( img );
   
+  --Apply convolution filter
+  newImg = helper.applyConvolutionFilter( img, filter, 3 );
+  
+  --Covert back to color
+  il.YIQ2RGB( newImg );
+  
+  return newImg;
 end
 edge.laplacian = laplacian;
 
