@@ -20,6 +20,12 @@ local helper = require("helper");
 --Table to hold the point process functions
 local edge = {};
 
+--Sobel filters
+local sobelGXPosFilter = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
+local sobelGYPosFilter = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
+local sobelGXNegFilter = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
+local sobelGYNegFilter = { { 1, 0, -1 }, { 2, 0, -2 }, { 1, 0, -1 } };
+  
 
 --------------------------------------------------------------------------------
 --
@@ -35,20 +41,14 @@ local edge = {};
 --
 --------------------------------------------------------------------------------
 local function sobelMag( img )  
-  --Sobel filters
-  local gxPosFilter = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
-  local gyPosFilter = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
-  local gxNegFilter = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
-  local gyNegFilter = { { 1, 0, -1 }, { 2, 0, -2 }, { 1, 0, -1 } };
-  
   --Covert to grayscale before applying filters
   il.RGB2YIQ( img );
   
   --Apply Sobel edge detectors as convolution filters
-  local gxPos = helper.applyConvolutionFilter( img, gxPosFilter, 3 );
-  local gyPos = helper.applyConvolutionFilter( img, gyPosFilter, 3 );
-  local gxNeg = helper.applyConvolutionFilter( img, gxNegFilter, 3 );
-  local gyNeg = helper.applyConvolutionFilter( img, gyNegFilter, 3 );
+  local gxPos = helper.applyConvolutionFilter( img, sobelGXPosFilter, 3 );
+  local gyPos = helper.applyConvolutionFilter( img, sobelGYPosFilter, 3 );
+  local gxNeg = helper.applyConvolutionFilter( img, sobelGXNegFilter, 3 );
+  local gyNeg = helper.applyConvolutionFilter( img, sobelGYNegFilter, 3 );
   
   --Loop over each pixel in the image
   local mag = img:clone();
@@ -91,9 +91,56 @@ edge.sobelMag = sobelMag;
 --
 --------------------------------------------------------------------------------
 local function sobelDir( img, lvl )
+  --Covert to grayscale before applying filters
+  il.RGB2YIQ( img );
   
-  return img;
+  --Apply Sobel edge detectors as convolution filters
+  local gxPos = helper.applyConvolutionFilter( img, sobelGXPosFilter, 3 );
+  local gyPos = helper.applyConvolutionFilter( img, sobelGYPosFilter, 3 );
+  local gxNeg = helper.applyConvolutionFilter( img, sobelGXNegFilter, 3 );
+  local gyNeg = helper.applyConvolutionFilter( img, sobelGYNegFilter, 3 );
   
+  --Create images for use later
+  local mag = img:clone();
+  local dir = image.flat( img.width, img.height );
+  local gx = image.flat( img.width, img.height );
+  local gy = image.flat( img.width, img.height );
+  
+  --Combine opposing Sobel filters
+  for r,c in img:pixels() do
+    gx:at(r,c).y = gxPos:at(r,c).y + gxNeg:at(r,c).y;
+    gy:at(r,c).y = gyPos:at(r,c).y + gyNeg:at(r,c).y;
+  end
+  
+  --Loop over each pixel in the image
+  for r,c in mag:pixels() do
+    --Find direction of strongest edge
+    local temp = math.atan2( gyPos:at(r,c).y, gxPos:at(r,c).y ) * ( 255 / 1.57 );
+    dir:at(r,c).r = temp;
+    dir:at(r,c).g = temp;
+    dir:at(r,c).b = temp;
+    
+    --Combine results from Sobel filters
+    temp = math.sqrt( gx:at(r,c).y * gx:at(r,c).y
+                    + gy:at(r,c).y * gy:at(r,c).y );
+    
+    --Trim result
+    if(temp > 255) then
+      temp = 255;
+    elseif(temp < 0) then
+      temp = 0;
+    end
+    
+    --Apply restuls from Sobel transformations
+    mag:at(r,c).r = temp;
+    mag:at(r,c).g = temp;
+    mag:at(r,c).b = temp;
+  end
+  
+  --Covert back to color
+  il.YIQ2RGB( img );
+  
+  return img, mag, dir;
 end
 edge.sobelDir = sobelDir;
 
