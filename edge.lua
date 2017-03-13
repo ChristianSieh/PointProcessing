@@ -162,12 +162,12 @@ local function kirsch( img, lvl )
   --Set up initial Kirsch filter
   local filter = { { -3, -3, -3 }, { -3, 0, -3 }, { 5, 5, 5 } };
   
-  --Covert to grayscale before applying filters
-  il.RGB2YIQ( img );
-  
   --Create images for use later
   local mag = img:clone();
   local dir = image.flat( img.width, img.height );
+  
+  --Covert to grayscale before applying filters
+  il.RGB2YIQ( img );
   
   --Loop over all pixels, ignoring border due to filter size
   for r,c in img:pixels( 1 ) do
@@ -194,6 +194,9 @@ local function kirsch( img, lvl )
       --Rotate to create next Kirsch filter
       filter = helper.rotateFilter( filter );
     end
+    
+    --Scale result
+    max_value = max_value / 3;
     
     --Trim result
     if(max_value > 255) then
