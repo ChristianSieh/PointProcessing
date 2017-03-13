@@ -308,7 +308,7 @@ neighborhood.median = median;
 --------------------------------------------------------------------------------
 local function emboss( img )
   --Embossing filter
-  local filter = { { 0, 0, 0 }, { 0, 1, 0 }, { 0, 0, -1 } };
+  local filter = { { 1, 0, 0 }, { 0, 0, 0 }, { 0, 0, -1 } };
   
   --Covert to grayscale before applying filter
   il.RGB2YIQ( img );
