@@ -159,9 +159,69 @@ edge.sobelDir = sobelDir;
 --
 --------------------------------------------------------------------------------
 local function kirsch( img, lvl )
+  --Set up initial Kirsch filter
+  local filter = { { -3, -3, -3 }, { -3, 0, -3 }, { 5, 5, 5 } };
   
-  return img;
+  --Covert to grayscale before applying filters
+  il.RGB2YIQ( img );
   
+  --Create images for use later
+  local mag = img:clone();
+  local dir = image.flat( img.width, img.height );
+  
+  --Loop over all pixels, ignoring border due to filter size
+  for r,c in img:pixels( 1 ) do
+    local max_value = -1;
+    local max_index = 0;
+    
+    --Loop eight times, once for each Kirsch filter
+    for i = 1, 8 do
+      local temp = 0;
+      --At each pixel, loop over neighbors
+      for x = 1, 3 do
+        for y = 1, 3 do
+          --Apply current filter
+          temp = temp + ( img:at(r + x-2, c + y-2 ).i * filter[x][y] );
+        end
+      end
+      
+      --Check if biggest response so far
+      if temp > max_value then
+        max_value = temp;
+        max_index = i;
+      end
+      
+      --Rotate to create next Kirsch filter
+      filter = helper.rotateFilter( filter );
+    end
+    
+    --Trim result
+    if(max_value > 255) then
+      max_value = 255;
+    elseif(max_value < 0) then
+      max_value = 0;
+    end
+    
+    --Apply restuls from Kirsch transformations
+    mag:at(r,c).r = max_value;
+    mag:at(r,c).g = max_value;
+    mag:at(r,c).b = max_value;
+    
+    if max_value > 0 then
+      dir:at(r,c).r = ( ( max_index - 1 - 2 ) % 8 ) * 32;
+      dir:at(r,c).g = ( ( max_index - 1 - 2 ) % 8 ) * 32;
+      dir:at(r,c).b = ( ( max_index - 1 - 2 ) % 8 ) * 32;
+    else
+      dir:at(r,c).r = 0;
+      dir:at(r,c).g = 0;
+      dir:at(r,c).b = 0;
+    end
+  end
+    
+  --Covert back to color
+  il.YIQ2RGB( img );
+  
+  return img, mag, dir;
 end
 edge.kirsch = kirsch;
 
