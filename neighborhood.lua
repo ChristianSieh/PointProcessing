@@ -65,7 +65,7 @@ neighborhood.smooth = smooth;
 --    newImg - The image object after being sharpened
 --
 --------------------------------------------------------------------------------
-local function sharpen( img, lvl )
+local function sharpen( img )
   --Sharpening filter
   local filter = { { 0, -1, 0 }, { -1, 5, -1 }, { 0, -1, 0 } };
   
@@ -104,6 +104,9 @@ local function mean( img, filterSize )
   local newImg = img:clone();
   
   --Indexing for traversing neighbors
+  if filterSize % 2 == 0 then
+    filterSize = filterSize + 1;
+  end
   local index = ( filterSize - 1 ) / 2;
   
   --Loop over all pixels, ignoring border due to filter size
@@ -150,6 +153,9 @@ local function minimum( img, filterSize )
   local newImg = img:clone();
   
   --Indexing for traversing neighbors
+  if filterSize % 2 == 0 then
+    filterSize = filterSize + 1;
+  end
   local index = ( filterSize - 1 ) / 2;
   
   --Loop over all pixels, ignoring border due to filter size
@@ -198,6 +204,9 @@ local function maximum( img, filterSize )
   local newImg = img:clone();
   
   --Indexing for traversing neighbors
+  if filterSize % 2 == 0 then
+    filterSize = filterSize + 1;
+  end
   local index = ( filterSize - 1 ) / 2;
   
   --Loop over all pixels, ignoring border due to filter size
@@ -270,6 +279,11 @@ neighborhood.medianPlus = medianPlus;
 --
 --------------------------------------------------------------------------------
 local function median( img, filterSize )
+  --Adjust filter size for even filters
+  if filterSize % 2 == 0 then
+    filterSize = filterSize + 1;
+  end
+  
   --Create filter
   local filter = {};
   for i = 1, filterSize do

@@ -90,7 +90,7 @@ edge.sobelMag = sobelMag;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function sobelDir( img, lvl )
+local function sobelDir( img )
   --Covert to grayscale before applying filters
   il.RGB2YIQ( img );
   
@@ -158,7 +158,7 @@ edge.sobelDir = sobelDir;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function kirsch( img, lvl )
+local function kirsch( img )
   --Set up initial Kirsch filter
   local filter = { { -3, -3, -3 }, { -3, 0, -3 }, { 5, 5, 5 } };
   
@@ -242,7 +242,7 @@ edge.kirsch = kirsch;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function laplacian( img, lvl )
+local function laplacian( img )
   --Smoothing filter
   local filter = { { -1, -1, -1 }, { -1, 8, -1 }, { -1, -1, -1 } };
   
@@ -281,6 +281,9 @@ local function range( img, filterSize )
   il.RGB2YIQ( img );
   
   --Indexing for traversing neighbors
+  if filterSize % 2 == 0 then
+    filterSize = filterSize + 1;
+  end
   local index = ( filterSize - 1 ) / 2;
   
   --Loop over all pixels, ignoring border due to filter size
@@ -342,6 +345,9 @@ local function stdDev( img, filterSize )
   local newImg = img:clone();
   
   --Indexing for traversing neighbors
+  if filterSize % 2 == 0 then
+    filterSize = filterSize + 1;
+  end
   local index = ( filterSize - 1 ) / 2;
   
   --Loop over all pixels, ignoring border due to filter size
