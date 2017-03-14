@@ -315,11 +315,11 @@ local function applyRankOrderFilter( img, filter, filterSize )
   --Indexing array for looping over filter
   local index = {};
   for i = 1, filterSize do
-    index[i] = i - 1 - math.floor( ( filterSize - 1 ) / 2 );
+    index[i] = i - 1 - ( ( filterSize - 1 ) / 2 );
   end
   
   --Loop over all pixels, ignoring border due to filter size
-  for r,c in newImg:pixels( index[filterSize] ) do
+  for r,c in newImg:pixels( ( filterSize - 1 ) / 2 ) do
     local neighbors = {};
     local i = 1;
     
@@ -335,7 +335,7 @@ local function applyRankOrderFilter( img, filter, filterSize )
     
     --Apply specified transformation (currently only median)
     helper.insertionSort( neighbors, i );
-    newImg:at(r,c).i = neighbors[math.floor(i/2)];
+    newImg:at(r,c).i = neighbors[i/2];
   end
   
   --Return new image
