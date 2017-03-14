@@ -334,7 +334,7 @@ local function applyRankOrderFilter( img, filter, filterSize )
     end
     
     --Apply specified transformation (currently only median)
-    table.sort( neighbors );
+    helper.insertionSort( neighbors, i );
     newImg:at(r,c).i = neighbors[i/2];
   end
   
@@ -373,6 +373,36 @@ local function rotateFilter( filter )
   return newFilter;
 end
 helper.rotateFilter = rotateFilter;
+
+
+--------------------------------------------------------------------------------
+--
+-- Function Name: insertionSort
+--
+-- Description: 
+--
+-- Parameters:
+--
+-- Return: 
+--
+--------------------------------------------------------------------------------
+local function insertionSort( list, length )
+  --Loop over each item in list
+  for i = 2, length - 1 do
+    local curr = list[i];
+    local j = i - 1;
+    
+    --Loop back through list until no numbers less than curr
+    while j >= 1 and list[j] > curr do
+      list[j+1] = list[j];
+      j = j - 1;
+    end
+    
+    --Insert current value into sorted portion of list
+    list[j+1] = curr;
+  end
+end
+helper.insertionSort = insertionSort;
 
 
 --Define help message
