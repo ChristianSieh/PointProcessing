@@ -104,15 +104,16 @@ local function mean( img, filterSize )
   local newImg = img:clone();
   
   --Indexing for traversing neighbors
-  local index = ( filterSize - 1 ) / 2;
+  local lowIndex = - math.floor( ( filterSize - 1 ) / 2 );
+  local highIndex = lowIndex + filterSize - 1;
   
   --Loop over all pixels, ignoring border due to filter size
-  for r,c in newImg:pixels( index ) do
+  for r,c in newImg:pixels( highIndex ) do
     local mean = 0;
     
     --Loop over each neighbor pixel
-    for x = -index, index do
-      for y = -index, index do
+    for x = lowIndex, highIndex do
+      for y = lowIndex, highIndex do
         mean = mean + img:at( r + x, c + y ).i;
       end
     end
@@ -150,15 +151,16 @@ local function minimum( img, filterSize )
   local newImg = img:clone();
   
   --Indexing for traversing neighbors
-  local index = ( filterSize - 1 ) / 2;
+  local lowIndex = - math.floor( ( filterSize - 1 ) / 2 );
+  local highIndex = lowIndex + filterSize - 1;  
   
   --Loop over all pixels, ignoring border due to filter size
-  for r,c in newImg:pixels( index ) do
+  for r,c in newImg:pixels( highIndex ) do
     local min = 256;
     
     --Loop over each neighbor pixel
-    for x = -index, index do
-      for y = -index, index do
+    for x = lowIndex, highIndex do
+      for y = lowIndex, highIndex do
         if img:at( r + x, c + y ).i < min then
           min = img:at( r + x, c + y ).i;
         end
@@ -198,15 +200,16 @@ local function maximum( img, filterSize )
   local newImg = img:clone();
   
   --Indexing for traversing neighbors
-  local index = ( filterSize - 1 ) / 2;
-  
+  local lowIndex = - math.floor( ( filterSize - 1 ) / 2 );
+  local highIndex = lowIndex + filterSize - 1;
+    
   --Loop over all pixels, ignoring border due to filter size
-  for r,c in newImg:pixels( index ) do
+  for r,c in newImg:pixels( highIndex ) do
     local max = -1;
     
     --Loop over each neighbor pixel
-    for x = -index, index do
-      for y = -index, index do
+    for x = lowIndex, highIndex do
+      for y = lowIndex, highIndex do
         if img:at( r + x, c + y ).i > max then
           max = img:at( r + x, c + y ).i;
         end

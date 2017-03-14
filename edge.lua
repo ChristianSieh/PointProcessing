@@ -281,16 +281,17 @@ local function range( img, filterSize )
   il.RGB2YIQ( img );
   
   --Indexing for traversing neighbors
-  local index = ( filterSize - 1 ) / 2;
+  local lowIndex = - math.floor( ( filterSize - 1 ) / 2 );
+  local highIndex = lowIndex + filterSize - 1;
   
   --Loop over all pixels, ignoring border due to filter size
-  for r,c in newImg:pixels( index ) do
+  for r,c in newImg:pixels( highIndex ) do
     local max = -1;
     local min = 1000;
     
     --Loop over each neighbor pixel
-    for x = -index, index do
-      for y = -index, index do
+    for x = lowIndex, highIndex do
+      for y = lowIndex, highIndex do
         --Check if current neighbor is larger than current max
         if img:at( r + x, c + y ).i > max then
           max = img:at( r + x, c + y ).i;
@@ -342,26 +343,27 @@ local function stdDev( img, filterSize )
   local newImg = img:clone();
   
   --Indexing for traversing neighbors
-  local index = ( filterSize - 1 ) / 2;
+  local lowIndex = - math.floor( ( filterSize - 1 ) / 2 );
+  local highIndex = lowIndex + filterSize - 1;
   
   --Loop over all pixels, ignoring border due to filter size
-  for r,c in img:pixels( index ) do
+  for r,c in img:pixels( highIndex ) do
     local mean = 0;
     local diff = 0;
     local sqDiff = 0;
     local variance = 0;
     
     --Loop over each neighbor pixel to calculate sample mean for neighborhood
-    for x = -index, index do
-      for y = -index, index do
+    for x = lowIndex, highIndex do
+      for y = lowIndex, highIndex do
         mean = mean + img:at( r + x, c + y ).i;
       end
     end
     mean = mean / ( filterSize * filterSize );
     
     --Loop over each neighbor pixel
-    for x = -index, index do
-      for y = -index, index do
+    for x = lowIndex, highIndex do
+      for y = lowIndex, highIndex do
         diff = img:at( r + x, c + y ).i - mean;
         sqDiff = sqDiff + ( diff * diff );
       end
