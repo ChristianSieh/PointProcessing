@@ -229,6 +229,11 @@ local function applyConvolutionFilter( img, filter, filterSize, recenter )
     --Recenter to gray (128) if specified
     if recenter then
       temp = temp + 128;
+    else
+      --Set magnitude
+      if temp < 0 then
+        temp = -temp;
+      end
     end
     
     --Trim result
