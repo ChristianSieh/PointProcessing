@@ -184,65 +184,6 @@ local function contPseudoLUT( val, LUT, i, j )
 end
 helper.contPseudoLUT = contPseudoLUT;
 
-
---------------------------------------------------------------------------------
---
--- Function Name: eightWay
---
--- Description: 
---
--- Parameters:
---   img - 
---   filter - 
---   num - 
---
--- Return: 
---   img - 
---
---------------------------------------------------------------------------------
-local function eightWay( img, filter, num)
-  local temp;
-
-  img = il.RGB2YIQ(img);
-
-  for r,c in img:pixels(1) do
-    -- UP LEFT
-    temp = filter[1] * img:at(r - 1, c - 1).y;
-    -- UP
-    temp = temp + filter[2] * img:at(r - 1, c).y;
-    -- UP RIGHT
-    temp = temp + filter[3] * img:at(r - 1, c).y;
-    -- RIGHT
-    temp = temp + filter[4] * img:at(r, c + 1).y;
-    -- MIDDLE
-    temp = temp + filter[5] * img:at(r, c).y;
-    -- DOWN RIGHT
-    temp = temp + filter[6] * img:at(r + 1, c + 1).y;
-    -- DOWN
-    temp = temp + filter[7] * img:at(r + 1, c).y;
-    -- DOWN LEFT
-    temp = temp + filter[8] * img:at(r + 1, c - 1).y;
-    -- LEFT
-    temp = temp + filter[9] * img:at(r, c - 1).y;
-    
-    temp = temp * num
-    
-    if(temp > 255) then
-      temp = 255;
-    elseif(temp < 0) then
-      temp = 0;
-    end
-    
-    img:at(r, c).y = temp;
-  end
-
-  img = il.YIQ2RGB(img);
-
-  return img;
-end
-helper.eightWay = eightWay;
-
-
 --------------------------------------------------------------------------------
 --
 -- Function Name: applyConvolutionFilter
@@ -271,7 +212,7 @@ local function applyConvolutionFilter( img, filter, filterSize, recenter )
     --At each pixel, loop over and add neighbors
     for x = 1, filterSize do
       for y = 1, filterSize do
-        temp = temp + ( img:at(r + index[x], c + index[y] ).i * filter[x][y] );
+        temp = temp + ( img:at(r + index[x], c + index[y] ).i * filter[y][x] );
       end
     end
     

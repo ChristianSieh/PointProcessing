@@ -20,11 +20,9 @@ local helper = require("helper");
 --Table to hold the point process functions
 local edge = {};
 
---Sobel filters
-local sobelGXPosFilter = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
-local sobelGYPosFilter = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
-local sobelGXNegFilter = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
-local sobelGYNegFilter = { { 1, 0, -1 }, { 2, 0, -2 }, { 1, 0, -1 } };
+--Sobel Filters
+local sobelGYFilter = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
+local sobelGXFilter = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
   
 
 --------------------------------------------------------------------------------
@@ -44,20 +42,15 @@ local function sobelMag( img )
   --Covert to grayscale before applying filters
   il.RGB2YIQ( img );
   
-  --Apply Sobel edge detectors as convolution filters
-  local gxPos = helper.applyConvolutionFilter( img, sobelGXPosFilter, 3 );
-  local gyPos = helper.applyConvolutionFilter( img, sobelGYPosFilter, 3 );
-  local gxNeg = helper.applyConvolutionFilter( img, sobelGXNegFilter, 3 );
-  local gyNeg = helper.applyConvolutionFilter( img, sobelGYNegFilter, 3 );
+  local gx = helper.applyConvolutionFilter( img, sobelGXFilter, 3);
+  local gy = helper.applyConvolutionFilter( img, sobelGYFilter, 3);
   
   --Loop over each pixel in the image
   local mag = img:clone();
   for r,c in mag:pixels() do
+    
     --Combine results from Sobel filters
-    local temp = math.sqrt( gxPos:at(r,c).r * gxPos:at(r,c).r
-                          + gyPos:at(r,c).r * gyPos:at(r,c).r
-                          + gxNeg:at(r,c).r * gxNeg:at(r,c).r
-                          + gyNeg:at(r,c).r * gyNeg:at(r,c).r );
+    local temp = math.sqrt( gx:at(r,c).r * gx:at(r,c).r + gy:at(r,c).r * gy:at(r,c).r);
     
     --Trim result
     if(temp > 255) then
@@ -91,50 +84,54 @@ edge.sobelMag = sobelMag;
 --
 --------------------------------------------------------------------------------
 local function sobelDir( img )
-  --Covert to grayscale before applying filters
-  il.RGB2YIQ( img );
-  
-  --Apply Sobel edge detectors as convolution filters
-  local gxPos = helper.applyConvolutionFilter( img, sobelGXPosFilter, 3 );
-  local gyPos = helper.applyConvolutionFilter( img, sobelGYPosFilter, 3 );
-  local gxNeg = helper.applyConvolutionFilter( img, sobelGXNegFilter, 3 );
-  local gyNeg = helper.applyConvolutionFilter( img, sobelGYNegFilter, 3 );
-  
   --Create images for use later
   local mag = img:clone();
   local dir = image.flat( img.width, img.height );
-  local gx = image.flat( img.width, img.height );
-  local gy = image.flat( img.width, img.height );
   
-  --Combine opposing Sobel filters
-  for r,c in img:pixels() do
-    gx:at(r,c).y = gxPos:at(r,c).y + gxNeg:at(r,c).y;
-    gy:at(r,c).y = gyPos:at(r,c).y + gyNeg:at(r,c).y;
-  end
+  --Covert to grayscale before applying filters
+  il.RGB2YIQ( img );
   
-  --Loop over each pixel in the image
-  for r,c in mag:pixels() do
-    --Find direction of strongest edge
-    local temp = math.atan2( gyPos:at(r,c).y, gxPos:at(r,c).y ) * ( 255 / 1.57 );
-    dir:at(r,c).r = temp;
-    dir:at(r,c).g = temp;
-    dir:at(r,c).b = temp;
+  --Loop over all pixels, ignoring border due to filter size
+  for r,c in img:pixels( 1 ) do
+    --Hold temporary edge magnitudes
+    local gx_temp = 0;
+    local gy_temp = 0;
     
-    --Combine results from Sobel filters
-    temp = math.sqrt( gx:at(r,c).y * gx:at(r,c).y
-                    + gy:at(r,c).y * gy:at(r,c).y );
-    
-    --Trim result
-    if(temp > 255) then
-      temp = 255;
-    elseif(temp < 0) then
-      temp = 0;
+    --At each pixel, loop over and add neighbors
+    for x = -1, 1 do
+      for y = -1, 1 do
+        gx_temp = gx_temp + ( img:at(r + x, c + y ).i * sobelGXFilter[x+2][y+2] );
+        gy_temp = gy_temp + ( img:at(r + x, c + y ).i * sobelGYFilter[x+2][y+2] );
+      end
     end
     
-    --Apply restuls from Sobel transformations
-    mag:at(r,c).r = temp;
-    mag:at(r,c).g = temp;
-    mag:at(r,c).b = temp;
+    --Find direction of strongest edge
+    local dir_val = math.atan2( gy_temp, gx_temp );
+    if(dir_val < 0) then
+      dir_val = dir_val + (2 * math.pi);
+    end
+    dir_val = math.floor(dir_val * ( 256 / ( 2 * math.pi ) ) );
+    
+    --Apply direction results from Sobel transformations
+    dir:at(r,c).r = dir_val;
+    dir:at(r,c).g = dir_val;
+    dir:at(r,c).b = dir_val;
+    
+    --Combine results from Sobel filters
+    local mag_val = math.sqrt( gx_temp * gx_temp
+                             + gy_temp * gy_temp );
+    
+    --Trim result
+    if(mag_val > 255) then
+      mag_val = 255;
+    elseif(mag_val < 0) then
+      mag_val = 0;
+    end
+    
+    --Apply magnitude results from Sobel transformations
+    mag:at(r,c).r = mag_val;
+    mag:at(r,c).g = mag_val;
+    mag:at(r,c).b = mag_val;
   end
   
   --Covert back to color
