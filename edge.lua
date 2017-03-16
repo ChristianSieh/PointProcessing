@@ -21,8 +21,12 @@ local helper = require("helper");
 local edge = {};
 
 --Sobel Filters
-local sobelGYFilter = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
 local sobelGXFilter = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
+local sobelGYFilter = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
+
+--Filter locations
+local filterLoc = { { 1, 1 }, { 2, 1 }, { 3, 1 }, { 3, 2 },
+                    { 3, 3 }, { 2, 3 }, { 1, 3 }, { 1, 2 } };
   
 
 --------------------------------------------------------------------------------
@@ -168,28 +172,32 @@ local function kirsch( img )
   
   --Loop over all pixels, ignoring border due to filter size
   for r,c in img:pixels( 1 ) do
-    local max_value = -1;
-    local max_index = 0;
-    
-    --Loop eight times, once for each Kirsch filter
-    for i = 1, 8 do
-      local temp = 0;
-      --At each pixel, loop over neighbors
-      for x = 1, 3 do
-        for y = 1, 3 do
-          --Apply current filter
-          temp = temp + ( img:at(r + x-2, c + y-2 ).i * filter[x][y] );
-        end
+    --At each pixel, loop over neighbors with first filter
+    local temp = 0;
+    for x = 1, 3 do
+      for y = 1, 3 do
+        --Apply current filter
+        temp = temp + ( img:at(r + x-2, c + y-2 ).i * filter[x][y] );
       end
+    end
+    
+    --Set initial max value and save index of rotation
+    local max_value = temp;
+    local max_index = 1;
+    
+    --Loop over remaining filters by adjusting changes
+    for i = 2, 8 do
+      --Adjust for rotating filter
+      temp = temp + 8 * img:at( r + filterLoc[((i+5)%8)+1][1]-2,
+                                c + filterLoc[((i+5)%8)+1][2]-2 ).i;
+      temp = temp - 8 * img:at( r + filterLoc[((i+2)%8)+1][1]-2,
+                                c + filterLoc[((i+2)%8)+1][2]-2 ).i;
       
       --Check if biggest response so far
       if temp > max_value then
         max_value = temp;
         max_index = i;
       end
-      
-      --Rotate to create next Kirsch filter
-      filter = helper.rotateFilter( filter );
     end
     
     --Scale result
@@ -248,7 +256,7 @@ local function laplacian( img )
   il.RGB2YIQ( img );
   
   --Apply convolution filter
-  newImg = helper.applyConvolutionFilter( img, filter, 3 );
+  local newImg = helper.applyConvolutionFilter( img, filter, 3 );
   
   --Covert back to color
   il.YIQ2RGB( newImg );
