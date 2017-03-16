@@ -25,7 +25,8 @@ local neighborhood = {};
 --
 --  Function Name: Smooth
 --
---  Description: 
+--  Description: This function uses a 3x3 filter with convolution to cause a
+--               weighted averaging which smoothens the image.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -56,7 +57,8 @@ neighborhood.smooth = smooth;
 --
 --  Function Name: Sharpen
 --
---  Description: 
+--  Description: This function uses a 3x3 filter with convolution to cause a
+--               sharpening of the image.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -87,7 +89,9 @@ neighborhood.sharpen = sharpen;
 --
 --  Function Name: Mean
 --
---  Description: 
+--  Description: This function allows the user to specify an n sized neighborhood,
+--               and each pixel in this neighborhood is used to calculate a mean
+--               that replaces the pixel.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -136,10 +140,13 @@ neighborhood.mean = mean;
 --
 --  Function Name: Minimum
 --
---  Description: 
+--  Description: This function allows the user to specify an n sized neighborhood,
+--               and this the minimum value is taken from this neighborhood and
+--               assigned to the pixel.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
+--    filterSize - width & height of the filter to be applied
 --
 --  Return: 
 --    newImg - The image object after having the process performed upon it
@@ -187,10 +194,13 @@ neighborhood.minimum = minimum;
 --
 --  Function Name: Maximum
 --
---  Description: 
+--  Description: This function allows the user to specify an n sized neighborhood,
+--               and this the maximum value is taken from this neighborhood and
+--               assigned to the pixel.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
+--    filterSize - width & height of the filter to be applied
 --
 --  Return: 
 --    newImg - The image object after having the process performed upon it
@@ -238,7 +248,10 @@ neighborhood.maximum = maximum;
 --
 --  Function Name: Median Plus
 --
---  Description: 
+--  Description: This function uses a plus shaped median filter to pick which
+--               pixels in the neighborhood to use for rank order. After being
+--               sorted, the middle sorted pixel is used to replace the current
+--               pixel.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -268,7 +281,10 @@ neighborhood.medianPlus = medianPlus;
 --
 --  Function Name: Median
 --
---  Description: 
+--  Description: This function uses an n sized median filter to pick which
+--               pixels in the neighborhood to use for rank order. After being
+--               sorted, the middle sorted pixel is used to replace the current
+--               pixel.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -311,7 +327,8 @@ neighborhood.median = median;
 --
 --  Function Name: Emboss
 --
---  Description: 
+--  Description: This function uses a 3x3 filter with convolution to cause an
+--               embossing effect on the image.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
