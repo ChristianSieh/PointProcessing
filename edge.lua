@@ -21,15 +21,18 @@ local helper = require("helper");
 local edge = {};
 
 --Sobel Filters
-local sobelGYFilter = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
 local sobelGXFilter = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
-  
+local sobelGYFilter = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
 
 --------------------------------------------------------------------------------
 --
 --  Function Name: Sobel Edge Magnitude
 --
---  Description: 
+--  Description: This function uses the sobel operator to calculate the
+--               gradient/magnitude of the image. This function uses the
+--               x and y sobel filters in order to get the vertical and
+--               horizontal values. These values are then used to calculate
+--               the magnitude, and are finally clipped.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -74,7 +77,15 @@ edge.sobelMag = sobelMag;
 --
 --  Function Name: Sobel Edge Direction
 --
---  Description: 
+--  Description: This function uses the sobel operator to calculate the
+--               direction of the image. First we calculate gx and gy by
+--               using the specified sobel filters. These values are then
+--               passed into atan2 to calculate the direction. If the direction
+--               is negative then we add 2pi to the value, and finally rescale
+--               the value to be between 0-255. Also, this function calculates
+--               the magnitude by using the x and y sobel filters in order to get 
+--               the vertical and horizontal values. These values are then used 
+--               to calculate the magnitude, and are finally clipped. 
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -231,7 +242,8 @@ edge.kirsch = kirsch;
 --
 --  Function Name: Laplacian
 --
---  Description: 
+--  Description: This function uses the specified filter and convolution
+--               in order to create the laplacian of the image.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -262,7 +274,9 @@ edge.laplacian = laplacian;
 --
 --  Function Name: range
 --
---  Description: 
+--  Description: Range uses a filter of filterSize in order to calculate the
+--               difference between the max and min value in the neighborhood.
+--               The pixel value is set to this difference.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -326,7 +340,11 @@ edge.range = range;
 --
 --  Function Name: Standard Deviation
 --
---  Description: 
+--  Description: Standard Deviation uses a filter of filterSize in order to 
+--               calculate the standard deviation of a neighborhood. This is
+--               accomplished by first calculating the mean, then the squares
+--               of the difference, the variance, and finally assigning the
+--               standard deviation to the pixel.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
