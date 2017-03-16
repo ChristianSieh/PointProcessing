@@ -6,7 +6,10 @@
 --  Instructor: Dr. Weiss
 --  Date: 3/11/2017
 --  
---  Description: 
+--  Description: This file contains the function definitions for the 
+--    noise operations. The functions are stored in a table as they are 
+--    created. This table is then returned at the end of the file, allowing
+--    them to be called from the main part of the program, prog1.
 --  
 --------------------------------------------------------------------------------
 
@@ -21,11 +24,20 @@ local noise = {};
 --
 --  Function Name: noiseClean
 --
---  Description: 
+--  Description: This function takes all of the neighbors in a 3x3 area and
+--               calculates their average. Then the difference between the
+--               current pixel value and the average is calculated. If the
+--               difference is above the threshold then the pixel's value
+--               changes otherwise it remains the same.
 --
 --  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    threshold - A threshold level defined by the user that tells if a pixel
+--                should be changed, if it falls above the threshold, or stay 
+--                it's current value.
 --
 --  Return: 
+--    newImg - The image object after being smoothed
 --
 --------------------------------------------------------------------------------
 local function noiseClean( img, threshold )

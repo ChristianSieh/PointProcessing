@@ -188,11 +188,21 @@ helper.contPseudoLUT = contPseudoLUT;
 --
 -- Function Name: applyConvolutionFilter
 --
--- Description: 
+-- Description: This function takes an image and a filter of filterSize and uses
+--              the filter to perform convolution. This is accomplished by summing
+--              each pixel in the neighbordhood and multiplying by it's associatted
+--              position in the filter. This function can also recenter the image to
+--              128, and finally this function provides clipping.
 --
--- Parameters:
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    filter - The filter to be used in the convolution process
+--    filterSize - The size of the filter that was passed in
+--    recenter - A boolean used to specify if the image should be recentered
+--               around the value 128
 --
--- Return: 
+--  Return: 
+--    newImg - The image object after being smoothed
 --
 --------------------------------------------------------------------------------
 local function applyConvolutionFilter( img, filter, filterSize, recenter )
@@ -242,11 +252,19 @@ helper.applyConvolutionFilter = applyConvolutionFilter;
 --
 -- Function Name: applyRankOrderFilter
 --
--- Description: 
+-- Description: This function takes an image and a filter of filterSize and uses
+--              the filter to perform a rank order. This function goes to each
+--              neighbor specified by the filter and puts them in a list. An
+--              insertion sort is then used to sort the list. Finally the middle
+--              value is returned from the list.
 --
--- Parameters:
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--    filter - The filter to be used in the convolution process
+--    filterSize - The size of the filter that was passed in
 --
--- Return:
+--  Return: 
+--    newImg - The image object after being smoothed
 --
 --------------------------------------------------------------------------------
 local function applyRankOrderFilter( img, filter, filterSize )
@@ -289,28 +307,18 @@ helper.applyRankOrderFilter = applyRankOrderFilter;
 --
 -- Function Name: rotateFilter
 --
--- Description: 
+-- Description: This function is used to rotate a 3x3 filter counter-clockwise.
 --
--- Parameters:
+--  Parameters:
+--    filter - A filter that is to be rotated by the function
 --
--- Return: 
+--  Return: 
+--    newFilter - The new, rotated filter
 --
 --------------------------------------------------------------------------------
 local function rotateFilter( filter )
   --Create new filter
   local newFilter = { {}, {}, {} };
-  
-  --Rotate filter 45 degrees clockwise
-  --[[newFilter[1][2] = filter[1][1];
-  newFilter[1][3] = filter[1][2];
-  newFilter[2][3] = filter[1][3];
-  newFilter[3][3] = filter[2][3];
-  newFilter[3][2] = filter[3][3];
-  newFilter[3][1] = filter[3][2];
-  newFilter[2][1] = filter[3][1];
-  newFilter[1][1] = filter[2][1];
-  newFilter[2][2] = filter[2][2];]]--
-  
   
   newFilter[1][1] = filter[1][2];
   newFilter[1][2] = filter[1][3];
@@ -331,11 +339,15 @@ helper.rotateFilter = rotateFilter;
 --
 -- Function Name: insertionSort
 --
--- Description: 
+-- Description: This takes a list and it's size in order to create a sorted list
+--              by using an insertion sort
 --
--- Parameters:
+--  Parameters:
+--    list - The list that is to be sorted
+--    length - The length of the list to be sorted
 --
--- Return: 
+--  Return: 
+--    list - The sorted list
 --
 --------------------------------------------------------------------------------
 local function insertionSort( list, length )
