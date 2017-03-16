@@ -157,7 +157,7 @@ edge.sobelDir = sobelDir;
 --------------------------------------------------------------------------------
 local function kirsch( img )
   --Set up initial Kirsch filter
-  local filter = { { -3, -3, -3 }, { -3, 0, -3 }, { 5, 5, 5 } };
+  local filter = { { -3, -3, 5 }, { -3, 0, 5 }, { -3, -3, 5 } };
   
   --Create images for use later
   local mag = img:clone();
@@ -208,9 +208,10 @@ local function kirsch( img )
     mag:at(r,c).b = max_value;
     
     if max_value > 0 then
-      dir:at(r,c).r = ( ( max_index - 1 - 2 ) % 8 ) * 32;
-      dir:at(r,c).g = ( ( max_index - 1 - 2 ) % 8 ) * 32;
-      dir:at(r,c).b = ( ( max_index - 1 - 2 ) % 8 ) * 32;
+      local temp = ( ( max_index - 1 ) % 8 ) * 32;
+      dir:at(r,c).r = temp;
+      dir:at(r,c).g = temp;
+      dir:at(r,c).b = temp;
     else
       dir:at(r,c).r = 0;
       dir:at(r,c).g = 0;

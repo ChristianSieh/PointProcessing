@@ -301,7 +301,7 @@ local function rotateFilter( filter )
   local newFilter = { {}, {}, {} };
   
   --Rotate filter 45 degrees clockwise
-  newFilter[1][2] = filter[1][1];
+  --[[newFilter[1][2] = filter[1][1];
   newFilter[1][3] = filter[1][2];
   newFilter[2][3] = filter[1][3];
   newFilter[3][3] = filter[2][3];
@@ -309,8 +309,19 @@ local function rotateFilter( filter )
   newFilter[3][1] = filter[3][2];
   newFilter[2][1] = filter[3][1];
   newFilter[1][1] = filter[2][1];
-  newFilter[2][2] = filter[2][2];
+  newFilter[2][2] = filter[2][2];]]--
   
+  
+  newFilter[1][1] = filter[1][2];
+  newFilter[1][2] = filter[1][3];
+  newFilter[1][3] = filter[2][3];
+  newFilter[2][3] = filter[3][3];
+  newFilter[3][3] = filter[3][2];
+  newFilter[3][2] = filter[3][1];
+  newFilter[3][1] = filter[2][1];
+  newFilter[2][1] = filter[1][1];
+  newFilter[2][2] = filter[2][2];
+
   return newFilter;
 end
 helper.rotateFilter = rotateFilter;
