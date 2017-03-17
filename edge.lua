@@ -162,7 +162,14 @@ edge.sobelDir = sobelDir;
 --
 --  Function Name: Kirsch Edge Magnitude & Direction
 --
---  Description: 
+--  Description: This function calculates the magnitude and direction of edges
+--               in the image using Kirsch edge detectors. For each pixel in 
+--               the image, the first Kirsch filter is applied to calculate the
+--               response in that direction. We then simulate rotating the 
+--               filter by adding and subtracting the neighbors that would
+--               change in the next filter. The direction that provides the
+--               largest magnitude is saved for display, as is the largest
+--               magnitude
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -232,10 +239,6 @@ local function kirsch( img )
       dir:at(r,c).r = temp;
       dir:at(r,c).g = temp;
       dir:at(r,c).b = temp;
-    else
-      dir:at(r,c).r = 0;
-      dir:at(r,c).g = 0;
-      dir:at(r,c).b = 0;
     end
   end
     
