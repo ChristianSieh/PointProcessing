@@ -50,8 +50,8 @@ local function sobelMag( img )
   --Covert to grayscale before applying filters
   il.RGB2YIQ( img );
   
-  local gx = helper.applyConvolutionFilter( img, sobelGXFilter, 3);
-  local gy = helper.applyConvolutionFilter( img, sobelGYFilter, 3);
+  local gx = helper.applyConvolutionFilter( img, sobelGXFilter, 3, false, true );
+  local gy = helper.applyConvolutionFilter( img, sobelGYFilter, 3, false, true );
   
   --Loop over each pixel in the image
   local mag = img:clone();
