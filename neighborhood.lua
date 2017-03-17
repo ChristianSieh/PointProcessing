@@ -95,6 +95,7 @@ neighborhood.sharpen = sharpen;
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
+--    filterSize - width & height of the filter to be applied
 --
 --  Return: 
 --    newImg - The image object after having the process performed upon it
@@ -143,7 +144,6 @@ neighborhood.mean = mean;
 --  Description: This function allows the user to specify an n sized neighborhood,
 --               and this the minimum value is taken from this neighborhood and
 --               assigned to the pixel.
---
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
 --    filterSize - width & height of the filter to be applied

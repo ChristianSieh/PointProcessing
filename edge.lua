@@ -96,7 +96,9 @@ edge.sobelMag = sobelMag;
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    img - Original image
+--    mag - Image of edge magnitudes
+--    dir - Image of edge directions
 --
 --------------------------------------------------------------------------------
 local function sobelDir( img )
@@ -175,7 +177,9 @@ edge.sobelDir = sobelDir;
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    img - Original image
+--    mag - Image of edge magnitudes
+--    dir - Image of edge directions
 --
 --------------------------------------------------------------------------------
 local function kirsch( img )
@@ -292,6 +296,7 @@ edge.laplacian = laplacian;
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
+--    filterSize - Width of filter
 --
 --  Return: 
 --    newImg - The image object after having the process performed upon it
@@ -360,6 +365,7 @@ edge.range = range;
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
+--    filterSize - Width of filter
 --
 --  Return: 
 --    img - The image object after having the point process performed upon it
