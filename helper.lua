@@ -205,7 +205,7 @@ helper.contPseudoLUT = contPseudoLUT;
 --    newImg - The image object after being smoothed
 --
 --------------------------------------------------------------------------------
-local function applyConvolutionFilter( img, filter, filterSize, recenter )
+local function applyConvolutionFilter( img, filter, filterSize, recenter, adjust )
   --New blank image to save results as processed
   local newImg = img:clone();
   
@@ -229,11 +229,11 @@ local function applyConvolutionFilter( img, filter, filterSize, recenter )
     --Recenter to gray (128) if specified
     if recenter then
       temp = temp + 128;
-    else
-      --Set magnitude
-      if temp < 0 then
-        temp = -temp;
-      end
+    end
+    
+    --Adjust values if specified
+    if adjust and temp < 0 then
+      temp = -temp;
     end
     
     --Trim result
