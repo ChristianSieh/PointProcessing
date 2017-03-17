@@ -56,7 +56,7 @@ imageMenu("Point Processes",
     {"Solarize", pointProc.solarize,       
       {{name = "Threshold", type = "number", displaytype = "spin", default = 128, min = 0, max = 255}}},
     {"Inverse Solarize", pointProc.inverseSolarize,       
-      {{name = "Threshold", type = "number", displaytype = "spin", default = 128, min = 0, max = 255}}},
+      {{name = "Threshold", type = "number", displaytype = "spin", default = 128, min = 0, max = 255}}}
   }
 )
 
@@ -71,56 +71,36 @@ imageMenu("Histogram processes",
     {"Histogram Display RGB\tCtrl-J", il.showHistogramRGB, hotkey = "C-J"},
     {"Histogram Equalization", hist.histogramEqualize},
     {"Histogram Equalize Clip", hist.histogramClipping,
-      {{name = "clip %", type = "number", displaytype = "textbox", default = "1.0"}}},
+      {{name = "clip %", type = "number", displaytype = "textbox", default = "1.0"}}}
   }
 )
 
 imageMenu("Neigborhood ops",
   {
     {"Smooth", neighborhood.smooth},
-    {"Smooth - Weiss", il.smooth},
     {"Sharpen", neighborhood.sharpen},
-    {"Sharpen - Weiss", il.sharpen},
     {"Mean", neighborhood.mean,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 3, max = 65}}},
-    {"Mean - Weiss", il.mean,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 3, max = 65}}},
     {"Minimum", neighborhood.minimum,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 3, max = 65}}},
-    {"Minimum - Weiss", il.minimum,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 3, max = 65}}},
     {"Maximum", neighborhood.maximum,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 3, max = 65}}},
-    {"Maximum - Weiss", il.maximum,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 3, max = 65}}},
     {"Median+", neighborhood.medianPlus},
-    {"Median+ - Weiss", il.medianPlus},
     {"Median", il.timed(neighborhood.median),
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Median - Weiss", il.timed(il.median),
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Emboss", neighborhood.emboss},
-    {"Emboss - Weiss", il.emboss},
+    {"Emboss", neighborhood.emboss}
   }
 )
 
 imageMenu("Edge detection",
   {
     {"Sobel Edge Mag\tCtrl-E", edge.sobelMag, hotkey = "C-E"},
-    {"Sobel Edge Mag - Weiss\tCtrl-E", il.sobelMag, hotkey = "C-E"},
     {"Sobel Edge Mag/Dir", edge.sobelDir},
-    {"Sobel Edge Mag/Dir - Weiss", il.sobel},
     {"Kirsch Edge Mag/Dir", edge.kirsch},
-    {"Kirsch Edge Mag/Dir - Weiss", il.kirsch},
     {"Laplacian", edge.laplacian},
-    {"Laplacian - Weiss", il.laplacian},
     {"Range", edge.range,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Range - Weiss", il.range,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Std Dev", edge.stdDev,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Std Dev - Weiss", il.stdDev,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}}
   }
 )
@@ -140,8 +120,6 @@ imageMenu("Noise",
     {"Add Gaussian noise", il.gaussianNoise,
       {{name = "sigma", type = "number", displaytype = "textbox", default = "16.0"}}},
     {"Out-of-Range Noise Cleaning", noise.noiseClean,
-      {{name = "threshold", type = "number", displaytype = "slider", default = 64, min = 0, max = 256}}},
-    {"Out-of-Range Noise Cleaning - Weiss", il.noiseClean,
       {{name = "threshold", type = "number", displaytype = "slider", default = 64, min = 0, max = 256}}}
   }
 )
