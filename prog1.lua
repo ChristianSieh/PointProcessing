@@ -29,6 +29,7 @@ local helper = require "helper"
 local edge = require "edge"
 local neighborhood = require "neighborhood"
 local noise = require "noise"
+local morph = require "morph"
 
 --Load images listed on command line
 local imgs = {...}
@@ -101,6 +102,29 @@ imageMenu("Edge detection",
     {"Range", edge.range,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Std Dev", edge.stdDev,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}}
+  }
+)
+
+imageMenu("Morphological operations",
+  {
+    {"Geodesic Dilate", morph.geodilate},
+    {"Geodesic Erode", morph.geoerode},
+    {"Dilate", morph.dilate,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Dilate- Weiss", il.dilate,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Erode", morph.erode,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Erode - Weiss", il.erode,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Open", morph.open,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Open - Weiss", il.open,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Close", morph.close,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Close - Weiss", il.close,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}}
   }
 )
