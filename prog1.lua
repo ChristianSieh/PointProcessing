@@ -109,7 +109,10 @@ imageMenu("Edge detection",
 
 imageMenu("Morphological operations",
   {
-    {"Geodesic Dilate", morph.geodilate},
+    {"Geodesic Dilate\tCtrl-N", morph.geoDilate, hotkey = "C-N",
+      {{name = "Mask", type = "string", displaytype = "textbox", default = ".\\Images\\mask.png"},
+       {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+       {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
     {"Geodesic Erode\tCtrl-M", morph.geoErode, hotkey = "C-M",
       {{name = "Mask", type = "string", displaytype = "textbox", default = ".\\Images\\mask.png"},
        {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},

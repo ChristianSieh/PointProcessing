@@ -22,7 +22,7 @@ local morph = {};
 
 --------------------------------------------------------------------------------
 --
---  Function Name: geodesic dilate
+--  Function Name: geoDilate
 --
 --  Description: 
 --
@@ -33,12 +33,15 @@ local morph = {};
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function geodilate( img )
-
+local function geoDilate( img, maskFile, filterWidth, filterHeight )
+  --Open specified mask file
+  local maskImg = image.open( maskFile );
   
-  return img;
+  
+  
+  return img, maskImg;
 end
-morph.geodilate = geodilate;
+morph.geoDilate = geoDilate;
 
 --------------------------------------------------------------------------------
 --
