@@ -133,7 +133,8 @@ imageMenu("Morphological operations",
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Close - Weiss", il.close,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    { "Zoom\tCtrl+Z", helper.zoom, hotkey = "C-Z" }
+    { "Zoom In\tCtrl+Z", helper.zoomIn, hotkey = "C-Z" },
+    { "Zoom Out\tCtrl+Z", helper.zoomOut, hotkey = "C-X" }
   }
 )
 

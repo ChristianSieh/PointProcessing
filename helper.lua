@@ -376,7 +376,7 @@ helper.insertionSort = insertionSort;
 
 --------------------------------------------------------------------------------
 --
---  Function Name: zoom
+--  Function Name: zoomIn
 --
 --  Description: Makes image 10 times bigger
 --
@@ -384,11 +384,10 @@ helper.insertionSort = insertionSort;
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - Original image
---    newImg - The image object after having the point process performed upon it
+--    newImg - The image after growing
 --
 --------------------------------------------------------------------------------
-local function zoom( img )
+local function zoomIn( img )
   --Create new image
   local newImg = image.flat( img.width * 10, img.height * 10 );
   
@@ -399,9 +398,39 @@ local function zoom( img )
     newImg:at(r,c).b = img:at( math.floor(r/10), math.floor(c/10) ).b;
   end
   
-  return img, newImg;
+  return newImg;
 end
-helper.zoom = zoom;
+helper.zoomIn = zoomIn;
+
+
+--------------------------------------------------------------------------------
+--
+--  Function Name: zoomOut
+--
+--  Description: Makes image 10 times smaller
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    newImg - The image after shrinking
+--
+--------------------------------------------------------------------------------
+local function zoomOut( img )
+  --Create new image
+  local newImg = image.flat( math.floor( img.width / 10 ),
+                             math.floor( img.height / 10 ) );
+  
+  --Shrink image
+  for r,c in newImg:pixels() do
+    newImg:at(r,c).r = img:at( r*10, c*10 ).r;
+    newImg:at(r,c).g = img:at( r*10, c*10 ).g;
+    newImg:at(r,c).b = img:at( r*10, c*10 ).b;
+  end
+  
+  return newImg;
+end
+helper.zoomOut = zoomOut;
 
 
 --Define help message
