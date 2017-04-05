@@ -42,7 +42,7 @@ morph.geodilate = geodilate;
 
 --------------------------------------------------------------------------------
 --
---  Function Name: geodesic erode
+--  Function Name: geoErode
 --
 --  Description: 
 --
@@ -53,12 +53,15 @@ morph.geodilate = geodilate;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function geoerode( img )
-
+local function geoErode( img, maskFile, filterWidth, filterHeight )
+  --Open specified mask file
+  local maskImg = image.open( maskFile );
   
-  return img;
+  
+  
+  return img, maskImg;
 end
-morph.geoerode = geoerode;
+morph.geoErode = geoErode;
 
 --------------------------------------------------------------------------------
 --

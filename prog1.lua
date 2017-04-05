@@ -32,7 +32,8 @@ local noise = require "noise"
 local morph = require "morph"
 
 --Load images listed on command line
-local imgs = {...}
+--local imgs = {...}
+local imgs = {".\\Images\\marker.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
 
 --Define menu of point process operations
@@ -109,7 +110,10 @@ imageMenu("Edge detection",
 imageMenu("Morphological operations",
   {
     {"Geodesic Dilate", morph.geodilate},
-    {"Geodesic Erode", morph.geoerode},
+    {"Geodesic Erode\tCtrl-M", morph.geoErode, hotkey = "C-M",
+      {{name = "Mask", type = "string", displaytype = "textbox", default = ".\\Images\\mask.png"},
+       {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+       {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
     {"Dilate", morph.dilate,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Dilate- Weiss", il.dilate,
