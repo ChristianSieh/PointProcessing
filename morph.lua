@@ -36,7 +36,7 @@ local morph = {};
 local function geoDilate( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
-  local resultImg = image.flat( markerImg.width, markerImg.height, 255 );
+  local resultImg = markerImg:clone();
   
   --Indexing for traversing neighbors
   local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
@@ -48,6 +48,17 @@ local function geoDilate( markerImg, maskFile, filterWidth, filterHeight )
   for r = -heightLowIndex, markerImg.height - 1 - heightHighIndex do
     for c = -widthLowIndex, markerImg.width - 1 - widthHighIndex do
       print(r,c);
+      --Loop over all neighbors
+      for rn = heightLowIndex, heightHighIndex do
+        for cn = widthLowIndex, widthHighIndex do
+          print(" ",r+rn,c+cn)
+          if markerImg:at(r + rn, c + cn).r == 0 then
+            resultImg:at(r,c).r = 0;
+            resultImg:at(r,c).g = 0;
+            resultImg:at(r,c).b = 0;
+          end
+        end
+      end
     end
   end
   
