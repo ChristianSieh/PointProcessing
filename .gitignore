@@ -1,3 +1,6 @@
+# Specific files
+/Images/_result.png
+
 # Compiled Lua sources
 luac.out
 
