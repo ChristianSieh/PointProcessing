@@ -33,13 +33,25 @@ local morph = {};
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function geoDilate( img, maskFile, filterWidth, filterHeight )
+local function geoDilate( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
+  local resultImg = image.flat( markerImg.width, markerImg.height, 255 );
   
+  --Indexing for traversing neighbors
+  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
+  local widthHighIndex = widthLowIndex + filterWidth - 1;
+  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
+  local heightHighIndex = heightLowIndex + filterHeight - 1;
   
+  --Loop over all pixels outside of border
+  for r = -heightLowIndex, markerImg.height - 1 - heightHighIndex do
+    for c = -widthLowIndex, markerImg.width - 1 - widthHighIndex do
+      print(r,c);
+    end
+  end
   
-  return img, maskImg;
+  return markerImg, maskImg, resultImg;
 end
 morph.geoDilate = geoDilate;
 
