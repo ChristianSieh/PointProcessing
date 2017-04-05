@@ -33,7 +33,7 @@ local morph = require "morph"
 
 --Load images listed on command line
 --local imgs = {...}
-local imgs = {".\\Images\\marker.png"}
+local imgs = {".\\Images\\marker_d.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
 
 --Define menu of point process operations
