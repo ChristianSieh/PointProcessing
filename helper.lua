@@ -374,6 +374,36 @@ end
 helper.insertionSort = insertionSort;
 
 
+--------------------------------------------------------------------------------
+--
+--  Function Name: zoom
+--
+--  Description: Makes image 10 times bigger
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    img - Original image
+--    newImg - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function zoom( img )
+  --Create new image
+  local newImg = image.flat( img.width * 10, img.height * 10 );
+  
+  --Stretch image
+  for r,c in newImg:pixels() do
+    newImg:at(r,c).r = img:at( math.floor(r/10), math.floor(c/10) ).r;
+    newImg:at(r,c).g = img:at( math.floor(r/10), math.floor(c/10) ).g;
+    newImg:at(r,c).b = img:at( math.floor(r/10), math.floor(c/10) ).b;
+  end
+  
+  return img, newImg;
+end
+helper.zoom = zoom;
+
+
 --Define help message
 helper.HelpMessage = "The following image processing techniques can be applied by selecting them from the menus.\n" ..
 "Grayscale - Converts image to grayscale image\n" ..
