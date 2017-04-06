@@ -224,13 +224,17 @@ local function recErode( markerImg, maskFile, filterWidth, filterHeight )
       for c = -widthLowIndex, markerImg.width - 1 - widthHighIndex do
         --If pixel is in mask
         if maskImg:at(r,c).r == 0 then
+          resultImg:at(r,c).r = 0;
+          resultImg:at(r,c).g = 0;
+          resultImg:at(r,c).b = 0;      
+        else
           --Loop over all neighbors
           for rn = heightLowIndex, heightHighIndex do
             for cn = widthLowIndex, widthHighIndex do
-              if markerImg:at(r + rn, c + cn).r == 0 then
-                resultImg:at(r,c).r = 0;
-                resultImg:at(r,c).g = 0;
-                resultImg:at(r,c).b = 0;
+              if markerImg:at(r + rn, c + cn).r == 255 then
+                resultImg:at(r,c).r = 255;
+                resultImg:at(r,c).g = 255;
+                resultImg:at(r,c).b = 255;
               end
             end
           end
