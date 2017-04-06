@@ -33,7 +33,7 @@ local morph = require "morph"
 
 --Load images listed on command line
 --local imgs = {...}
-local imgs = {".\\Images\\marker_d.png"}
+local imgs = {".\\Images\\marker_e.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
 
 --Define menu of point process operations
@@ -118,6 +118,10 @@ imageMenu("Morphological operations",
        {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
        {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
     {"Reconstruction by Dilation\tCtrl-Shift-N", morph.recDilate, hotkey = "C-Shift-N",
+      {{name = "Mask", type = "string", displaytype = "textbox", default = ".\\Images\\mask.png"},
+       {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+       {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
+    {"Reconstruction by Erosion\tCtrl-Shift-M", morph.recErode, hotkey = "C-Shift-M",
       {{name = "Mask", type = "string", displaytype = "textbox", default = ".\\Images\\mask.png"},
        {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
        {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},

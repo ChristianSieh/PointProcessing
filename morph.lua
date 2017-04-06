@@ -188,6 +188,72 @@ morph.recDilate = recDilate;
 
 --------------------------------------------------------------------------------
 --
+--  Function Name: recErode
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function recErode( markerImg, maskFile, filterWidth, filterHeight )
+  --Open specified mask file
+  local maskImg = image.open( maskFile );
+  local resultImg;
+  
+  --Indexing for traversing neighbors
+  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
+  local widthHighIndex = widthLowIndex + filterWidth - 1;
+  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
+  local heightHighIndex = heightLowIndex + filterHeight - 1;
+  
+  --Loop geodesic dilation until no changes
+  local changed;
+  repeat
+    --Set up new result image
+    resultImg = markerImg:clone();
+    
+    --Initialized changed flag to false
+    changed = false;
+    
+    --Loop over all pixels outside of border
+    for r = -heightLowIndex, markerImg.height - 1 - heightHighIndex do
+      for c = -widthLowIndex, markerImg.width - 1 - widthHighIndex do
+        --If pixel is in mask
+        if maskImg:at(r,c).r == 0 then
+          --Loop over all neighbors
+          for rn = heightLowIndex, heightHighIndex do
+            for cn = widthLowIndex, widthHighIndex do
+              if markerImg:at(r + rn, c + cn).r == 0 then
+                resultImg:at(r,c).r = 0;
+                resultImg:at(r,c).g = 0;
+                resultImg:at(r,c).b = 0;
+              end
+            end
+          end
+        end
+        
+        --Check if pixel was changed this iteration
+        if resultImg:at(r,c).r ~= markerImg:at(r,c).r then
+          changed = true;
+        end
+      end
+    end
+    
+    --Copy new result image into old marker image
+    markerImg = resultImg;
+  until not changed
+    
+  return markerImg;
+end
+morph.recErode = recErode;
+
+
+--------------------------------------------------------------------------------
+--
 --  Function Name: dilate
 --
 --  Description: 
