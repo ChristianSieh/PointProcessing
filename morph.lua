@@ -125,10 +125,33 @@ morph.recErode = recErode;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function dilate( img )
-
+local function dilate( img, filterWidth, filterHeight )
+  --Create starting copy of marker
+  local resultImg = img:clone();
   
-  return img;
+  --Indexing for traversing neighbors
+  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
+  local widthHighIndex = widthLowIndex + filterWidth - 1;
+  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
+  local heightHighIndex = heightLowIndex + filterHeight - 1;
+  
+  --Loop over all pixels outside of border
+  for r = -heightLowIndex, img.height - 1 - heightHighIndex do
+    for c = -widthLowIndex, img.width - 1 - widthHighIndex do
+      --Loop over all neighbors
+      for rn = heightLowIndex, heightHighIndex do
+        for cn = widthLowIndex, widthHighIndex do
+          if img:at(r + rn, c + cn).r == 0 then
+            resultImg:at(r,c).r = 0;
+            resultImg:at(r,c).g = 0;
+            resultImg:at(r,c).b = 0;
+          end
+        end
+      end
+    end
+  end
+  
+  return resultImg;
 end
 morph.dilate = dilate;
 
@@ -145,10 +168,33 @@ morph.dilate = dilate;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function erode( img )
-
+local function erode( img, filterWidth, filterHeight )
+  --Create starting copy of marker
+  local resultImg = img:clone();
   
-  return img;
+  --Indexing for traversing neighbors
+  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
+  local widthHighIndex = widthLowIndex + filterWidth - 1;
+  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
+  local heightHighIndex = heightLowIndex + filterHeight - 1;
+  
+  --Loop over all pixels outside of border
+  for r = -heightLowIndex, img.height - 1 - heightHighIndex do
+    for c = -widthLowIndex, img.width - 1 - widthHighIndex do
+      --Loop over all neighbors
+      for rn = heightLowIndex, heightHighIndex do
+        for cn = widthLowIndex, widthHighIndex do
+          if img:at(r + rn, c + cn).r == 255 then
+            resultImg:at(r,c).r = 255;
+            resultImg:at(r,c).g = 255;
+            resultImg:at(r,c).b = 255;
+          end
+        end
+      end
+    end
+  end
+  
+  return resultImg;
 end
 morph.erode = erode;
 
