@@ -15,7 +15,7 @@
 
 --Define already loaded il file
 local il = require("il");
-local helper = require("helper");
+local morphHelper = require("morphHelper");
 
 --Table to hold the point process functions
 local morph = {};
@@ -38,7 +38,7 @@ local function geoDilate( markerImg, maskFile, filterWidth, filterHeight )
   local maskImg = image.open( maskFile );
   
   --Apply geodesic dilation
-  return helper.applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight );
+  return morphHelper.applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight );
 end
 morph.geoDilate = geoDilate;
 
@@ -61,15 +61,15 @@ local function geoErode( markerImg, maskFile, filterWidth, filterHeight )
   local maskImg = image.open( maskFile );
   
   --Complement marker and mask
-  helper.complement( markerImg );
-  helper.complement( maskImg );
+  morphHelper.complement( markerImg );
+  morphHelper.complement( maskImg );
   
   --Apply geodesic dilation (dual with respect to complement)
-  local resultImg = helper.applyGeoDilate( markerImg, maskImg, filterWidth,
+  local resultImg = morphHelper.applyGeoDilate( markerImg, maskImg, filterWidth,
                                             filterHeight );
   
   --Complement result image
-  helper.complement( resultImg );
+  morphHelper.complement( resultImg );
   
   return resultImg;
 end
@@ -96,15 +96,15 @@ local function recDilate( markerImg, maskFile, filterWidth, filterHeight, comp )
   --Complement marker and mask if requested (for duals)
   if comp then
     --Complement marker and mask
-    helper.complement( markerImg );
-    helper.complement( maskImg );
+    morphHelper.complement( markerImg );
+    morphHelper.complement( maskImg );
   end
   
   --Loop until stable
   local changed;
   repeat
     --Apply geodesic dilation
-    local resultImg = helper.applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight );
+    local resultImg = morphHelper.applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight );
     
     --Compare result to marker to see if stable yet
     changed = false;
@@ -141,7 +141,7 @@ local function recErode( markerImg, maskFile, filterWidth, filterHeight )
   local resultImg = recDilate( markerImg, maskFile, filterWidth, filterHeight, true );
   
   --Complement result image
-  helper.complement( resultImg );
+  morphHelper.complement( resultImg );
   
   return resultImg;
 end

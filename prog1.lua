@@ -30,6 +30,7 @@ local edge = require "edge"
 local neighborhood = require "neighborhood"
 local noise = require "noise"
 local morph = require "morph"
+local morphHelper = require "morphHelper"
 
 --Load images listed on command line
 --local imgs = {...}
@@ -141,8 +142,8 @@ imageMenu("Morphological operations",
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Close - Weiss", il.close,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    { "Zoom In\tCtrl+Z", helper.zoomIn, hotkey = "C-Z" },
-    { "Zoom Out\tCtrl+Z", helper.zoomOut, hotkey = "C-X" }
+    { "Zoom In\tCtrl+Z", morphHelper.zoomIn, hotkey = "C-Z" },
+    { "Zoom Out\tCtrl+Z", morphHelper.zoomOut, hotkey = "C-X" }
   }
 )
 
