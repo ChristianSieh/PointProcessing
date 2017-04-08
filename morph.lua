@@ -200,7 +200,7 @@ morph.erode = erode;
 
 --------------------------------------------------------------------------------
 --
---  Function Name: open
+--  Function Name: openRec
 --
 --  Description: 
 --
@@ -211,16 +211,16 @@ morph.erode = erode;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function open( img )
+local function openRec( img, filterWidth, filterHeight, iterations )
 
   
   return img;
 end
-morph.open = open;
+morph.openRec = openRec;
 
 --------------------------------------------------------------------------------
 --
---  Function Name: close
+--  Function Name: closeRec
 --
 --  Description: 
 --
@@ -231,12 +231,13 @@ morph.open = open;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function close( img )
+local function closeRec( img, filterWidth, filterHeight, iterations )
 
   
   return img;
 end
-morph.close = close;
+morph.closeRec = closeRec;
+
 
 --Return table of miscellaneous functions
 return morph;  
