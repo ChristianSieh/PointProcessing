@@ -89,9 +89,16 @@ morph.geoErode = geoErode;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function recDilate( markerImg, maskFile, filterWidth, filterHeight )
+local function recDilate( markerImg, maskFile, filterWidth, filterHeight, comp )
   --Open specified mask file
   local maskImg = image.open( maskFile );
+  
+  --Complement marker and mask if requested (for duals)
+  if comp then
+    --Complement marker and mask
+    helper.complement( markerImg );
+    helper.complement( maskImg );
+  end
   
   --Loop until stable
   local changed;
@@ -130,58 +137,13 @@ morph.recDilate = recDilate;
 --
 --------------------------------------------------------------------------------
 local function recErode( markerImg, maskFile, filterWidth, filterHeight )
-  --Open specified mask file
-  local maskImg = image.open( maskFile );
-  local resultImg;
+  --Apply reconstruction by dilation (dual with respect to complement)
+  local resultImg = recDilate( markerImg, maskFile, filterWidth, filterHeight, true );
   
-  --Indexing for traversing neighbors
-  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
-  local widthHighIndex = widthLowIndex + filterWidth - 1;
-  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
-  local heightHighIndex = heightLowIndex + filterHeight - 1;
+  --Complement result image
+  helper.complement( resultImg );
   
-  --Loop geodesic dilation until no changes
-  local changed;
-  repeat
-    --Set up new result image
-    resultImg = markerImg:clone();
-    
-    --Initialized changed flag to false
-    changed = false;
-    
-    --Loop over all pixels outside of border
-    for r = -heightLowIndex, markerImg.height - 1 - heightHighIndex do
-      for c = -widthLowIndex, markerImg.width - 1 - widthHighIndex do
-        --If pixel is in mask
-        if maskImg:at(r,c).r == 0 then
-          resultImg:at(r,c).r = 0;
-          resultImg:at(r,c).g = 0;
-          resultImg:at(r,c).b = 0;      
-        else
-          --Loop over all neighbors
-          for rn = heightLowIndex, heightHighIndex do
-            for cn = widthLowIndex, widthHighIndex do
-              if markerImg:at(r + rn, c + cn).r == 255 then
-                resultImg:at(r,c).r = 255;
-                resultImg:at(r,c).g = 255;
-                resultImg:at(r,c).b = 255;
-              end
-            end
-          end
-        end
-        
-        --Check if pixel was changed this iteration
-        if resultImg:at(r,c).r ~= markerImg:at(r,c).r then
-          changed = true;
-        end
-      end
-    end
-    
-    --Copy new result image into old marker image
-    markerImg = resultImg;
-  until not changed
-    
-  return markerImg;
+  return resultImg;
 end
 morph.recErode = recErode;
 
