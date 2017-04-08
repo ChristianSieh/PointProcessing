@@ -212,9 +212,16 @@ morph.erode = erode;
 --
 --------------------------------------------------------------------------------
 local function openRec( img, filterWidth, filterHeight, iterations )
-
+  --Create copy of image to erode
+  local markerImg = img:clone();
   
-  return img;
+  --Perform specified number of erosions
+  for _ = 1, iterations do
+    markerImg = erode( markerImg, filterWidth, filterHeight );
+  end
+  
+  --Perform reconstruction by dilation
+  return morphHelper.applyRecDilate( markerImg, img, 3, 3 );
 end
 morph.openRec = openRec;
 
