@@ -162,5 +162,62 @@ end
 morphHelper.applyGeoDilate = applyGeoDilate;
 
 
+--------------------------------------------------------------------------------
+--
+--  Function Name: applyGeoErode
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    resultImg - The image after applying geodesic dilation
+--
+--------------------------------------------------------------------------------
+local function applyGeoErode( markerImg, maskImg, filterWidth, filterHeight )
+
+end
+morphHelper.applyGeoErode = applyGeoErode;
+
+
+--------------------------------------------------------------------------------
+--
+--  Function Name: applyRecDilate
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    resultImg - The image after applying geodesic dilation
+--
+--------------------------------------------------------------------------------
+local function applyRecDilate( markerImg, maskImg, filterWidth, filterHeight )
+
+end
+morphHelper.applyRecDilate = applyRecDilate;
+
+
+--------------------------------------------------------------------------------
+--
+--  Function Name: applyRecErode
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    resultImg - The image after applying geodesic dilation
+--
+--------------------------------------------------------------------------------
+local function applyRecErode( markerImg, maskImg, filterWidth, filterHeight )
+
+end
+morphHelper.applyRecErode = applyRecErode;
+
+
 --Return table of helper functions
 return morphHelper;  
