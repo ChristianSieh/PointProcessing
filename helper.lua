@@ -471,6 +471,10 @@ local function applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight )
             end
           end
         end
+      else
+        resultImg:at(r,c).r = 255;
+        resultImg:at(r,c).g = 255;
+        resultImg:at(r,c).b = 255;
       end
     end
   end
