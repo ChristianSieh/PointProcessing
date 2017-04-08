@@ -176,7 +176,17 @@ morphHelper.applyGeoDilate = applyGeoDilate;
 --
 --------------------------------------------------------------------------------
 local function applyGeoErode( markerImg, maskImg, filterWidth, filterHeight )
-
+  --Complement marker and mask
+  morphHelper.complement( markerImg );
+  morphHelper.complement( maskImg );
+  
+  --Apply geodesic dilation (dual with respect to complement)
+  local resultImg = morphHelper.applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight );
+  
+  --Complement result image
+  morphHelper.complement( resultImg );
+  
+  return resultImg;
 end
 morphHelper.applyGeoErode = applyGeoErode;
 
@@ -195,7 +205,25 @@ morphHelper.applyGeoErode = applyGeoErode;
 --
 --------------------------------------------------------------------------------
 local function applyRecDilate( markerImg, maskImg, filterWidth, filterHeight )
-
+  --Loop until stable
+  local changed;
+  repeat
+    --Apply geodesic dilation
+    local resultImg = morphHelper.applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight );
+    
+    --Compare result to marker to see if stable yet
+    changed = false;
+    for r,c in markerImg:pixels() do
+      if markerImg:at(r,c).r ~= resultImg:at(r,c).r then
+        changed = true;
+      end
+    end
+    
+    --Copy result into markerImg
+    markerImg = resultImg;
+  until not changed
+  
+  return markerImg;
 end
 morphHelper.applyRecDilate = applyRecDilate;
 
@@ -214,7 +242,17 @@ morphHelper.applyRecDilate = applyRecDilate;
 --
 --------------------------------------------------------------------------------
 local function applyRecErode( markerImg, maskImg, filterWidth, filterHeight )
-
+  --Complement marker and mask
+  morphHelper.complement( markerImg );
+  morphHelper.complement( maskImg );
+  
+  --Apply geodesic dilation (dual with respect to complement)
+  local resultImg = morphHelper.applyRecDilate( markerImg, maskImg, filterWidth, filterHeight );
+  
+  --Complement result image
+  morphHelper.complement( resultImg );
+  
+  return resultImg;
 end
 morphHelper.applyRecErode = applyRecErode;
 

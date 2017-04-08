@@ -60,18 +60,8 @@ local function geoErode( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
   
-  --Complement marker and mask
-  morphHelper.complement( markerImg );
-  morphHelper.complement( maskImg );
-  
-  --Apply geodesic dilation (dual with respect to complement)
-  local resultImg = morphHelper.applyGeoDilate( markerImg, maskImg, filterWidth,
-                                            filterHeight );
-  
-  --Complement result image
-  morphHelper.complement( resultImg );
-  
-  return resultImg;
+  --Apply geodesic erosion
+  return morphHelper.applyGeoErode( markerImg, maskImg, filterWidth, filterHeight );
 end
 morph.geoErode = geoErode;
 
@@ -89,36 +79,12 @@ morph.geoErode = geoErode;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function recDilate( markerImg, maskFile, filterWidth, filterHeight, comp )
+local function recDilate( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
   
-  --Complement marker and mask if requested (for duals)
-  if comp then
-    --Complement marker and mask
-    morphHelper.complement( markerImg );
-    morphHelper.complement( maskImg );
-  end
-  
-  --Loop until stable
-  local changed;
-  repeat
-    --Apply geodesic dilation
-    local resultImg = morphHelper.applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight );
-    
-    --Compare result to marker to see if stable yet
-    changed = false;
-    for r,c in markerImg:pixels() do
-      if markerImg:at(r,c).r ~= resultImg:at(r,c).r then
-        changed = true;
-      end
-    end
-    
-    --Copy result into markerImg
-    markerImg = resultImg;
-  until not changed
-  
-  return markerImg;
+  --Apply reconstruction by dilation
+  return morphHelper.applyRecDilate( markerImg, maskImg, filterWidth, filterHeight );
 end
 morph.recDilate = recDilate;
 
@@ -137,13 +103,11 @@ morph.recDilate = recDilate;
 --
 --------------------------------------------------------------------------------
 local function recErode( markerImg, maskFile, filterWidth, filterHeight )
-  --Apply reconstruction by dilation (dual with respect to complement)
-  local resultImg = recDilate( markerImg, maskFile, filterWidth, filterHeight, true );
+  --Open specified mask file
+  local maskImg = image.open( maskFile );
   
-  --Complement result image
-  morphHelper.complement( resultImg );
-  
-  return resultImg;
+  --Apply reconstruction by erosion
+  return morphHelper.applyRecErode( markerImg, maskImg, filterWidth, filterHeight );
 end
 morph.recErode = recErode;
 
