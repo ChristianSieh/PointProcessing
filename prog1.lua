@@ -34,8 +34,19 @@ local morphHelper = require "morphHelper"
 
 --Load images listed on command line
 --local imgs = {...}
-local imgs = {".\\Images\\marker_e.png"}
+local imgs = {".\\Images\\sampleTextBold.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
+
+local function pointSelector( img, pt )
+  local rgb = img:at( pt.y, pt.x )
+  io.write( ( "point: (%d,%d) = (%d,%d,%d)\n" ):format( pt.x, pt.y, rgb.r, rgb.g, rgb.b ) );
+  return img
+end
+
+local function rectSelector( img, r )
+  io.write( ( "rect: (%d, %d, %d, %d)\n" ):format( r.x, r.y, r.width, r.height ) );
+  return img
+end
 
 --Define menu of point process operations
 imageMenu("Point Processes",
@@ -132,11 +143,11 @@ imageMenu("Morphological operations",
     {"Erode", morph.erode,
        {{name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
         {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
-    {"Opening by Reconstruction", morph.openRec,
+    {"Opening by Reconstruction\tCtrl-Alt-M", morph.openRec, hotkey = "C-Alt-M",
        {{name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
         {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
         {name = "Number of Erosions", type = "number", displaytype = "spin", default = 1, min = 1, max = 65}}},
-    {"Closing by Reconstruction", morph.closeRec,
+    {"Closing by Reconstruction\tCtrl-Alt-N", morph.closeRec, hotkey = "C-Alt-N",
        {{name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
         {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
         {name = "Number of Dilations", type = "number", displaytype = "spin", default = 1, min = 1, max = 65}}},
@@ -146,10 +157,12 @@ imageMenu("Morphological operations",
 )
 
 --Define menu of segment operations
-imageMenu("Segment",
+imageMenu("Misc",
   {
     {"Binary Threshold", segment.threshold,
-      {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}}
+      {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}},
+    {"Point Selector", pointSelector, {{name="point", type = "point", default = {x=0, y=0}}}},
+    {"Rectangle Selector", rectSelector, {{name="rect", type = "rect", default = {x=0,y=0,width=0,height=0}}}}
   }
 )
 
