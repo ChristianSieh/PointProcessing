@@ -433,6 +433,53 @@ end
 helper.zoomOut = zoomOut;
 
 
+--------------------------------------------------------------------------------
+--
+--  Function Name: applyGeoDilate
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    resultImg - The image after applying geodesic dilation
+--
+--------------------------------------------------------------------------------
+local function applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight )
+  --Create starting copy of marker
+  local resultImg = markerImg:clone();
+  
+  --Indexing for traversing neighbors
+  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
+  local widthHighIndex = widthLowIndex + filterWidth - 1;
+  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
+  local heightHighIndex = heightLowIndex + filterHeight - 1;
+  
+  --Loop over all pixels outside of border
+  for r = -heightLowIndex, markerImg.height - 1 - heightHighIndex do
+    for c = -widthLowIndex, markerImg.width - 1 - widthHighIndex do
+      --If pixel is in mask
+      if maskImg:at(r,c).r == 0 then
+        --Loop over all neighbors
+        for rn = heightLowIndex, heightHighIndex do
+          for cn = widthLowIndex, widthHighIndex do
+            if markerImg:at(r + rn, c + cn).r == 0 then
+              resultImg:at(r,c).r = 0;
+              resultImg:at(r,c).g = 0;
+              resultImg:at(r,c).b = 0;
+            end
+          end
+        end
+      end
+    end
+  end
+  
+  return resultImg;
+end
+helper.applyGeoDilate = applyGeoDilate;
+
+
 --Define help message
 helper.HelpMessage = "The following image processing techniques can be applied by selecting them from the menus.\n" ..
 "Grayscale - Converts image to grayscale image\n" ..
