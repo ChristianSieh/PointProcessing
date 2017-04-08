@@ -480,6 +480,41 @@ end
 helper.applyGeoDilate = applyGeoDilate;
 
 
+--------------------------------------------------------------------------------
+--
+--  Function Name: complement
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    newImg - The image after shrinking
+--
+--------------------------------------------------------------------------------
+local function complement( img )
+  --Loop over all pixels in image
+  for r,c in img:pixels() do
+    --If pixel is black
+    if img:at(r,c).r == 0 then
+      --Set pixel to white
+      img:at(r,c).r = 255;
+      img:at(r,c).g = 255;
+      img:at(r,c).b = 255;
+      
+    --Else pixel is white
+    else
+      --Set pixel to black
+      img:at(r,c).r = 0;
+      img:at(r,c).g = 0;
+      img:at(r,c).b = 0;
+    end
+  end
+end
+helper.complement = complement;
+
+
 --Define help message
 helper.HelpMessage = "The following image processing techniques can be applied by selecting them from the menus.\n" ..
 "Grayscale - Converts image to grayscale image\n" ..
