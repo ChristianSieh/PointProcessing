@@ -29,9 +29,11 @@ local helper = require "helper"
 local edge = require "edge"
 local neighborhood = require "neighborhood"
 local noise = require "noise"
+local morph = require "morph"
 
 --Load images listed on command line
-local imgs = {...}
+--local imgs = {...}
+local imgs = {".\\Images\\marker_d.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
 
 --Define menu of point process operations
@@ -75,7 +77,7 @@ imageMenu("Histogram processes",
   }
 )
 
-imageMenu("Neigborhood ops",
+imageMenu("Neighborhood ops",
   {
     {"Smooth", neighborhood.smooth},
     {"Sharpen", neighborhood.sharpen},
@@ -102,6 +104,45 @@ imageMenu("Edge detection",
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Std Dev", edge.stdDev,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}}
+  }
+)
+
+imageMenu("Morphological operations",
+  {
+    {"Geodesic Dilate\tCtrl-N", morph.geoDilate, hotkey = "C-N",
+      {{name = "Mask", type = "string", displaytype = "textbox", default = ".\\Images\\mask.png"},
+       {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+       {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
+    {"Geodesic Erode\tCtrl-M", morph.geoErode, hotkey = "C-M",
+      {{name = "Mask", type = "string", displaytype = "textbox", default = ".\\Images\\mask.png"},
+       {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+       {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
+    {"Reconstruction by Dilation\tCtrl-Shift-N", morph.recDilate, hotkey = "C-Shift-N",
+      {{name = "Mask", type = "string", displaytype = "textbox", default = ".\\Images\\mask.png"},
+       {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+       {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
+    {"Reconstruction by Erosion\tCtrl-Shift-M", morph.recErode, hotkey = "C-Shift-M",
+      {{name = "Mask", type = "string", displaytype = "textbox", default = ".\\Images\\mask.png"},
+       {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+       {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
+    {"Dilate", morph.dilate,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Dilate- Weiss", il.dilate,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Erode", morph.erode,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Erode - Weiss", il.erode,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Open", morph.open,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Open - Weiss", il.open,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Close", morph.close,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Close - Weiss", il.close,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    { "Zoom In\tCtrl+Z", helper.zoomIn, hotkey = "C-Z" },
+    { "Zoom Out\tCtrl+Z", helper.zoomOut, hotkey = "C-X" }
   }
 )
 
