@@ -34,7 +34,7 @@ local morphHelper = require "morphHelper"
 
 --Load images listed on command line
 --local imgs = {...}
-local imgs = {".\\Images\\sampleTextBoldInverse.png"}
+local imgs = {".\\Images\\sampleTextInverse.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
 
 local function pointSelector( img, pt )
@@ -152,7 +152,8 @@ imageMenu("Morphological operations",
         {name = "SE Height", type = "number", displaytype = "spin", default = 15, min = 1, max = 65},
         {name = "Number of Dilations", type = "number", displaytype = "spin", default = 1, min = 1, max = 65}}},
     { "Zoom In\tCtrl+Z", morphHelper.zoomIn, hotkey = "C-Z" },
-    { "Zoom Out\tCtrl+Z", morphHelper.zoomOut, hotkey = "C-X" }
+    { "Zoom Out\tCtrl+Z", morphHelper.zoomOut, hotkey = "C-X" },
+    { "Complement\tCtrl+C", morphHelper.complement, hotkey = "C-C" }
   }
 )
 
