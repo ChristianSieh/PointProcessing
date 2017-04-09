@@ -380,13 +380,13 @@ local function thinMorph( img, n )
  
   for i = 0, 3 do
     -- Hit/miss down, left, up, right
-    img = morphHelper.hitOrMiss(img, filter1);
+    img = morphHelper.hitOrMiss(img, filter1, 0);
     filter1 = helper.rotateFilter(filter1);
     filter1 = helper.rotateFilter(filter1);
 
     -- If doing 8 directional then we need to hit/miss the diagonals
     if n == "8" then
-        img = morphHelper.hitOrMiss(img, filter2);
+        img = morphHelper.hitOrMiss(img, filter2, 0);
         filter2 = helper.rotateFilter(filter2);
         filter2 = helper.rotateFilter(filter2);
     end
@@ -412,7 +412,26 @@ morph.thinMorph = thinMorph;
 --
 --------------------------------------------------------------------------------
 local function thickMorph( img, n )
+  local filter1 = { { 255, 255, 255 }, { -1, 0, -1 }, { 0, 0, 0 } };
+  local filter2 = { { -1, 255, 255 }, { 0, 0, 255 }, { 0, 0, -1 } };
+ 
+  il.RGB2YIQ( img );
+ 
+  for i = 0, 3 do
+    -- Hit/miss down, left, up, right
+    img = morphHelper.hitOrMiss(img, filter1, 255);
+    filter1 = helper.rotateFilter(filter1);
+    filter1 = helper.rotateFilter(filter1);
 
+    -- If doing 8 directional then we need to hit/miss the diagonals
+    if n == "8" then
+        img = morphHelper.hitOrMiss(img, filter2, 255);
+        filter2 = helper.rotateFilter(filter2);
+        filter2 = helper.rotateFilter(filter2);
+    end
+  end
+  
+  il.YIQ2RGB( img );
   
   return img;
 end
