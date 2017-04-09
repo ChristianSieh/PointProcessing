@@ -336,5 +336,65 @@ local function close( img )
 end
 morph.close = close;
 
+--------------------------------------------------------------------------------
+--
+--  Function Name: thinMorph
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    img - The image object after having the point process performed upon it
+--    n   - 4 directional or 8 directional neighbors
+--
+--------------------------------------------------------------------------------
+local function thinMorph( img, n )
+  local filter1 = { { 0, 0, 0 }, { -1, 255, -1 }, { 255, 255, 255 } };
+  local filter2 = { { -1, 0, 0 }, { 255, 255, 0 }, { 255, 255, -1 } };
+ 
+  il.RGB2YIQ( img );
+ 
+  for i = 0, 3 do
+    -- Hit/miss down, left, up, right
+    img = helper.hitOrMiss(img, filter1);
+    filter1 = helper.rotateFilter(filter1);
+    filter1 = helper.rotateFilter(filter1);
+
+    -- If doing 8 directional then we need to hit/miss the diagonals
+    if n == "8" then
+        img = helper.hitOrMiss(img, filter2);
+        filter2 = helper.rotateFilter(filter2);
+        filter2 = helper.rotateFilter(filter2);
+    end
+  end
+  
+  il.YIQ2RGB( img );
+  
+  return img;
+end
+morph.thinMorph = thinMorph;
+
+--------------------------------------------------------------------------------
+--
+--  Function Name: thickMorph
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function thickMorph( img, n )
+
+  
+  return img;
+end
+morph.thickMorph = thickMorph;
+
 --Return table of miscellaneous functions
-return morph;  
+return morph;

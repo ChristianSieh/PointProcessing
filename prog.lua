@@ -4,7 +4,7 @@
 --  Authors: Matt Dyke & Christian Sieh
 --  Course: CSC 442 - Digital Image Processing
 --  Instructor: Dr. Weiss
---  Date: 1/22/2017
+--  Date: 4/24/2017
 --  
 --  Description: This program implements basic image processing routines. It
 --    provides a GUI where users can open, duplicate, and save images. Various
@@ -33,8 +33,29 @@ local morph = require "morph"
 
 --Load images listed on command line
 --local imgs = {...}
-local imgs = {".\\Images\\marker_d.png"}
+local imgs = {"Images/marker_d.png", "Images/Skeletonize.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
+
+
+local function pointSelector( img, pt )
+  local rgb = img:at( pt.y, pt.x )
+  io.write( ( "point: (%d,%d) = (%d,%d,%d)\n" ):format( pt.x, pt.y, rgb.r, rgb.g, rgb.b ) );
+  return img
+end
+
+local function rectSelector( img, r )
+  io.write( ( "rect: (%d, %d, %d, %d)\n" ):format( r.x, r.y, r.width, r.height ) );
+  return img
+end
+
+local function quadSelector( img, q )
+  local strs = {}
+  for i = 1, 4 do
+    strs[i] = ("(%d, %d)"):format(q[i].x, q[i].y)
+  end
+  io.write("["..table.concat(strs, ", ").."]", "\n")
+  return img
+end
 
 --Define menu of point process operations
 imageMenu("Point Processes",
@@ -141,6 +162,12 @@ imageMenu("Morphological operations",
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Close - Weiss", il.close,
       {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Morph Thin", morph.thinMorph,
+      {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
+    {"Morph Thin - Weiss", il.thinMorph,
+      {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
+    {"Morph Thick", morph.thickMorph,
+      {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
     { "Zoom In\tCtrl+Z", helper.zoomIn, hotkey = "C-Z" },
     { "Zoom Out\tCtrl+Z", helper.zoomOut, hotkey = "C-X" }
   }
@@ -162,6 +189,25 @@ imageMenu("Noise",
       {{name = "sigma", type = "number", displaytype = "textbox", default = "16.0"}}},
     {"Out-of-Range Noise Cleaning", noise.noiseClean,
       {{name = "threshold", type = "number", displaytype = "slider", default = 64, min = 0, max = 256}}}
+  }
+)
+
+imageMenu("Misc",
+  {
+    {"Point Selector", pointSelector, {{name="point", type = "point", default = {x=0, y=0}}}},
+    {"Rectangle Selector", rectSelector, {{name="rect", type = "rect", default = {x=0,y=0,width=0,height=0}}}},
+    {"Quadrilateral Selector", quadSelector, {{name="quad", type = "quad", default = {{0, 0}, {100, 0}, {100, 100}, {0, 100}}}}},
+    {"Crop Image", il.crop, {{name="rect", type = "rect", default = {x=0,y=0,width=0,height=0}}}},
+    {"Resize", il.rescale,
+      {{name = "rows", type = "number", displaytype = "spin", default = 1024, min = 1, max = 16384},
+        {name = "cols", type = "number", displaytype = "spin", default = 1024, min = 1, max = 16384}, cmarg3}},
+    {"Rotate", il.rotate,
+      {{name = "theta", type = "number", displaytype = "slider", default = 0, min = -360, max = 360}, cmarg3}},
+    {"Stat Diff", il.statDiff,
+      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65},
+        {name = "k", type = "number", displaytype = "textbox", default = "1.0"}}},
+    {"Add Image", il.add, {{name = "image", type = "image"}}},
+    {"Subtract Image", il.sub, {{name = "image", type = "image"}}},
   }
 )
 
