@@ -15,6 +15,7 @@
 
 --Define already loaded il file
 local il = require("il");
+local morphHelper = require("morphHelper");
 local helper = require("helper");
 
 --Table to hold the point process functions
@@ -36,34 +37,9 @@ local morph = {};
 local function geoDilate( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
-  local resultImg = markerImg:clone();
   
-  --Indexing for traversing neighbors
-  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
-  local widthHighIndex = widthLowIndex + filterWidth - 1;
-  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
-  local heightHighIndex = heightLowIndex + filterHeight - 1;
-  
-  --Loop over all pixels outside of border
-  for r = -heightLowIndex, markerImg.height - 1 - heightHighIndex do
-    for c = -widthLowIndex, markerImg.width - 1 - widthHighIndex do
-      --If pixel is in mask
-      if maskImg:at(r,c).r == 0 then
-        --Loop over all neighbors
-        for rn = heightLowIndex, heightHighIndex do
-          for cn = widthLowIndex, widthHighIndex do
-            if markerImg:at(r + rn, c + cn).r == 0 then
-              resultImg:at(r,c).r = 0;
-              resultImg:at(r,c).g = 0;
-              resultImg:at(r,c).b = 0;
-            end
-          end
-        end
-      end
-    end
-  end
-  
-  return markerImg, maskImg, resultImg;
+  --Apply geodesic dilation
+  return morphHelper.applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight );
 end
 morph.geoDilate = geoDilate;
 
@@ -84,38 +60,9 @@ morph.geoDilate = geoDilate;
 local function geoErode( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
-  local resultImg = markerImg:clone();
   
-  --Indexing for traversing neighbors
-  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
-  local widthHighIndex = widthLowIndex + filterWidth - 1;
-  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
-  local heightHighIndex = heightLowIndex + filterHeight - 1;
-  
-  --Loop over all pixels outside of border
-  for r = -heightLowIndex, markerImg.height - 1 - heightHighIndex do
-    for c = -widthLowIndex, markerImg.width - 1 - widthHighIndex do
-      --If pixel is in mask
-      if maskImg:at(r,c).r == 0 then
-        resultImg:at(r,c).r = 0;
-        resultImg:at(r,c).g = 0;
-        resultImg:at(r,c).b = 0;      
-      else
-        --Loop over all neighbors
-        for rn = heightLowIndex, heightHighIndex do
-          for cn = widthLowIndex, widthHighIndex do
-            if markerImg:at(r + rn, c + cn).r == 255 then
-              resultImg:at(r,c).r = 255;
-              resultImg:at(r,c).g = 255;
-              resultImg:at(r,c).b = 255;
-            end
-          end
-        end
-      end
-    end
-  end
-  
-  return markerImg, maskImg, resultImg;
+  --Apply geodesic erosion
+  return morphHelper.applyGeoErode( markerImg, maskImg, filterWidth, filterHeight );
 end
 morph.geoErode = geoErode;
 
@@ -136,52 +83,9 @@ morph.geoErode = geoErode;
 local function recDilate( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
-  local resultImg;
   
-  --Indexing for traversing neighbors
-  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
-  local widthHighIndex = widthLowIndex + filterWidth - 1;
-  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
-  local heightHighIndex = heightLowIndex + filterHeight - 1;
-  
-  --Loop geodesic dilation until no changes
-  local changed;
-  repeat
-    --Set up new result image
-    resultImg = markerImg:clone();
-    
-    --Initialized changed flag to false
-    changed = false;
-    
-    --Loop over all pixels outside of border
-    for r = -heightLowIndex, markerImg.height - 1 - heightHighIndex do
-      for c = -widthLowIndex, markerImg.width - 1 - widthHighIndex do
-        --If pixel is in mask
-        if maskImg:at(r,c).r == 0 then
-          --Loop over all neighbors
-          for rn = heightLowIndex, heightHighIndex do
-            for cn = widthLowIndex, widthHighIndex do
-              if markerImg:at(r + rn, c + cn).r == 0 then
-                resultImg:at(r,c).r = 0;
-                resultImg:at(r,c).g = 0;
-                resultImg:at(r,c).b = 0;
-              end
-            end
-          end
-        end
-        
-        --Check if pixel was changed this iteration
-        if resultImg:at(r,c).r ~= markerImg:at(r,c).r then
-          changed = true;
-        end
-      end
-    end
-    
-    --Copy new result image into old marker image
-    markerImg = resultImg;
-  until not changed
-    
-  return markerImg;
+  --Apply reconstruction by dilation
+  return morphHelper.applyRecDilate( markerImg, maskImg, filterWidth, filterHeight );
 end
 morph.recDilate = recDilate;
 
@@ -202,56 +106,9 @@ morph.recDilate = recDilate;
 local function recErode( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
-  local resultImg;
   
-  --Indexing for traversing neighbors
-  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
-  local widthHighIndex = widthLowIndex + filterWidth - 1;
-  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
-  local heightHighIndex = heightLowIndex + filterHeight - 1;
-  
-  --Loop geodesic dilation until no changes
-  local changed;
-  repeat
-    --Set up new result image
-    resultImg = markerImg:clone();
-    
-    --Initialized changed flag to false
-    changed = false;
-    
-    --Loop over all pixels outside of border
-    for r = -heightLowIndex, markerImg.height - 1 - heightHighIndex do
-      for c = -widthLowIndex, markerImg.width - 1 - widthHighIndex do
-        --If pixel is in mask
-        if maskImg:at(r,c).r == 0 then
-          resultImg:at(r,c).r = 0;
-          resultImg:at(r,c).g = 0;
-          resultImg:at(r,c).b = 0;      
-        else
-          --Loop over all neighbors
-          for rn = heightLowIndex, heightHighIndex do
-            for cn = widthLowIndex, widthHighIndex do
-              if markerImg:at(r + rn, c + cn).r == 255 then
-                resultImg:at(r,c).r = 255;
-                resultImg:at(r,c).g = 255;
-                resultImg:at(r,c).b = 255;
-              end
-            end
-          end
-        end
-        
-        --Check if pixel was changed this iteration
-        if resultImg:at(r,c).r ~= markerImg:at(r,c).r then
-          changed = true;
-        end
-      end
-    end
-    
-    --Copy new result image into old marker image
-    markerImg = resultImg;
-  until not changed
-    
-  return markerImg;
+  --Apply reconstruction by erosion
+  return morphHelper.applyRecErode( markerImg, maskImg, filterWidth, filterHeight );
 end
 morph.recErode = recErode;
 
@@ -269,10 +126,33 @@ morph.recErode = recErode;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function dilate( img )
-
+local function dilate( img, filterWidth, filterHeight )
+  --Create starting copy of marker
+  local resultImg = img:clone();
   
-  return img;
+  --Indexing for traversing neighbors
+  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
+  local widthHighIndex = widthLowIndex + filterWidth - 1;
+  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
+  local heightHighIndex = heightLowIndex + filterHeight - 1;
+  
+  --Loop over all pixels outside of border
+  for r = -heightLowIndex, img.height - 1 - heightHighIndex do
+    for c = -widthLowIndex, img.width - 1 - widthHighIndex do
+      --Loop over all neighbors
+      for rn = heightLowIndex, heightHighIndex do
+        for cn = widthLowIndex, widthHighIndex do
+          if img:at(r + rn, c + cn).r == 0 then
+            resultImg:at(r,c).r = 0;
+            resultImg:at(r,c).g = 0;
+            resultImg:at(r,c).b = 0;
+          end
+        end
+      end
+    end
+  end
+  
+  return resultImg;
 end
 morph.dilate = dilate;
 
@@ -289,16 +169,39 @@ morph.dilate = dilate;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function erode( img )
-
+local function erode( img, filterWidth, filterHeight )
+  --Create starting copy of marker
+  local resultImg = img:clone();
   
-  return img;
+  --Indexing for traversing neighbors
+  local widthLowIndex = -math.floor( ( filterWidth -1 ) / 2 );
+  local widthHighIndex = widthLowIndex + filterWidth - 1;
+  local heightLowIndex = -math.floor( ( filterHeight -1 ) / 2 );
+  local heightHighIndex = heightLowIndex + filterHeight - 1;
+  
+  --Loop over all pixels outside of border
+  for r = -heightLowIndex, img.height - 1 - heightHighIndex do
+    for c = -widthLowIndex, img.width - 1 - widthHighIndex do
+      --Loop over all neighbors
+      for rn = heightLowIndex, heightHighIndex do
+        for cn = widthLowIndex, widthHighIndex do
+          if img:at(r + rn, c + cn).r == 255 then
+            resultImg:at(r,c).r = 255;
+            resultImg:at(r,c).g = 255;
+            resultImg:at(r,c).b = 255;
+          end
+        end
+      end
+    end
+  end
+  
+  return resultImg;
 end
 morph.erode = erode;
 
 --------------------------------------------------------------------------------
 --
---  Function Name: open
+--  Function Name: openRec
 --
 --  Description: 
 --
@@ -309,16 +212,23 @@ morph.erode = erode;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function open( img )
-
+local function openRec( img, filterWidth, filterHeight, iterations )
+  --Create copy of image to erode
+  local markerImg = img:clone();
   
-  return img;
+  --Perform specified number of erosions
+  for _ = 1, iterations do
+    markerImg = erode( markerImg, filterWidth, filterHeight );
+  end
+  
+  --Perform reconstruction by dilation
+  return morphHelper.applyRecDilate( markerImg, img, 3, 3 );
 end
-morph.open = open;
+morph.openRec = openRec;
 
 --------------------------------------------------------------------------------
 --
---  Function Name: close
+--  Function Name: closeRec
 --
 --  Description: 
 --
@@ -329,12 +239,20 @@ morph.open = open;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function close( img )
-
+local function closeRec( img, filterWidth, filterHeight, iterations )
+  --Create copy of image to dilate
+  local markerImg = img:clone();
   
-  return img;
+  --Perform specified number of dilations
+  for _ = 1, iterations do
+    markerImg = dilate( markerImg, filterWidth, filterHeight );
+  end
+  
+  --Perform reconstruction by erosion
+  return morphHelper.applyRecErode( markerImg, img, 3, 3 );
 end
-morph.close = close;
+morph.closeRec = closeRec;
+
 
 --------------------------------------------------------------------------------
 --
@@ -358,13 +276,13 @@ local function thinMorph( img, n )
  
   for i = 0, 3 do
     -- Hit/miss down, left, up, right
-    img = helper.hitOrMiss(img, filter1);
+    img = morphHelper.hitOrMiss(img, filter1);
     filter1 = helper.rotateFilter(filter1);
     filter1 = helper.rotateFilter(filter1);
 
     -- If doing 8 directional then we need to hit/miss the diagonals
     if n == "8" then
-        img = helper.hitOrMiss(img, filter2);
+        img = morphHelper.hitOrMiss(img, filter2);
         filter2 = helper.rotateFilter(filter2);
         filter2 = helper.rotateFilter(filter2);
     end

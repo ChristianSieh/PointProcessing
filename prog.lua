@@ -30,12 +30,13 @@ local edge = require "edge"
 local neighborhood = require "neighborhood"
 local noise = require "noise"
 local morph = require "morph"
+local morphHelper = require "morphHelper"
 
 --Load images listed on command line
 --local imgs = {...}
+
 local imgs = {"Images/marker_d.png", "Images/Skeletonize.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
-
 
 local function pointSelector( img, pt )
   local rgb = img:at( pt.y, pt.x )
@@ -45,15 +46,6 @@ end
 
 local function rectSelector( img, r )
   io.write( ( "rect: (%d, %d, %d, %d)\n" ):format( r.x, r.y, r.width, r.height ) );
-  return img
-end
-
-local function quadSelector( img, q )
-  local strs = {}
-  for i = 1, 4 do
-    strs[i] = ("(%d, %d)"):format(q[i].x, q[i].y)
-  end
-  io.write("["..table.concat(strs, ", ").."]", "\n")
   return img
 end
 
@@ -147,37 +139,38 @@ imageMenu("Morphological operations",
        {name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
        {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
     {"Dilate", morph.dilate,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Dilate- Weiss", il.dilate,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+       {{name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+        {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
     {"Erode", morph.erode,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Erode - Weiss", il.erode,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Open", morph.open,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Open - Weiss", il.open,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Close", morph.close,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Close - Weiss", il.close,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+       {{name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+        {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
+    {"Opening by Reconstruction\tCtrl-Alt-M", morph.openRec, hotkey = "C-Alt-M",
+       {{name = "SE Width", type = "number", displaytype = "spin", default = 1, min = 1, max = 65},
+        {name = "SE Height", type = "number", displaytype = "spin", default = 15, min = 1, max = 65},
+        {name = "Number of Erosions", type = "number", displaytype = "spin", default = 1, min = 1, max = 65}}},
+    {"Closing by Reconstruction\tCtrl-Alt-N", morph.closeRec, hotkey = "C-Alt-N",
+       {{name = "SE Width", type = "number", displaytype = "spin", default = 1, min = 1, max = 65},
+        {name = "SE Height", type = "number", displaytype = "spin", default = 15, min = 1, max = 65},
+        {name = "Number of Dilations", type = "number", displaytype = "spin", default = 1, min = 1, max = 65}}},
     {"Morph Thin", morph.thinMorph,
       {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
     {"Morph Thin - Weiss", il.thinMorph,
       {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
     {"Morph Thick", morph.thickMorph,
       {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
-    { "Zoom In\tCtrl+Z", helper.zoomIn, hotkey = "C-Z" },
-    { "Zoom Out\tCtrl+Z", helper.zoomOut, hotkey = "C-X" }
+    { "Zoom In\tCtrl+Z", morphHelper.zoomIn, hotkey = "C-Z" },
+    { "Zoom Out\tCtrl+Z", morphHelper.zoomOut, hotkey = "C-X" },
+    { "Complement\tCtrl+C", morphHelper.complement, hotkey = "C-C" }
   }
 )
 
 --Define menu of segment operations
-imageMenu("Segment",
+imageMenu("Misc",
   {
     {"Binary Threshold", segment.threshold,
-      {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}}
+      {{name = "threshold", type = "number", displaytype = "slider", default = 128, min = 0, max = 255}}},
+    {"Point Selector", pointSelector, {{name="point", type = "point", default = {x=0, y=0}}}},
+    {"Rectangle Selector", rectSelector, {{name="rect", type = "rect", default = {x=0,y=0,width=0,height=0}}}}
   }
 )
 
@@ -189,25 +182,6 @@ imageMenu("Noise",
       {{name = "sigma", type = "number", displaytype = "textbox", default = "16.0"}}},
     {"Out-of-Range Noise Cleaning", noise.noiseClean,
       {{name = "threshold", type = "number", displaytype = "slider", default = 64, min = 0, max = 256}}}
-  }
-)
-
-imageMenu("Misc",
-  {
-    {"Point Selector", pointSelector, {{name="point", type = "point", default = {x=0, y=0}}}},
-    {"Rectangle Selector", rectSelector, {{name="rect", type = "rect", default = {x=0,y=0,width=0,height=0}}}},
-    {"Quadrilateral Selector", quadSelector, {{name="quad", type = "quad", default = {{0, 0}, {100, 0}, {100, 100}, {0, 100}}}}},
-    {"Crop Image", il.crop, {{name="rect", type = "rect", default = {x=0,y=0,width=0,height=0}}}},
-    {"Resize", il.rescale,
-      {{name = "rows", type = "number", displaytype = "spin", default = 1024, min = 1, max = 16384},
-        {name = "cols", type = "number", displaytype = "spin", default = 1024, min = 1, max = 16384}, cmarg3}},
-    {"Rotate", il.rotate,
-      {{name = "theta", type = "number", displaytype = "slider", default = 0, min = -360, max = 360}, cmarg3}},
-    {"Stat Diff", il.statDiff,
-      {{name = "width", type = "number", displaytype = "spin", default = 3, min = 0, max = 65},
-        {name = "k", type = "number", displaytype = "textbox", default = "1.0"}}},
-    {"Add Image", il.add, {{name = "image", type = "image"}}},
-    {"Subtract Image", il.sub, {{name = "image", type = "image"}}},
   }
 )
 

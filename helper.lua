@@ -205,7 +205,7 @@ helper.contPseudoLUT = contPseudoLUT;
 --    newImg - The image object after being smoothed
 --
 --------------------------------------------------------------------------------
-local function applyConvolutionFilter( img, filter, filterSize, recenter )
+local function applyConvolutionFilter( img, filter, filterSize, recenter, adjust )
   --New blank image to save results as processed
   local newImg = img:clone();
   
@@ -229,11 +229,11 @@ local function applyConvolutionFilter( img, filter, filterSize, recenter )
     --Recenter to gray (128) if specified
     if recenter then
       temp = temp + 128;
-    else
-      --Set magnitude
-      if temp < 0 then
-        temp = -temp;
-      end
+    end
+    
+    --Adjust values if specified
+    if adjust and temp < 0 then
+      temp = -temp;
     end
     
     --Trim result
@@ -372,116 +372,6 @@ local function insertionSort( list, length )
   end
 end
 helper.insertionSort = insertionSort;
-
-
---------------------------------------------------------------------------------
---
---  Function Name: zoomIn
---
---  Description: Makes image 10 times bigger
---
---  Parameters:
---    img - An image object from ip.lua representing the image to process
---
---  Return: 
---    newImg - The image after growing
---
---------------------------------------------------------------------------------
-local function zoomIn( img )
-  --Create new image
-  local newImg = image.flat( img.width * 10, img.height * 10 );
-  
-  --Stretch image
-  for r,c in newImg:pixels() do
-    newImg:at(r,c).r = img:at( math.floor(r/10), math.floor(c/10) ).r;
-    newImg:at(r,c).g = img:at( math.floor(r/10), math.floor(c/10) ).g;
-    newImg:at(r,c).b = img:at( math.floor(r/10), math.floor(c/10) ).b;
-  end
-  
-  return newImg;
-end
-helper.zoomIn = zoomIn;
-
-
---------------------------------------------------------------------------------
---
---  Function Name: zoomOut
---
---  Description: Makes image 10 times smaller
---
---  Parameters:
---    img - An image object from ip.lua representing the image to process
---
---  Return: 
---    newImg - The image after shrinking
---
---------------------------------------------------------------------------------
-local function zoomOut( img )
-  --Create new image
-  local newImg = image.flat( math.floor( img.width / 10 ),
-                             math.floor( img.height / 10 ) );
-  
-  --Shrink image
-  for r,c in newImg:pixels() do
-    newImg:at(r,c).r = img:at( r*10, c*10 ).r;
-    newImg:at(r,c).g = img:at( r*10, c*10 ).g;
-    newImg:at(r,c).b = img:at( r*10, c*10 ).b;
-  end
-  
-  return newImg;
-end
-helper.zoomOut = zoomOut;
-
---------------------------------------------------------------------------------
---
---  Function Name: hitOrMiss
---
---  Description: 
---
---  Parameters:
---    img - An image object from ip.lua representing the image to process
---
---  Return: 
---    newImg - The image after shrinking
---    structElem - The structuring element to be used for hit/miss
---
---------------------------------------------------------------------------------
-local function hitOrMiss( img, structElem )
-  --Loop over each pixel in the image
-  local newImg = img:clone();
-
-  --Indexing array for looping over structuring element
-  local index = {};
-  for i = 1, 3 do
-    index[i] = i - 2;
-  end
-  
-  --Loop over all pixels, ignoring border due to filter size
-  for r,c in newImg:pixels( 1 ) do
-    local valid = true;
-    local x = 1
-    
-    --While we have a valid match to our SE, loop through SE
-    while valid and x <= 3 do
-        for y = 1, 3 do
-          if structElem[x][y] ~= -1 and img:at(r + index[x], c + index[y] ).i ~= structElem[x][y] then
-              valid = false;
-          end
-        end
-        x = x + 1;
-    end
-    
-    --If hit/miss passed then update value to black otherwise leave it
-    if valid then
-        newImg:at(r,c).i = 0;
-    else
-        newImg:at(r,c).i = img:at(r,c).i;
-    end
-  end
-
-  return newImg;
-end
-helper.hitOrMiss = hitOrMiss;
 
 --Define help message
 helper.HelpMessage = "The following image processing techniques can be applied by selecting them from the menus.\n" ..
