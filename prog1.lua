@@ -151,6 +151,7 @@ imageMenu("Morphological operations",
        {{name = "SE Width", type = "number", displaytype = "spin", default = 1, min = 1, max = 65},
         {name = "SE Height", type = "number", displaytype = "spin", default = 15, min = 1, max = 65},
         {name = "Number of Dilations", type = "number", displaytype = "spin", default = 1, min = 1, max = 65}}},
+    { "Hole Filling", morph.holeFill },
     { "Zoom In\tCtrl+Z", morphHelper.zoomIn, hotkey = "C-Z" },
     { "Zoom Out\tCtrl+Z", morphHelper.zoomOut, hotkey = "C-X" },
     { "Complement\tCtrl+C", morphHelper.complement, hotkey = "C-C" }

@@ -155,6 +155,7 @@ local function dilate( img, filterWidth, filterHeight )
 end
 morph.dilate = dilate;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: erode
@@ -198,6 +199,7 @@ local function erode( img, filterWidth, filterHeight )
 end
 morph.erode = erode;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: openRec
@@ -225,6 +227,7 @@ local function openRec( img, filterWidth, filterHeight, iterations )
 end
 morph.openRec = openRec;
 
+
 --------------------------------------------------------------------------------
 --
 --  Function Name: closeRec
@@ -251,6 +254,25 @@ local function closeRec( img, filterWidth, filterHeight, iterations )
   return morphHelper.applyRecErode( markerImg, img, 3, 3 );
 end
 morph.closeRec = closeRec;
+
+
+--------------------------------------------------------------------------------
+--
+--  Function Name: holeFill
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function holeFill( img )
+  
+end
+morph.holeFill = holeFill;
 
 
 --Return table of miscellaneous functions
