@@ -239,9 +239,16 @@ morph.openRec = openRec;
 --
 --------------------------------------------------------------------------------
 local function closeRec( img, filterWidth, filterHeight, iterations )
-
+  --Create copy of image to dilate
+  local markerImg = img:clone();
   
-  return img;
+  --Perform specified number of dilations
+  for _ = 1, iterations do
+    markerImg = dilate( markerImg, filterWidth, filterHeight );
+  end
+  
+  --Perform reconstruction by erosion
+  return morphHelper.applyRecErode( markerImg, img, 3, 3 );
 end
 morph.closeRec = closeRec;
 

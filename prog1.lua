@@ -34,7 +34,7 @@ local morphHelper = require "morphHelper"
 
 --Load images listed on command line
 --local imgs = {...}
-local imgs = {".\\Images\\sampleTextBold.png"}
+local imgs = {".\\Images\\sampleTextBoldInverse.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
 
 local function pointSelector( img, pt )
@@ -144,12 +144,12 @@ imageMenu("Morphological operations",
        {{name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
         {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65}}},
     {"Opening by Reconstruction\tCtrl-Alt-M", morph.openRec, hotkey = "C-Alt-M",
-       {{name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
-        {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+       {{name = "SE Width", type = "number", displaytype = "spin", default = 1, min = 1, max = 65},
+        {name = "SE Height", type = "number", displaytype = "spin", default = 15, min = 1, max = 65},
         {name = "Number of Erosions", type = "number", displaytype = "spin", default = 1, min = 1, max = 65}}},
     {"Closing by Reconstruction\tCtrl-Alt-N", morph.closeRec, hotkey = "C-Alt-N",
-       {{name = "SE Width", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
-        {name = "SE Height", type = "number", displaytype = "spin", default = 3, min = 1, max = 65},
+       {{name = "SE Width", type = "number", displaytype = "spin", default = 1, min = 1, max = 65},
+        {name = "SE Height", type = "number", displaytype = "spin", default = 15, min = 1, max = 65},
         {name = "Number of Dilations", type = "number", displaytype = "spin", default = 1, min = 1, max = 65}}},
     { "Zoom In\tCtrl+Z", morphHelper.zoomIn, hotkey = "C-Z" },
     { "Zoom Out\tCtrl+Z", morphHelper.zoomOut, hotkey = "C-X" }
