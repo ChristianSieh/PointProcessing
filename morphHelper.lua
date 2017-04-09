@@ -274,7 +274,7 @@ morphHelper.applyRecErode = applyRecErode;
 --    structElem - The structuring element to be used for hit/miss
 --
 --------------------------------------------------------------------------------
-local function hitOrMiss( img, structElem )
+local function hitOrMiss( img, structElem, value )
   --Loop over each pixel in the image
   local newImg = img:clone();
 
@@ -301,7 +301,7 @@ local function hitOrMiss( img, structElem )
     
     --If hit/miss passed then update value to black otherwise leave it
     if valid then
-        newImg:at(r,c).i = 0;
+        newImg:at(r,c).i = value;
     else
         newImg:at(r,c).i = img:at(r,c).i;
     end
