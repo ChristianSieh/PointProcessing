@@ -4,7 +4,7 @@
 --  Authors: Matt Dyke & Christian Sieh
 --  Course: CSC 442 - Digital Image Processing
 --  Instructor: Dr. Weiss
---  Date: 1/22/2017
+--  Date: 4/24/2017
 --  
 --  Description: This program implements basic image processing routines. It
 --    provides a GUI where users can open, duplicate, and save images. Various
@@ -34,7 +34,8 @@ local morphHelper = require "morphHelper"
 
 --Load images listed on command line
 --local imgs = {...}
-local imgs = {".\\Images\\sampleTextBold.png"}
+
+local imgs = {"Images/marker_d.png", "Images/Skeletonize.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
 
 local function pointSelector( img, pt )
@@ -152,6 +153,12 @@ imageMenu("Morphological operations",
         {name = "SE Height", type = "number", displaytype = "spin", default = 15, min = 1, max = 65},
         {name = "Number of Dilations", type = "number", displaytype = "spin", default = 1, min = 1, max = 65}}},
     { "Hole Filling", morph.holeFill },
+    {"Morph Thin", morph.thinMorph,
+      {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
+    {"Morph Thin - Weiss", il.thinMorph,
+      {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
+    {"Morph Thick", morph.thickMorph,
+      {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
     { "Zoom In\tCtrl+Z", morphHelper.zoomIn, hotkey = "C-Z" },
     { "Zoom Out\tCtrl+Z", morphHelper.zoomOut, hotkey = "C-X" },
     { "Complement\tCtrl+C", morphHelper.complement, hotkey = "C-C" }

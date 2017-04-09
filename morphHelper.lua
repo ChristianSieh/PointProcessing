@@ -260,6 +260,56 @@ local function applyRecErode( markerImg, maskImg, filterWidth, filterHeight )
 end
 morphHelper.applyRecErode = applyRecErode;
 
+--------------------------------------------------------------------------------
+--
+--  Function Name: hitOrMiss
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    newImg - The image after shrinking
+--    structElem - The structuring element to be used for hit/miss
+--
+--------------------------------------------------------------------------------
+local function hitOrMiss( img, structElem )
+  --Loop over each pixel in the image
+  local newImg = img:clone();
+
+  --Indexing array for looping over structuring element
+  local index = {};
+  for i = 1, 3 do
+    index[i] = i - 2;
+  end
+  
+  --Loop over all pixels, ignoring border due to filter size
+  for r,c in newImg:pixels( 1 ) do
+    local valid = true;
+    local x = 1
+    
+    --While we have a valid match to our SE, loop through SE
+    while valid and x <= 3 do
+        for y = 1, 3 do
+          if structElem[x][y] ~= -1 and img:at(r + index[x], c + index[y] ).i ~= structElem[x][y] then
+              valid = false;
+          end
+        end
+        x = x + 1;
+    end
+    
+    --If hit/miss passed then update value to black otherwise leave it
+    if valid then
+        newImg:at(r,c).i = 0;
+    else
+        newImg:at(r,c).i = img:at(r,c).i;
+    end
+  end
+
+  return newImg;
+end
+morphHelper.hitOrMiss = hitOrMiss;
 
 --Return table of helper functions
 return morphHelper;  

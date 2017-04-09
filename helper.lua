@@ -373,7 +373,6 @@ local function insertionSort( list, length )
 end
 helper.insertionSort = insertionSort;
 
-
 --Define help message
 helper.HelpMessage = "The following image processing techniques can be applied by selecting them from the menus.\n" ..
 "Grayscale - Converts image to grayscale image\n" ..
