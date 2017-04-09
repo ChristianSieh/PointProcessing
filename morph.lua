@@ -305,6 +305,61 @@ morph.holeFill = holeFill;
 
 --------------------------------------------------------------------------------
 --
+--  Function Name: borderClearing
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function borderClearing( img )
+  --Set up marker image
+  local row_max, col_max = img.height - 1, img.width - 1;
+  local markerImg = img:clone();
+  local resultImg = img:clone();
+  for r,c in img:pixels() do
+    --If border pixel
+    if r == 0 or r == row_max or c == 0 or c == col_max then
+      --Set to inverse of image
+      markerImg:at(r,c).r = img:at(r,c).r;
+      markerImg:at(r,c).g = img:at(r,c).g;
+      markerImg:at(r,c).b = img:at(r,c).b;
+    
+    --If interior pixel
+    else
+      --Remove from set
+      markerImg:at(r,c).r = 255;
+      markerImg:at(r,c).g = 255;
+      markerImg:at(r,c).b = 255;
+    end
+  end
+  
+  --Perform reconstruction by dilation
+  local recImg = morphHelper.applyRecDilate( markerImg, img, 3, 3 );
+  
+  --Subtract result from original image
+  for r,c in resultImg:pixels() do
+    --resultImg:at(r,c).r = img:at(r,c).r - recImg:at(r,c).r;
+    --resultImg:at(r,c).g = img:at(r,c).g - recImg:at(r,c).g;
+    --resultImg:at(r,c).b = img:at(r,c).b - recImg:at(r,c).b;
+    if recImg:at(r,c).r == 0 then
+      resultImg:at(r,c).r = 255;
+      resultImg:at(r,c).g = 255;
+      resultImg:at(r,c).b = 255;
+    end
+  end
+  
+  return resultImg;
+end
+morph.borderClearing = borderClearing;
+
+
+--------------------------------------------------------------------------------
+--
 --  Function Name: thinMorph
 --
 --  Description: 

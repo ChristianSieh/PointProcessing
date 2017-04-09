@@ -35,7 +35,7 @@ local morphHelper = require "morphHelper"
 --Load images listed on command line
 --local imgs = {...}
 
-local imgs = {"Images/marker_d.png", "Images/Skeletonize.png"}
+local imgs = {"Images/sampleTextBold.png", "Images/Skeletonize.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
 
 local function pointSelector( img, pt )
@@ -153,6 +153,7 @@ imageMenu("Morphological operations",
         {name = "SE Height", type = "number", displaytype = "spin", default = 15, min = 1, max = 65},
         {name = "Number of Dilations", type = "number", displaytype = "spin", default = 1, min = 1, max = 65}}},
     { "Hole Filling", morph.holeFill },
+    { "Border Clearing", morph.borderClearing },
     {"Morph Thin", morph.thinMorph,
       {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
     {"Morph Thin - Weiss", il.thinMorph,
