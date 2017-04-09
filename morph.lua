@@ -270,7 +270,34 @@ morph.closeRec = closeRec;
 --
 --------------------------------------------------------------------------------
 local function holeFill( img )
+  --Set up mask image
+  local maskImg = morphHelper.complement( img );
   
+  --Set up marker image
+  local row_max, col_max = img.height - 1, img.width - 1;
+  local markerImg = img:clone();
+  for r,c in img:pixels() do
+    --If border pixel
+    if r == 0 or r == row_max or c == 0 or c == col_max then
+      --Set to inverse of image
+      markerImg:at(r,c).r = 255 - img:at(r,c).r;
+      markerImg:at(r,c).g = 255 - img:at(r,c).g;
+      markerImg:at(r,c).b = 255 - img:at(r,c).b;
+    
+    --If interior pixel
+    else
+      --Remove from set
+      markerImg:at(r,c).r = 255;
+      markerImg:at(r,c).g = 255;
+      markerImg:at(r,c).b = 255;
+    end
+  end
+  
+  --Perform reconstruction by dilation
+  local resultImg = morphHelper.applyRecDilate( markerImg, maskImg, 3, 3 );
+  
+  --Return complement of result
+  return morphHelper.complement( resultImg );
 end
 morph.holeFill = holeFill;
 
