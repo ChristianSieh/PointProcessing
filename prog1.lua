@@ -34,7 +34,7 @@ local morphHelper = require "morphHelper"
 
 --Load images listed on command line
 --local imgs = {...}
-local imgs = {".\\Images\\sampleTextInverse.png"}
+local imgs = {".\\Images\\holeFilling.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
 
 local function pointSelector( img, pt )
