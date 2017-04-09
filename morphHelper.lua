@@ -90,23 +90,27 @@ morphHelper.zoomOut = zoomOut;
 --
 --------------------------------------------------------------------------------
 local function complement( img )
+  local resultImg = image.flat( img.width, img.height );
+  
   --Loop over all pixels in image
   for r,c in img:pixels() do
     --If pixel is black
     if img:at(r,c).r == 0 then
       --Set pixel to white
-      img:at(r,c).r = 255;
-      img:at(r,c).g = 255;
-      img:at(r,c).b = 255;
+      resultImg:at(r,c).r = 255;
+      resultImg:at(r,c).g = 255;
+      resultImg:at(r,c).b = 255;
       
     --Else pixel is white
     else
       --Set pixel to black
-      img:at(r,c).r = 0;
-      img:at(r,c).g = 0;
-      img:at(r,c).b = 0;
+      resultImg:at(r,c).r = 0;
+      resultImg:at(r,c).g = 0;
+      resultImg:at(r,c).b = 0;
     end
   end
+  
+  return resultImg;
 end
 morphHelper.complement = complement;
 
@@ -177,14 +181,14 @@ morphHelper.applyGeoDilate = applyGeoDilate;
 --------------------------------------------------------------------------------
 local function applyGeoErode( markerImg, maskImg, filterWidth, filterHeight )
   --Complement marker and mask
-  morphHelper.complement( markerImg );
-  morphHelper.complement( maskImg );
+  markerImg = morphHelper.complement( markerImg );
+  maskImg = morphHelper.complement( maskImg );
   
   --Apply geodesic dilation (dual with respect to complement)
   local resultImg = morphHelper.applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight );
   
   --Complement result image
-  morphHelper.complement( resultImg );
+  resultImg = morphHelper.complement( resultImg );
   
   return resultImg;
 end
@@ -243,14 +247,14 @@ morphHelper.applyRecDilate = applyRecDilate;
 --------------------------------------------------------------------------------
 local function applyRecErode( markerImg, maskImg, filterWidth, filterHeight )
   --Complement marker and mask
-  morphHelper.complement( markerImg );
-  morphHelper.complement( maskImg );
+  markerImg = morphHelper.complement( markerImg );
+  maskImg = morphHelper.complement( maskImg );
   
   --Apply geodesic dilation (dual with respect to complement)
   local resultImg = morphHelper.applyRecDilate( markerImg, maskImg, filterWidth, filterHeight );
   
   --Complement result image
-  morphHelper.complement( resultImg );
+  resultImg = morphHelper.complement( resultImg );
   
   return resultImg;
 end
