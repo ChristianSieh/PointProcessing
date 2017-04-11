@@ -6,15 +6,7 @@
 --  Instructor: Dr. Weiss
 --  Date: 4/24/2017
 --  
---  Description: This program implements basic image processing routines. It
---    provides a GUI where users can open, duplicate, and save images. Various
---    image processing routines can be applied to these images, such as 
---    adjusting brightness, contrast, and colors.
---
---    This file is used as the start file for the program. It defines the 
---    various menus used in the program, including one each for point processes,
---    histogram operations, segmenting operations, and a help menu. Once these
---    menus have been set up, it launches the program.
+--  Description: 
 --  
 --------------------------------------------------------------------------------
 
@@ -35,7 +27,7 @@ local morphHelper = require "morphHelper"
 --Load images listed on command line
 --local imgs = {...}
 
-local imgs = {"Images/sampleTextBold.png", "Images/Skeletonize.png"}
+local imgs = {"Images/sampleTextInverseBold.png", "Images/Skeletonize.png"}
 for i, fname in ipairs(imgs) do loadImage(fname) end
 
 local function pointSelector( img, pt )

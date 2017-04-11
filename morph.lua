@@ -142,10 +142,10 @@ local function dilate( img, filterWidth, filterHeight )
       --Loop over all neighbors
       for rn = heightLowIndex, heightHighIndex do
         for cn = widthLowIndex, widthHighIndex do
-          if img:at(r + rn, c + cn).r == 0 then
-            resultImg:at(r,c).r = 0;
-            resultImg:at(r,c).g = 0;
-            resultImg:at(r,c).b = 0;
+          if img:at(r + rn, c + cn).r == 255 then
+            resultImg:at(r,c).r = 255;
+            resultImg:at(r,c).g = 255;
+            resultImg:at(r,c).b = 255;
           end
         end
       end
@@ -186,10 +186,10 @@ local function erode( img, filterWidth, filterHeight )
       --Loop over all neighbors
       for rn = heightLowIndex, heightHighIndex do
         for cn = widthLowIndex, widthHighIndex do
-          if img:at(r + rn, c + cn).r == 255 then
-            resultImg:at(r,c).r = 255;
-            resultImg:at(r,c).g = 255;
-            resultImg:at(r,c).b = 255;
+          if img:at(r + rn, c + cn).r == 0 then
+            resultImg:at(r,c).r = 0;
+            resultImg:at(r,c).g = 0;
+            resultImg:at(r,c).b = 0;
           end
         end
       end
@@ -288,9 +288,9 @@ local function holeFill( img )
     --If interior pixel
     else
       --Remove from set
-      markerImg:at(r,c).r = 255;
-      markerImg:at(r,c).g = 255;
-      markerImg:at(r,c).b = 255;
+      markerImg:at(r,c).r = 0;
+      markerImg:at(r,c).g = 0;
+      markerImg:at(r,c).b = 0;
     end
   end
   
@@ -332,9 +332,9 @@ local function borderClearing( img )
     --If interior pixel
     else
       --Remove from set
-      markerImg:at(r,c).r = 255;
-      markerImg:at(r,c).g = 255;
-      markerImg:at(r,c).b = 255;
+      markerImg:at(r,c).r = 0;
+      markerImg:at(r,c).g = 0;
+      markerImg:at(r,c).b = 0;
     end
   end
   
@@ -343,14 +343,9 @@ local function borderClearing( img )
   
   --Subtract result from original image
   for r,c in resultImg:pixels() do
-    --resultImg:at(r,c).r = img:at(r,c).r - recImg:at(r,c).r;
-    --resultImg:at(r,c).g = img:at(r,c).g - recImg:at(r,c).g;
-    --resultImg:at(r,c).b = img:at(r,c).b - recImg:at(r,c).b;
-    if recImg:at(r,c).r == 0 then
-      resultImg:at(r,c).r = 255;
-      resultImg:at(r,c).g = 255;
-      resultImg:at(r,c).b = 255;
-    end
+    resultImg:at(r,c).r = img:at(r,c).r - recImg:at(r,c).r;
+    resultImg:at(r,c).g = img:at(r,c).g - recImg:at(r,c).g;
+    resultImg:at(r,c).b = img:at(r,c).b - recImg:at(r,c).b;
   end
   
   return resultImg;
