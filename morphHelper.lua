@@ -6,7 +6,8 @@
 --  Instructor: Dr. Weiss
 --  Date: 4/8/2017
 --  
---  Description: 
+--  Description: This file contains many of the helper functions that are used
+--    in the implementation of the morphological operators.
 --  
 --------------------------------------------------------------------------------
 
@@ -21,7 +22,10 @@ local morphHelper = {};
 --
 --  Function Name: zoomIn
 --
---  Description: Makes image 10 times bigger
+--  Description: Makes image 10 times bigger. This function stretches the width
+--    and height of the image by making 10 copies of each pixel in each
+--    direction. This function is only intended to be used to zoom in on the
+--    test images for morphological operators.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -50,7 +54,10 @@ morphHelper.zoomIn = zoomIn;
 --
 --  Function Name: zoomOut
 --
---  Description: Makes image 10 times smaller
+--  Description: Makes image 10 times smaller. This function compresses the 
+--    width and height of the image by keeping every tenth pixel. This image is
+--    only meant to be used to zoom out of the test images for morphological 
+--    operators.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -80,13 +87,16 @@ morphHelper.zoomOut = zoomOut;
 --
 --  Function Name: complement
 --
---  Description: 
+--  Description: This returns the complement of an image. It sets any pixel with
+--    a maxed out red component to white - all other pixels are set to black.
+--    Because of this implementation, this funtion is only intended to be used
+--    on binary images.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    newImg - The image after shrinking
+--    resultImg - complemented image
 --
 --------------------------------------------------------------------------------
 local function complement( img )
@@ -119,10 +129,18 @@ morphHelper.complement = complement;
 --
 --  Function Name: applyGeoDilate
 --
---  Description: 
+--  Description: This function performs the implementation of geodesic dilation
+--    on the given marker image using the given mask image. It calculates the
+--    pixels to loop over and what the neighborhood for each pixel would be. For
+--    each pixel, if the pixel is in the mask and all its neighbors are as well,
+--    then that pixel is retained. Otherwise the pixel is not a part of the 
+--    result.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    markerImg - Marker image used in geodesic operators
+--    maskImg - Mask image used in geodesic operators
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
 --
 --  Return: 
 --    resultImg - The image after applying geodesic dilation
@@ -170,13 +188,20 @@ morphHelper.applyGeoDilate = applyGeoDilate;
 --
 --  Function Name: applyGeoErode
 --
---  Description: 
+--  Description: This function performs the implementation of geodesic erosion
+--    on the given marker image using the given mask image. It does so by using
+--    geodesic dilation, its dual with respect to complement. The mask and 
+--    marker are complemented, geodesic dilation is applied, and the result is
+--    complemented before returning.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    markerImg - Marker image used in geodesic operators
+--    maskImg - Mask image used in geodesic operators
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
 --
 --  Return: 
---    resultImg - The image after applying geodesic dilation
+--    resultImg - The image after applying geodesic erosion
 --
 --------------------------------------------------------------------------------
 local function applyGeoErode( markerImg, maskImg, filterWidth, filterHeight )
@@ -199,13 +224,19 @@ morphHelper.applyGeoErode = applyGeoErode;
 --
 --  Function Name: applyRecDilate
 --
---  Description: 
+--  Description: This function performs the implementation of reconstruction by
+--    dilation using the given marker and mask images. It repeatedly applies
+--    geodesic dilation, and checks to see if any changes occured after each
+--    iteration. If none did, then reconstruction is complete.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    markerImg - Marker image used in geodesic operators
+--    maskImg - Mask image used in geodesic operators
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
 --
 --  Return: 
---    resultImg - The image after applying geodesic dilation
+--    markerImg - The image after applying reconstruction by dilation
 --
 --------------------------------------------------------------------------------
 local function applyRecDilate( markerImg, maskImg, filterWidth, filterHeight )
@@ -236,13 +267,19 @@ morphHelper.applyRecDilate = applyRecDilate;
 --
 --  Function Name: applyRecErode
 --
---  Description: 
+--  Description: This function performs the implementation of reconstruction by
+--    erosion. It does so as the dual with respect to complement of 
+--    reconstruction by dilation. It complements the mask and marker, performs
+--    reconstruction by dilation, and then returns the complement of the result.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    markerImg - Marker image used in geodesic operators
+--    maskImg - Mask image used in geodesic operators
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
 --
 --  Return: 
---    resultImg - The image after applying geodesic dilation
+--    resultImg - The image after applying reconstruction by erosion
 --
 --------------------------------------------------------------------------------
 local function applyRecErode( markerImg, maskImg, filterWidth, filterHeight )
@@ -259,6 +296,7 @@ local function applyRecErode( markerImg, maskImg, filterWidth, filterHeight )
   return resultImg;
 end
 morphHelper.applyRecErode = applyRecErode;
+
 
 --------------------------------------------------------------------------------
 --
@@ -322,6 +360,7 @@ local function hitOrMiss( img, structElem, value )
   return newImg;
 end
 morphHelper.hitOrMiss = hitOrMiss;
+
 
 --Return table of helper functions
 return morphHelper;  

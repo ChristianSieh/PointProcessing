@@ -25,13 +25,18 @@ local morph = {};
 --
 --  Function Name: geoDilate
 --
---  Description: 
+--  Description: This is a wrapper function for geodesic dilation. It opens the
+--    specified mask file, then passes all arguments to a function to implement
+--    geodesic dilation.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    markerImg - Marker image used in geodesic operators
+--    maskFile - File containing mask image
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    resultImg - The image after applying geodesic dilation
 --
 --------------------------------------------------------------------------------
 local function geoDilate( markerImg, maskFile, filterWidth, filterHeight )
@@ -48,13 +53,18 @@ morph.geoDilate = geoDilate;
 --
 --  Function Name: geoErode
 --
---  Description: 
+--  Description: This is a wrapper function for geodesic erosion. It opens the
+--    specified mask file, then passes all arguments to a function to implement
+--    geodesic erosion.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    markerImg - Marker image used in geodesic operators
+--    maskFile - File containing mask image
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    resultImg - The image after applying geodesic erosion
 --
 --------------------------------------------------------------------------------
 local function geoErode( markerImg, maskFile, filterWidth, filterHeight )
@@ -71,13 +81,18 @@ morph.geoErode = geoErode;
 --
 --  Function Name: recDilate
 --
---  Description: 
+--  Description: This is a wrapper function for reconstruction by dilation. It
+--    opens the specified mask file, then passes all arguments to a function to
+--    implement reconstruction by dilation.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    markerImg - Marker image used in geodesic operators
+--    maskFile - File containing mask image
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    resultImg - The image after applying reconstruction by erosion
 --
 --------------------------------------------------------------------------------
 local function recDilate( markerImg, maskFile, filterWidth, filterHeight )
@@ -94,13 +109,18 @@ morph.recDilate = recDilate;
 --
 --  Function Name: recErode
 --
---  Description: 
+--  Description: This is a wrapper function for reconstruction by erosion. It
+--    opens the specified mask file, then passes all arguments to a function to
+--    implement reconstruction by erosion.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    markerImg - Marker image used in geodesic operators
+--    maskFile - File containing mask image
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    resultImg - The image after applying reconstruction by erosion
 --
 --------------------------------------------------------------------------------
 local function recErode( markerImg, maskFile, filterWidth, filterHeight )
@@ -117,13 +137,16 @@ morph.recErode = recErode;
 --
 --  Function Name: dilate
 --
---  Description: 
+--  Description: This function dilates a binary image. It is only intended to be
+--    used on binary images.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    img - Input image
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    resultImg - The image after applying dilation
 --
 --------------------------------------------------------------------------------
 local function dilate( img, filterWidth, filterHeight )
@@ -161,13 +184,16 @@ morph.dilate = dilate;
 --
 --  Function Name: erode
 --
---  Description: 
+--  Description: This function erodes a binary image. It is only intended to be
+--    used on binary images.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    img - Input image
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    resultImg - The image after applying erosion
 --
 --------------------------------------------------------------------------------
 local function erode( img, filterWidth, filterHeight )
@@ -205,13 +231,18 @@ morph.erode = erode;
 --
 --  Function Name: openRec
 --
---  Description: 
+--  Description: This function performs opening by reconstruction. It begins by
+--    performing the specified number of erosions, then performs reconstruction
+--    by dilation.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    img - Input image
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
+--    iterations - How many erosions to perform
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    resultImg - The image after applying opening by reconstruction
 --
 --------------------------------------------------------------------------------
 local function openRec( img, filterWidth, filterHeight, iterations )
@@ -233,13 +264,18 @@ morph.openRec = openRec;
 --
 --  Function Name: closeRec
 --
---  Description: 
+--  Description: This function performs closing by reconstruction. It begins by
+--    performing the specified number of dilations, then performs reconstruction
+--    by erosion.
 --
 --  Parameters:
---    img - An image object from ip.lua representing the image to process
+--    img - Input image
+--    filterWidth - Width of the filter to use
+--    filterHeight - Height of the filter to use
+--    iterations - How many dilations to perform
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    resultImg - The image after applying closing by reconstruction
 --
 --------------------------------------------------------------------------------
 local function closeRec( img, filterWidth, filterHeight, iterations )
@@ -261,13 +297,17 @@ morph.closeRec = closeRec;
 --
 --  Function Name: holeFill
 --
---  Description: 
+--  Description: This function performs automatic hole filling. It begins by
+--    complementing the mask image. It then sets up the marker image, which will
+--    be the inverse of any pixels on the border, and zero for any interior
+--    pixels. It then performs reconstruction by dilation and returns the 
+--    complement of the result.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    resultImg - The image after filling holes
 --
 --------------------------------------------------------------------------------
 local function holeFill( img )
@@ -307,13 +347,16 @@ morph.holeFill = holeFill;
 --
 --  Function Name: borderClearing
 --
---  Description: 
+--  Description: This function performs automatic border clearing. It begins by
+--    setting up the marker image, which will be the value of any pixels on the
+--    border, and zero for any interior pixels. It then performs reconstruction
+--    by dilation and returns the result subtracted from the original image.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    resultImg - The image after clearing border
 --
 --------------------------------------------------------------------------------
 local function borderClearing( img )
@@ -324,7 +367,7 @@ local function borderClearing( img )
   for r,c in img:pixels() do
     --If border pixel
     if r == 0 or r == row_max or c == 0 or c == col_max then
-      --Set to inverse of image
+      --Set to value of image
       markerImg:at(r,c).r = img:at(r,c).r;
       markerImg:at(r,c).g = img:at(r,c).g;
       markerImg:at(r,c).b = img:at(r,c).b;

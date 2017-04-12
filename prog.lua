@@ -6,7 +6,10 @@
 --  Instructor: Dr. Weiss
 --  Date: 4/24/2017
 --  
---  Description: 
+--  Description: This project contains all of the image processing techniques
+--    that have been implemented this semester. It includes point processes,
+--    neighborhood processes, edge detectors, morphological operations, and
+--    other miscellaneous processes.
 --  
 --------------------------------------------------------------------------------
 
