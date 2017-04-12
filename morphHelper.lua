@@ -287,12 +287,20 @@ local function hitOrMiss( img, structElem, value )
   --Loop over all pixels, ignoring border due to filter size
   for r,c in newImg:pixels( 1 ) do
     local valid = true;
-    local x = 1
+    local x = 1;
+    local rC;
+    local gC;
+    local bC;
     
     --While we have a valid match to our SE, loop through SE
     while valid and x <= 3 do
         for y = 1, 3 do
-          if structElem[x][y] ~= -1 and img:at(r + index[x], c + index[y] ).i ~= structElem[x][y] then
+          rC = img:at(r + index[x], c + index[y] ).r;
+          gC = img:at(r + index[x], c + index[y] ).g;
+          bC = img:at(r + index[x], c + index[y] ).b;
+
+          if structElem[x][y] ~= -1 and rC ~= structElem[x][y] and 
+                gC ~= structElem[x][y] and bC ~= structElem[x][y] then
               valid = false;
           end
         end
@@ -301,9 +309,13 @@ local function hitOrMiss( img, structElem, value )
     
     --If hit/miss passed then update value to black otherwise leave it
     if valid then
-        newImg:at(r,c).i = value;
+        newImg:at(r,c).r = value;
+        newImg:at(r,c).g = value;
+        newImg:at(r,c).b = value;
     else
-        newImg:at(r,c).i = img:at(r,c).i;
+        newImg:at(r,c).r = img:at(r,c).r;
+        newImg:at(r,c).g = img:at(r,c).g;
+        newImg:at(r,c).b = img:at(r,c).b;
     end
   end
 
