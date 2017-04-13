@@ -155,6 +155,7 @@ imageMenu("Morphological operations",
       {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
     {"Morph Thick", morph.thickMorph,
       {{name = "n", type = "string", displaytype = "combo", choices = {"4", "8"}, default = "8"}}},
+    {"Skeletonization", morph.skeletonMorph},
     { "Zoom In\tCtrl+Z", morphHelper.zoomIn, hotkey = "C-Z" },
     { "Zoom Out\tCtrl+Z", morphHelper.zoomOut, hotkey = "C-X" },
     { "Complement\tCtrl+C", morphHelper.complement, hotkey = "C-C" }

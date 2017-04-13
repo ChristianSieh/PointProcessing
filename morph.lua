@@ -463,5 +463,48 @@ local function thickMorph( img, n )
 end
 morph.thickMorph = thickMorph;
 
+--------------------------------------------------------------------------------
+--
+--  Function Name: skeletonMorph
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function skeletonMorph( img )
+  local isFinished = false
+  local procImage
+  
+  -- Loop image till processed image is same as unprocessed image
+  while isFinished == false do
+    isFinished = true
+  
+    -- Call thinning and send clone to prevent safe reference
+    procImage = thinMorph(img:clone(), 4)
+    
+    -- Check pixels in both images and compare to see if complete
+    for r,c in procImage:pixels( 0 ) do
+      -- If any pixel is different, run again
+      if  img:at(r, c).r ~= procImage:at(r, c).r or
+          img:at(r, c).g ~= procImage:at(r, c).g or
+          img:at(r, c).b ~= procImage:at(r, c).b then
+        isFinished = false
+        break
+      end
+    end
+    
+    -- Set image to processed image to repeat process
+    img = procImage
+  end
+  
+  return img;
+end
+morph.skeletonMorph = skeletonMorph;
+
 --Return table of miscellaneous functions
 return morph;
