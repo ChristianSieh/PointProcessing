@@ -490,9 +490,7 @@ local function skeletonMorph( img )
     -- Check pixels in both images and compare to see if complete
     for r,c in procImage:pixels( 0 ) do
       -- If any pixel is different, run again
-      if  img:at(r, c).r ~= procImage:at(r, c).r or
-          img:at(r, c).g ~= procImage:at(r, c).g or
-          img:at(r, c).b ~= procImage:at(r, c).b then
+      if  img:at(r, c).r ~= procImage:at(r, c).r then
         isFinished = false
         break
       end
@@ -505,6 +503,54 @@ local function skeletonMorph( img )
   return img;
 end
 morph.skeletonMorph = skeletonMorph;
+
+--------------------------------------------------------------------------------
+--
+--  Function Name: skeletonMorph
+--
+--  Description: 
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    img - The image object after having the point process performed upon it
+--
+--------------------------------------------------------------------------------
+local function pruningMorph( img )
+  local isFinished = false
+  local procImage
+  local sElement = {{0,0,0},
+                    {1,1,0},
+                    {0,0,0}}
+
+  local images = {}
+  
+  img = skeletonMorph( img )
+  local clone = img:clone()
+  
+  for i = 1, 8 do
+    images[i] = clone:clone()
+    
+    helper.applyConvolutionFilter( images[i], sElement, 3, false, false)
+    
+    sElement = helper.rotateFilter( sElement )
+  end
+  
+  for i = 1, 8 do
+    for r,c in images[i]:pixels( 0 ) do
+      if images[i]:at(r, c).r ~= 0 then
+        clone:at(r,c).r = 255
+        clone:at(r,c).g = 255
+        clone:at(r,c).b = 255
+        break
+      end
+    end
+  end
+  
+  return clone;
+end
+morph.pruningMorph = pruningMorph;
 
 --Return table of miscellaneous functions
 return morph;
