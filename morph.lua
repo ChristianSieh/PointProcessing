@@ -410,22 +410,47 @@ morph.borderClearing = borderClearing;
 --    n   - 4 directional or 8 directional neighbors
 --
 --------------------------------------------------------------------------------
-local function thinMorph( img, n )
+local function thinMorph( img, n, filter1, filter2, prune )
   --White, black, and -1 for positions we don't care about
-  local filter = { { 0, 0, 0 }, { -1, 255, -1 }, { 255, 255, 255 } };
- 
-  for i = 0, 3 do
-    -- Hit/miss down, left, up, right
-    img = morphHelper.hitOrMiss(img, filter, 0);
-    filter = helper.rotateFilter(filter);
-
-    -- If doing 8 directional then we need to hit/miss the diagonals
-    if n == "8" then
-        img = morphHelper.hitOrMiss(img, filter, 0);
-    end
-    filter = helper.rotateFilter(filter);
+  if filter1 == nil then
+    filter1 = { { 0, 0, 0 }, { -1, 255, -1 }, { 255, 255, 255 } };
   end
-  
+  if filter2 == nil then
+    filter2 = { { -1, 0, 0 }, { 255, 255, 0 }, { 255, 255, -1 } };
+  end
+ 
+  if prune then
+    for i = 0, 3 do
+      -- Hit/miss down, left, up, right
+      img = morphHelper.hitOrMiss(img, filter1, 0);
+      
+      filter1 = helper.rotateFilter(filter1);
+      filter1 = helper.rotateFilter(filter1);
+    end
+    -- If doing 8 directional then we need to hit/miss the diagonals
+    if n == "8" then  
+      for i = 0, 3 do
+          img = morphHelper.hitOrMiss(img, filter2, 0);
+          filter2 = helper.rotateFilter(filter2);
+          filter2 = helper.rotateFilter(filter2);
+      end
+    end
+  else
+    for i = 0, 3 do
+      -- Hit/miss down, left, up, right
+      img = morphHelper.hitOrMiss(img, filter1, 0);
+      
+      filter1 = helper.rotateFilter(filter1);
+      filter1 = helper.rotateFilter(filter1);
+
+      -- If doing 8 directional then we need to hit/miss the diagonals
+      if n == "8" then
+          img = morphHelper.hitOrMiss(img, filter2, 0);
+          filter2 = helper.rotateFilter(filter2);
+          filter2 = helper.rotateFilter(filter2);
+      end
+    end
+  end
   return img;
 end
 morph.thinMorph = thinMorph;
@@ -476,7 +501,7 @@ morph.thickMorph = thickMorph;
 --    img - The image object after having the point process performed upon it
 --
 --------------------------------------------------------------------------------
-local function skeletonMorph( img )
+local function skeletonMorph( img, filter1, filter2, prune )
   local isFinished = false
   local procImage
   
@@ -485,7 +510,7 @@ local function skeletonMorph( img )
     isFinished = true
   
     -- Call thinning and send clone to prevent safe reference
-    procImage = thinMorph(img:clone(), 4)
+    procImage = thinMorph(img:clone(), "8", filter1, filter2, prune)
     
     -- Check pixels in both images and compare to see if complete
     for r,c in procImage:pixels( 0 ) do
@@ -520,14 +545,17 @@ morph.skeletonMorph = skeletonMorph;
 local function pruningMorph( img )
   local isFinished = false
   local procImage
-  local sElement = {{0,0,0},
-                    {1,1,0},
-                    {0,0,0}}
+  local sElement1 = {{-1, 0, 0},
+                    {255, 255, 0},
+                    {-1, 0, 0}}
+  local sElement2 = {{255, 0, 0},
+                    {0, 255, 0},
+                    {0, 0, 0}}
 
   local images = {}
   
-  img = skeletonMorph( img )
-  local clone = img:clone()
+  img = skeletonMorph( img, sElement1, sElement2, true )
+  --[[local clone = img:clone()
   
   for i = 1, 8 do
     images[i] = clone:clone()
@@ -546,9 +574,9 @@ local function pruningMorph( img )
         break
       end
     end
-  end
+  end]]--
   
-  return clone;
+  return img;
 end
 morph.pruningMorph = pruningMorph;
 
