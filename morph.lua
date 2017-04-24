@@ -400,7 +400,16 @@ morph.borderClearing = borderClearing;
 --
 --  Function Name: thinMorph
 --
---  Description: 
+--  Description: thinMorph takes an image, if the operation will be 4 or 8
+--               directional, up to two filters, and whether it will be
+--               a pruning or not. In the simple version, no filters are specified
+--               and it is not a pruning. In this case the two filters specifed
+--               in the code are used, applied with hitOrMiss, and rotate as needed.
+--
+--
+--  Note: thinMorph is a bit of a mess since we have tried to jam pruning
+--        into it. To see a simpler version of this function, look at thickMorph
+--        and switch 0 -> 255 and 255 -> 0.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -459,7 +468,11 @@ morph.thinMorph = thinMorph;
 --
 --  Function Name: thickMorph
 --
---  Description: 
+--  Description: This function uses the kernel specified, runs hit/miss
+--               and rotates the filter after each hit/miss. If a pixel
+--               matches the kernel then it is changed to white since
+--               we are using white for the foreground and black for the
+--               background.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -470,18 +483,18 @@ morph.thinMorph = thinMorph;
 --------------------------------------------------------------------------------
 local function thickMorph( img, n )
   --White, black, and -1 for positions we don't care about
-  local filter = { { 255, 255, 255 }, { -1, 0, -1 }, { 0, 0, 0 } };
+  local kernel = { { 255, 255, 255 }, { -1, 0, -1 }, { 0, 0, 0 } };
  
   for i = 0, 3 do
     -- Hit/miss down, left, up, right
-    img = morphHelper.hitOrMiss(img, filter, 255);
-    filter = helper.rotateFilter(filter);
+    img = morphHelper.hitOrMiss(img, kernel, 255);
+    kernel = helper.rotateFilter(kernel);
 
     -- If doing 8 directional then we need to hit/miss the diagonals
     if n == "8" then
-        img = morphHelper.hitOrMiss(img, filter, 255);
+        img = morphHelper.hitOrMiss(img, kernel, 255);
     end
-    filter = helper.rotateFilter(filter);
+    kernel = helper.rotateFilter(kernel);
   end
   
   return img;

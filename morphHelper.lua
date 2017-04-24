@@ -302,7 +302,10 @@ morphHelper.applyRecErode = applyRecErode;
 --
 --  Function Name: hitOrMiss
 --
---  Description: 
+--  Description: hitOrMiss loops through all the pixels in an image and tries
+--               to apply the specified structuring element to each pixel. If
+--               the pixel is valid for hitOrMiss then it's value is updated
+--               to the value passed in, otherwise it reamains the same.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -333,10 +336,12 @@ local function hitOrMiss( img, structElem, value )
     --While we have a valid match to our SE, loop through SE
     while valid and x <= 3 do
         for y = 1, 3 do
+          --Get rgb values while looping through structuring element
           rC = img:at(r + index[x], c + index[y] ).r;
           gC = img:at(r + index[x], c + index[y] ).g;
           bC = img:at(r + index[x], c + index[y] ).b;
 
+          --If rgb didn't match then hit/miss didn't work and this pixel isn't valid
           if structElem[x][y] ~= -1 and rC ~= structElem[x][y] and 
                 gC ~= structElem[x][y] and bC ~= structElem[x][y] then
               valid = false;
@@ -345,7 +350,7 @@ local function hitOrMiss( img, structElem, value )
         x = x + 1;
     end
     
-    --If hit/miss passed then update value to black otherwise leave it
+    --If hit/miss passed then update pixel to value otherwise leave it the same
     if valid then
         newImg:at(r,c).r = value;
         newImg:at(r,c).g = value;
