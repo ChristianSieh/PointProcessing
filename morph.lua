@@ -402,9 +402,11 @@ morph.borderClearing = borderClearing;
 --
 --  Description: thinMorph takes an image, if the operation will be 4 or 8
 --               directional, up to two filters, and whether it will be
---               a pruning or not. In the simple version, no filters are specified
---               and it is not a pruning. In this case the two filters specifed
---               in the code are used, applied with hitOrMiss, and rotate as needed.
+--               a pruning or not. If no filters are specified then the two filters
+--               in the code are used and applied on after the other, applied 
+--               with hitOrMiss, and rotated by 90 degrees. If pruning is used
+--               then the first filter is ran 4 times and if 8 directional then
+--               the second filter is ran 4 times as well.
 --
 --
 --  Note: thinMorph is a bit of a mess since we have tried to jam pruning
@@ -544,7 +546,7 @@ morph.skeletonMorph = skeletonMorph;
 
 --------------------------------------------------------------------------------
 --
---  Function Name: skeletonMorph
+--  Function Name: pruningMorph
 --
 --  Description: 
 --
