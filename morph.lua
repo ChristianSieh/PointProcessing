@@ -552,31 +552,44 @@ local function pruningMorph( img )
                     {0, 255, 0},
                     {0, 0, 0}}
 
-  local images = {}
+  local image1 = img:clone()
+  local image2 = img:clone()
+  local image3 = img:clone()
+  local image4 = img:clone()
   
-  img = skeletonMorph( img, sElement1, sElement2, true )
-  --[[local clone = img:clone()
-  
-  for i = 1, 8 do
-    images[i] = clone:clone()
-    
-    helper.applyConvolutionFilter( images[i], sElement, 3, false, false)
-    
-    sElement = helper.rotateFilter( sElement )
+  for r, c in image4:pixels( 0 ) do
+    image4:at(r, c).r = 0
+    image4:at(r, c).g = 0
+    image4:at(r, c).b = 0
   end
   
-  for i = 1, 8 do
-    for r,c in images[i]:pixels( 0 ) do
-      if images[i]:at(r, c).r ~= 0 then
-        clone:at(r,c).r = 255
-        clone:at(r,c).g = 255
-        clone:at(r,c).b = 255
-        break
-      end
-    end
-  end]]--
+  for i = 1, 3 do
+    image1 = thinMorph(image1, "8", sElement1, sElement2, prune)
+  end
   
-  return img;
+  image2 = morphHelper.hitOrMiss(image1:clone(), sElement1, 0)
+  
+  image2 = dilate( image2:clone(), 3, 3)
+  
+  for r, c in img:pixels( 0 ) do
+    if image1:at(r, c).r ~= 255 or
+       image2:at(r, c).r ~= 255 then
+      image3:at(r, c).r = 0
+      image3:at(r, c).g = 0
+      image3:at(r, c).b = 0
+    end
+  end
+  
+  for r, c in img:pixels( 0 ) do
+    if image1:at(r, c).r == 255 or
+       image3:at(r, c).r == 255 then
+      image4:at(r, c).r = 255
+      image4:at(r, c).g = 255
+      image4:at(r, c).b = 255
+    end
+  end
+  
+  return image4
 end
 morph.pruningMorph = pruningMorph;
 
