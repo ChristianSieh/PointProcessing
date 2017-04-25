@@ -401,17 +401,9 @@ morph.borderClearing = borderClearing;
 --  Function Name: thinMorph
 --
 --  Description: thinMorph takes an image, if the operation will be 4 or 8
---               directional, up to two filters, and whether it will be
---               a pruning or not. If no filters are specified then the two filters
---               in the code are used and applied on after the other, applied 
---               with hitOrMiss, and rotated by 90 degrees. If pruning is used
---               then the first filter is ran 4 times and if 8 directional then
---               the second filter is ran 4 times as well.
---
---
---  Note: thinMorph is a bit of a mess since we have tried to jam pruning
---        into it. To see a simpler version of this function, look at thickMorph
---        and switch 0 -> 255 and 255 -> 0.
+--               directional, and two filters. If no filters are specified then the 
+--               two filters in the code are used one after the other, 
+--               applied with hitOrMiss, and rotated by 90 degrees.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
@@ -419,9 +411,11 @@ morph.borderClearing = borderClearing;
 --  Return: 
 --    img - The image object after having the point process performed upon it
 --    n   - 4 directional or 8 directional neighbors
+--    filter1 - optional first filter that can be used
+--    filter2 - optional second filter that can be used
 --
 --------------------------------------------------------------------------------
-local function thinMorph( img, n, filter1, filter2, prune )
+local function thinMorph( img, n, filter1, filter2)
   --White, black, and -1 for positions we don't care about
   if filter1 == nil then
     filter1 = { { 0, 0, 0 }, { -1, 255, -1 }, { 255, 255, 255 } };
@@ -429,72 +423,75 @@ local function thinMorph( img, n, filter1, filter2, prune )
   if filter2 == nil then
     filter2 = { { -1, 0, 0 }, { 255, 255, 0 }, { 255, 255, -1 } };
   end
- 
-  if prune then
-      local temp1 = image.flat(img.width, img.height);
-      local temp2 = image.flat(img.width, img.height);
-      local temp3 = image.flat(img.width, img.height);
-      local temp4 = image.flat(img.width, img.height);
-      local temp5 = image.flat(img.width, img.height);
-      local temp6 = image.flat(img.width, img.height);
-      local temp7 = image.flat(img.width, img.height);
-      local temp8 = image.flat(img.width, img.height);
-      
-      -- Hit/miss down, left, up, right
-      _, temp1 = morphHelper.hitOrMiss(img, filter1, 255);
-      filter1 = helper.rotateFilter(filter1);
-      filter1 = helper.rotateFilter(filter1);
-      _, temp2 = morphHelper.hitOrMiss(img, filter1, 255);
-      filter1 = helper.rotateFilter(filter1);
-      filter1 = helper.rotateFilter(filter1);
-      _, temp3 = morphHelper.hitOrMiss(img, filter1, 255);
-      filter1 = helper.rotateFilter(filter1);
-      filter1 = helper.rotateFilter(filter1);
-      _, temp4 = morphHelper.hitOrMiss(img, filter1, 255);
-      filter1 = helper.rotateFilter(filter1);
-      filter1 = helper.rotateFilter(filter1);
-      _, temp5 = morphHelper.hitOrMiss(img, filter2, 255);
-      filter2 = helper.rotateFilter(filter2);
-      filter2 = helper.rotateFilter(filter2);
-      _, temp6 = morphHelper.hitOrMiss(img, filter2, 255);
-      filter2 = helper.rotateFilter(filter2);
-      filter2 = helper.rotateFilter(filter2);
-      _, temp7 = morphHelper.hitOrMiss(img, filter2, 255);
-      filter2 = helper.rotateFilter(filter2);
-      filter2 = helper.rotateFilter(filter2);
-      _, temp8 = morphHelper.hitOrMiss(img, filter2, 255);
-      
-      local imgList = { temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8 };
   
-      --Next union them all together
-      for r, c in img:pixels( 0 ) do
-        for i = 1, 8 do
-          if imgList[i]:at(r, c).r == 255 then --Fix if to short circuit?
-            img:at(r, c).r = 0;
-            img:at(r, c).g = 0;
-            img:at(r, c).b = 0;
-          end
-        end
-      end
-  else
-    for i = 0, 3 do
-      -- Hit/miss down, left, up, right
-      img = morphHelper.hitOrMiss(img, filter1, 0);
-      
-      filter1 = helper.rotateFilter(filter1);
-      filter1 = helper.rotateFilter(filter1);
+  for i = 0, 3 do
+    -- Hit/miss down, left, up, right
+    img = morphHelper.hitOrMiss(img, filter1, 0);
+    
+    filter1 = helper.rotateFilter(filter1);
+    filter1 = helper.rotateFilter(filter1);
 
-      -- If doing 8 directional then we need to hit/miss the diagonals
-      if n == "8" then
-          img = morphHelper.hitOrMiss(img, filter2, 0);
-          filter2 = helper.rotateFilter(filter2);
-          filter2 = helper.rotateFilter(filter2);
-      end
+    -- If doing 8 directional then we need to hit/miss the diagonals
+    if n == "8" then
+        img = morphHelper.hitOrMiss(img, filter2, 0);
+        filter2 = helper.rotateFilter(filter2);
+        filter2 = helper.rotateFilter(filter2);
     end
   end
+
   return img;
 end
 morph.thinMorph = thinMorph;
+
+--------------------------------------------------------------------------------
+--
+--  Function Name: pruningThin
+--
+--  Description: pruningThin is like thinMorph above, but it runs the filters
+--               in a different order, has to keep track of individual changes
+--               for each filter and then union them together.
+--
+--  Parameters:
+--    img - An image object from ip.lua representing the image to process
+--
+--  Return: 
+--    img - The image object after having the point process performed upon it
+--    filter1 - The first filter that is to be used
+--    filter2 - The second filter that is to be used
+--
+--------------------------------------------------------------------------------
+local function pruningThin(img, sElement1, sElement2)
+  local temp = image.flat(img.width, img.height);
+  local currentSE = sElement1;
+  local hitMissImages = {};
+  
+    --First create the 8 images using {B}
+  for i = 1, 8 do
+    if i == 5 then
+      currentSE = sElement2
+    end
+    
+    -- Hit or miss the image to find the end points
+    _, hitMissImages[i] = morphHelper.hitOrMiss(img, currentSE, 255);
+    
+    currentSE = helper.rotateFilter(currentSE);
+    currentSE = helper.rotateFilter(currentSE);
+  end
+
+  --Next union them all together
+  for r, c in img:pixels( 0 ) do
+    for i = 1, 8 do
+      if hitMissImages[i]:at(r, c).r == 255 then
+        img:at(r, c).r = 0;
+        img:at(r, c).g = 0;
+        img:at(r, c).b = 0;
+      end
+    end
+  end
+  
+  return img;
+end
+morph.pruningThin = pruningThin
 
 --------------------------------------------------------------------------------
 --
@@ -617,7 +614,7 @@ local function pruningMorph( img )
   
   --Create image1, thin(A,{B}) 3 times
   for i = 1, 3 do
-    image1 = thinMorph(image1, "8", sElement1, sElement2, true)
+    image1 = pruningThin(image1, sElement1, sElement2)
   end
   
   --Create image2, union( hitMiss(image1, {B}) )

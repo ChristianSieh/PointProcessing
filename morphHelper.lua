@@ -313,10 +313,13 @@ morphHelper.applyRecErode = applyRecErode;
 --  Return: 
 --    newImg - The image after shrinking
 --    structElem - The structuring element to be used for hit/miss
+--    value - the value that you want to set the pixel to in newImg
 --
 --------------------------------------------------------------------------------
 local function hitOrMiss( img, structElem, value )
+  --The img which will have the hit/miss pixels changed
   local newImg = img:clone();
+  --Image that stores the hit/miss pixels as white pixels
   local pixelImg = image.flat(img.width, img.height);
 
   --Indexing array for looping over structuring element
