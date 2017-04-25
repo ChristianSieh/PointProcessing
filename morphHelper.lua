@@ -370,5 +370,99 @@ end
 morphHelper.hitOrMiss = hitOrMiss;
 
 
+--------------------------------------------------------------------------------
+--
+--  Function Name: intersect
+--
+--  Description: intersect loops through all pixels in img1 and img2 and if
+--               both of them have an rgb value of 255, then the result image
+--               will have a corresponding 255 in the result image. The
+--               resultImg is passed in to allow an old image to be used to
+--               apply the results of the intersect to.
+--
+--  Parameters:
+--    resultImg - Image with result of intersect
+--    img1 - First image to intersect
+--    img2 - Second image to intersect
+--
+--------------------------------------------------------------------------------
+local function intersect( resultImg, img1, img2 )
+  -- Loop through all pixels and intersect
+  for r, c in img1:pixels( 0 ) do
+    if img1:at(r, c).r == 255 and img2:at(r, c).r == 255 then
+        resultImg:at(r, c).r = 255
+        resultImg:at(r, c).g = 255
+        resultImg:at(r, c).b = 255
+    end
+  end
+end
+morphHelper.intersect = intersect;
+
+
+--------------------------------------------------------------------------------
+--
+--  Function Name: union
+--
+--  Description: union loops through all pixels in img1 and img2 and if either
+--               of them have an rgb value of 255, then the result image will have
+--               a corresponding 255 in the result image. The resultImg is
+--               passed in to allow an old image to be used to apply the results
+--               of the union to.
+--
+--  Parameters:
+--    resultImg - Image with result of union
+--    img1 - First image to union
+--    img2 - Second image to union
+--
+--------------------------------------------------------------------------------
+local function union( resultImg, img1, img2 )
+  -- Loop through all pixels and union
+  for r, c in img1:pixels( 0 ) do
+    if img1:at(r, c).r == 255 or img2:at(r, c).r == 255 then
+        resultImg:at(r, c).r = 255
+        resultImg:at(r, c).g = 255
+        resultImg:at(r, c).b = 255
+    end
+  end
+end
+morphHelper.union = union;
+
+
+--------------------------------------------------------------------------------
+--
+--  Function Name: dilateAndIntersect
+--
+--  Description: 
+--
+--  Parameters:
+--    originalImage - Original image to intersect dilation with
+--    img - Image to dilate
+--    dilate - Dilation function pointer
+--    iteration - Count to know if flat image needs to be created
+--
+--  Return: 
+--    resultImg - The image after applying dilation and then union
+--
+--------------------------------------------------------------------------------
+local function dilateAndIntersect( originalImage, img, dilate, iteration )
+  --Create image3, intersect( dilate(image2, H), img)
+  local dilatedImg = dilate( img:clone(), 3, 3); --FOR LOOP
+  local resultImg
+  
+  -- If this is first time, create flat image
+  if iteration == 1 then
+    resultImg = image.flat( img.width, img.height );
+  else
+    resultImg = img:clone()
+  end
+  
+  -- Intersect images to get the correct resultImg
+  intersect( resultImg, originalImage, dilatedImg )
+  
+  return resultImg;
+end
+morphHelper.dilateAndIntersect = dilateAndIntersect;
+
+
 --Return table of helper functions
 return morphHelper;  

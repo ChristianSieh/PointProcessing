@@ -537,16 +537,19 @@ morph.thickMorph = thickMorph;
 --
 --  Function Name: skeletonMorph
 --
---  Description: 
+--  Description: skeletonMorph repeats multiple morphological thinning's to the
+--               input image. Once the images from one iteration of thinning to
+--               the next show know changes, it has found the skeleton of the
+--               input image and returns the result.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    img - The image object after having the skeletonization process performed
 --
 --------------------------------------------------------------------------------
-local function skeletonMorph( img, filter1, filter2, prune )
+local function skeletonMorph( img )
   local isFinished = false
   local procImage
   
@@ -578,13 +581,22 @@ morph.skeletonMorph = skeletonMorph;
 --
 --  Function Name: pruningMorph
 --
---  Description: 
+--  Description: pruningMorph uses a B structuring element that is used
+--               throughout the function. The function starts off by running
+--               the morphological thinning 3 times. Then 8 images are then
+--               created to capture all of the end points in the image. Next,
+--               it must union all those together in order to get an image
+--               containing all the end points. Then it runs dilation and
+--               intersection in order to reconstruct pixel by pixel the
+--               original structure of the input image. pruningMorph finishes
+--               by unioning the first thinned image with the reconstructed
+--               image to form the final pruned result image.
 --
 --  Parameters:
 --    img - An image object from ip.lua representing the image to process
 --
 --  Return: 
---    img - The image object after having the point process performed upon it
+--    img - The image object after having the pruning process performed upon it
 --
 --------------------------------------------------------------------------------
 local function pruningMorph( img )
@@ -594,103 +606,57 @@ local function pruningMorph( img )
   local sElement2 = {{255, 0, 0},
                     {0, 255, 0},
                     {0, 0, 0}}
+  local currentSE = sElement1;
 
+  -- Initialize and create images
+  local hitMissImages = {};
   local image1 = img:clone();
-  local image4 = image.flat(img.width, img.height)
+  local image2 = image.flat(img.width, img.height);
+  local image3 = image.flat(img.width, img.height);
+  local resultImg = image.flat(img.width, img.height)
   
   --Create image1, thin(A,{B}) 3 times
   for i = 1, 3 do
     image1 = thinMorph(image1, "8", sElement1, sElement2, true)
   end
   
-  local image2 = image.flat(img.width, img.height);
-  local temp1 = img:clone();
-  local temp2 = img:clone();
-  local temp3 = img:clone();
-  local temp4 = img:clone();
-  local temp5 = img:clone();
-  local temp6 = img:clone();
-  local temp7 = img:clone();
-  local temp8 = img:clone();
-  
   --Create image2, union( hitMiss(image1, {B}) )
   --First create the 8 images using {B}
-  _, temp1 = morphHelper.hitOrMiss(image1, sElement1, 255);
-  sElement1 = helper.rotateFilter(sElement1);
-  sElement1 = helper.rotateFilter(sElement1);
-  _, temp2 = morphHelper.hitOrMiss(image1, sElement1, 255);
-  sElement1 = helper.rotateFilter(sElement1);
-  sElement1 = helper.rotateFilter(sElement1);
-  _, temp3 = morphHelper.hitOrMiss(image1, sElement1, 255);
-  sElement1 = helper.rotateFilter(sElement1);
-  sElement1 = helper.rotateFilter(sElement1);
-  _, temp4 = morphHelper.hitOrMiss(image1, sElement1, 255);
-  _, temp5 = morphHelper.hitOrMiss(image1, sElement2, 255);
-  sElement2 = helper.rotateFilter(sElement2);
-  sElement2 = helper.rotateFilter(sElement2);
-  _, temp6 = morphHelper.hitOrMiss(image1, sElement2, 255);
-  sElement2 = helper.rotateFilter(sElement2);
-  sElement2 = helper.rotateFilter(sElement2);
-  _, temp7 = morphHelper.hitOrMiss(image1, sElement2, 255);
-  sElement2 = helper.rotateFilter(sElement2);
-  sElement2 = helper.rotateFilter(sElement2);
-  _, temp8 = morphHelper.hitOrMiss(image1, sElement2, 255);
-  
-  local imgList = { temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8 };
-  
+  for i = 1, 8 do
+    if i == 5 then
+      currentSE = sElement2
+    end
+    
+    -- Hit or miss the image to find the end points
+    _, hitMissImages[i] = morphHelper.hitOrMiss(image1, currentSE, 255);
+    
+    currentSE = helper.rotateFilter(currentSE);
+    currentSE = helper.rotateFilter(currentSE);
+  end
+    
   --Next union them all together
   for r, c in img:pixels( 0 ) do
     for i = 1, 8 do
-      if imgList[i]:at(r, c).r == 255 then --Fix if to short circuit?
+      if hitMissImages[i]:at(r, c).r == 255 then
         image2:at(r, c).r = 255;
         image2:at(r, c).g = 255;
         image2:at(r, c).b = 255;
+        break
       end
     end
   end
   
-  --Create image3, intersect( dilate(image2, H), img)
-  local tempDilate = dilate( image2:clone(), 3, 3); --FOR LOOP
-  local image3 = image.flat(img.width, img.height);
+  --Assign image3 to image2, intersect( dilate(image2, H), img)
+  image3 = image2
   
-  for r, c in img:pixels( 0 ) do
-    if img:at(r, c).r == 255 and tempDilate:at(r,c).r == 255 then
-      image3:at(r, c).r = 255;
-      image3:at(r, c).g = 255;
-      image3:at(r, c).b = 255;
-    end
+  for i = 1, 3 do
+    image3 = morphHelper.dilateAndIntersect( img, image3, dilate, i )
   end
   
-  tempDilate = dilate( image3:clone(), 3, 3);
-    
-  for r, c in img:pixels( 0 ) do
-    if img:at(r, c).r == 255 and tempDilate:at(r,c).r == 255 then
-      image3:at(r, c).r = 255;
-      image3:at(r, c).g = 255;
-      image3:at(r, c).b = 255;
-    end
-  end
-    
-  tempDilate = dilate( image3:clone(), 3, 3);
+  --union(image1, image3) into the resultImg
+  morphHelper.union( resultImg, image1, image3 );
   
-  for r, c in img:pixels( 0 ) do
-    if img:at(r, c).r == 255 and tempDilate:at(r,c).r == 255 then
-      image3:at(r, c).r = 255;
-      image3:at(r, c).g = 255;
-      image3:at(r, c).b = 255;
-    end
-  end
-  
-  --Create image4, union(image1, image3)
-  for r, c in img:pixels( 0 ) do
-    if image1:at(r, c).r == 255 or image3:at(r, c).r == 255 then
-        image4:at(r, c).r = 255
-        image4:at(r, c).g = 255
-        image4:at(r, c).b = 255
-    end
-  end
-  
-  return image4
+  return resultImg;
 end
 morph.pruningMorph = pruningMorph;
 
