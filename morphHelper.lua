@@ -316,8 +316,8 @@ morphHelper.applyRecErode = applyRecErode;
 --
 --------------------------------------------------------------------------------
 local function hitOrMiss( img, structElem, value )
-  --Loop over each pixel in the image
   local newImg = img:clone();
+  local pixelImg = image.flat(img.width, img.height);
 
   --Indexing array for looping over structuring element
   local index = {};
@@ -355,6 +355,9 @@ local function hitOrMiss( img, structElem, value )
         newImg:at(r,c).r = value;
         newImg:at(r,c).g = value;
         newImg:at(r,c).b = value;
+        pixelImg:at(r,c).r = 255;
+        pixelImg:at(r,c).g = 255;
+        pixelImg:at(r,c).b = 255;
     else
         newImg:at(r,c).r = img:at(r,c).r;
         newImg:at(r,c).g = img:at(r,c).g;
@@ -362,7 +365,7 @@ local function hitOrMiss( img, structElem, value )
     end
   end
 
-  return newImg;
+  return newImg, pixelImg;
 end
 morphHelper.hitOrMiss = hitOrMiss;
 

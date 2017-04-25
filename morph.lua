@@ -431,21 +431,51 @@ local function thinMorph( img, n, filter1, filter2, prune )
   end
  
   if prune then
-    for i = 0, 3 do
-      -- Hit/miss down, left, up, right
-      img = morphHelper.hitOrMiss(img, filter1, 0);
+      local temp1 = image.flat(img.width, img.height);
+      local temp2 = image.flat(img.width, img.height);
+      local temp3 = image.flat(img.width, img.height);
+      local temp4 = image.flat(img.width, img.height);
+      local temp5 = image.flat(img.width, img.height);
+      local temp6 = image.flat(img.width, img.height);
+      local temp7 = image.flat(img.width, img.height);
+      local temp8 = image.flat(img.width, img.height);
       
+      -- Hit/miss down, left, up, right
+      _, temp1 = morphHelper.hitOrMiss(img, filter1, 255);
       filter1 = helper.rotateFilter(filter1);
       filter1 = helper.rotateFilter(filter1);
-    end
-    -- If doing 8 directional then we need to hit/miss the diagonals
-    if n == "8" then  
-      for i = 0, 3 do
-          img = morphHelper.hitOrMiss(img, filter2, 0);
-          filter2 = helper.rotateFilter(filter2);
-          filter2 = helper.rotateFilter(filter2);
+      _, temp2 = morphHelper.hitOrMiss(img, filter1, 255);
+      filter1 = helper.rotateFilter(filter1);
+      filter1 = helper.rotateFilter(filter1);
+      _, temp3 = morphHelper.hitOrMiss(img, filter1, 255);
+      filter1 = helper.rotateFilter(filter1);
+      filter1 = helper.rotateFilter(filter1);
+      _, temp4 = morphHelper.hitOrMiss(img, filter1, 255);
+      filter1 = helper.rotateFilter(filter1);
+      filter1 = helper.rotateFilter(filter1);
+      _, temp5 = morphHelper.hitOrMiss(img, filter2, 255);
+      filter2 = helper.rotateFilter(filter2);
+      filter2 = helper.rotateFilter(filter2);
+      _, temp6 = morphHelper.hitOrMiss(img, filter2, 255);
+      filter2 = helper.rotateFilter(filter2);
+      filter2 = helper.rotateFilter(filter2);
+      _, temp7 = morphHelper.hitOrMiss(img, filter2, 255);
+      filter2 = helper.rotateFilter(filter2);
+      filter2 = helper.rotateFilter(filter2);
+      _, temp8 = morphHelper.hitOrMiss(img, filter2, 255);
+      
+      local imgList = { temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8 };
+  
+      --Next union them all together
+      for r, c in img:pixels( 0 ) do
+        for i = 1, 8 do
+          if imgList[i]:at(r, c).r == 255 then --Fix if to short circuit?
+            img:at(r, c).r = 0;
+            img:at(r, c).g = 0;
+            img:at(r, c).b = 0;
+          end
+        end
       end
-    end
   else
     for i = 0, 3 do
       -- Hit/miss down, left, up, right
@@ -530,7 +560,7 @@ local function skeletonMorph( img, filter1, filter2, prune )
     -- Check pixels in both images and compare to see if complete
     for r,c in procImage:pixels( 0 ) do
       -- If any pixel is different, run again
-      if  img:at(r, c).r ~= procImage:at(r, c).r then
+      if img:at(r, c).r ~= procImage:at(r, c).r then
         isFinished = false
         break
       end
@@ -558,8 +588,6 @@ morph.skeletonMorph = skeletonMorph;
 --
 --------------------------------------------------------------------------------
 local function pruningMorph( img )
-  local isFinished = false
-  local procImage
   local sElement1 = {{-1, 0, 0},
                     {255, 255, 0},
                     {-1, 0, 0}}
@@ -567,40 +595,98 @@ local function pruningMorph( img )
                     {0, 255, 0},
                     {0, 0, 0}}
 
-  local image1 = img:clone()
-  local image2 = img:clone()
-  local image3 = img:clone()
-  local image4 = img:clone()
+  local image1 = img:clone();
+  local image4 = image.flat(img.width, img.height)
   
-  for r, c in image4:pixels( 0 ) do
-    image4:at(r, c).r = 0
-    image4:at(r, c).g = 0
-    image4:at(r, c).b = 0
-  end
-  
+  --Create image1, thin(A,{B}) 3 times
   for i = 1, 3 do
-    image1 = thinMorph(image1, "8", sElement1, sElement2, prune)
+    image1 = thinMorph(image1, "8", sElement1, sElement2, true)
   end
   
-  image2 = morphHelper.hitOrMiss(image1:clone(), sElement1, 0)
+  local image2 = image.flat(img.width, img.height);
+  local temp1 = img:clone();
+  local temp2 = img:clone();
+  local temp3 = img:clone();
+  local temp4 = img:clone();
+  local temp5 = img:clone();
+  local temp6 = img:clone();
+  local temp7 = img:clone();
+  local temp8 = img:clone();
   
-  image2 = dilate( image2:clone(), 3, 3)
+  --Create image2, union( hitMiss(image1, {B}) )
+  --First create the 8 images using {B}
+  _, temp1 = morphHelper.hitOrMiss(image1, sElement1, 255);
+  sElement1 = helper.rotateFilter(sElement1);
+  sElement1 = helper.rotateFilter(sElement1);
+  _, temp2 = morphHelper.hitOrMiss(image1, sElement1, 255);
+  sElement1 = helper.rotateFilter(sElement1);
+  sElement1 = helper.rotateFilter(sElement1);
+  _, temp3 = morphHelper.hitOrMiss(image1, sElement1, 255);
+  sElement1 = helper.rotateFilter(sElement1);
+  sElement1 = helper.rotateFilter(sElement1);
+  _, temp4 = morphHelper.hitOrMiss(image1, sElement1, 255);
+  _, temp5 = morphHelper.hitOrMiss(image1, sElement2, 255);
+  sElement2 = helper.rotateFilter(sElement2);
+  sElement2 = helper.rotateFilter(sElement2);
+  _, temp6 = morphHelper.hitOrMiss(image1, sElement2, 255);
+  sElement2 = helper.rotateFilter(sElement2);
+  sElement2 = helper.rotateFilter(sElement2);
+  _, temp7 = morphHelper.hitOrMiss(image1, sElement2, 255);
+  sElement2 = helper.rotateFilter(sElement2);
+  sElement2 = helper.rotateFilter(sElement2);
+  _, temp8 = morphHelper.hitOrMiss(image1, sElement2, 255);
   
+  local imgList = { temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8 };
+  
+  --Next union them all together
   for r, c in img:pixels( 0 ) do
-    if image1:at(r, c).r ~= 255 or
-       image2:at(r, c).r ~= 255 then
-      image3:at(r, c).r = 0
-      image3:at(r, c).g = 0
-      image3:at(r, c).b = 0
+    for i = 1, 8 do
+      if imgList[i]:at(r, c).r == 255 then --Fix if to short circuit?
+        image2:at(r, c).r = 255;
+        image2:at(r, c).g = 255;
+        image2:at(r, c).b = 255;
+      end
     end
   end
   
+  --Create image3, intersect( dilate(image2, H), img)
+  local tempDilate = dilate( image2:clone(), 3, 3); --FOR LOOP
+  local image3 = image.flat(img.width, img.height);
+  
   for r, c in img:pixels( 0 ) do
-    if image1:at(r, c).r == 255 or
-       image3:at(r, c).r == 255 then
-      image4:at(r, c).r = 255
-      image4:at(r, c).g = 255
-      image4:at(r, c).b = 255
+    if img:at(r, c).r == 255 and tempDilate:at(r,c).r == 255 then
+      image3:at(r, c).r = 255;
+      image3:at(r, c).g = 255;
+      image3:at(r, c).b = 255;
+    end
+  end
+  
+  tempDilate = dilate( image3:clone(), 3, 3);
+    
+  for r, c in img:pixels( 0 ) do
+    if img:at(r, c).r == 255 and tempDilate:at(r,c).r == 255 then
+      image3:at(r, c).r = 255;
+      image3:at(r, c).g = 255;
+      image3:at(r, c).b = 255;
+    end
+  end
+    
+  tempDilate = dilate( image3:clone(), 3, 3);
+  
+  for r, c in img:pixels( 0 ) do
+    if img:at(r, c).r == 255 and tempDilate:at(r,c).r == 255 then
+      image3:at(r, c).r = 255;
+      image3:at(r, c).g = 255;
+      image3:at(r, c).b = 255;
+    end
+  end
+  
+  --Create image4, union(image1, image3)
+  for r, c in img:pixels( 0 ) do
+    if image1:at(r, c).r == 255 or image3:at(r, c).r == 255 then
+        image4:at(r, c).r = 255
+        image4:at(r, c).g = 255
+        image4:at(r, c).b = 255
     end
   end
   
