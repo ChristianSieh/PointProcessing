@@ -17,6 +17,7 @@
 local il = require("il");
 local morphHelper = require("morphHelper");
 local helper = require("helper");
+local viz = require("visual");
 
 --Table to hold the point process functions
 local morph = {};
@@ -42,6 +43,12 @@ local morph = {};
 local function geoDilate( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
+  
+  --Ensure mask and marker have same dimensions
+  if markerImg.width ~= maskImg.width or markerImg.height ~= maskImg.height then
+    viz.message("Error","Mask and marker images must have same dimensions");
+    return markerImg;
+  end
   
   --Apply geodesic dilation
   return morphHelper.applyGeoDilate( markerImg, maskImg, filterWidth, filterHeight );
@@ -71,6 +78,12 @@ local function geoErode( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
   
+  --Ensure mask and marker have same dimensions
+  if markerImg.width ~= maskImg.width or markerImg.height ~= maskImg.height then
+    viz.message("Error","Mask and marker images must have same dimensions");
+    return markerImg;
+  end
+  
   --Apply geodesic erosion
   return morphHelper.applyGeoErode( markerImg, maskImg, filterWidth, filterHeight );
 end
@@ -99,6 +112,12 @@ local function recDilate( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
   
+  --Ensure mask and marker have same dimensions
+  if markerImg.width ~= maskImg.width or markerImg.height ~= maskImg.height then
+    viz.message("Error","Mask and marker images must have same dimensions");
+    return markerImg;
+  end
+  
   --Apply reconstruction by dilation
   return morphHelper.applyRecDilate( markerImg, maskImg, filterWidth, filterHeight );
 end
@@ -126,6 +145,12 @@ morph.recDilate = recDilate;
 local function recErode( markerImg, maskFile, filterWidth, filterHeight )
   --Open specified mask file
   local maskImg = image.open( maskFile );
+  
+  --Ensure mask and marker have same dimensions
+  if markerImg.width ~= maskImg.width or markerImg.height ~= maskImg.height then
+    viz.message("Error","Mask and marker images must have same dimensions");
+    return markerImg;
+  end
   
   --Apply reconstruction by erosion
   return morphHelper.applyRecErode( markerImg, maskImg, filterWidth, filterHeight );
