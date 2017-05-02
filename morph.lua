@@ -40,10 +40,7 @@ local morph = {};
 --    resultImg - The image after applying geodesic dilation
 --
 --------------------------------------------------------------------------------
-local function geoDilate( markerImg, maskFile, filterWidth, filterHeight )
-  --Open specified mask file
-  local maskImg = image.open( maskFile );
-  
+local function geoDilate( markerImg, maskImg, filterWidth, filterHeight )
   --Ensure mask and marker have same dimensions
   if markerImg.width ~= maskImg.width or markerImg.height ~= maskImg.height then
     viz.message("Error","Mask and marker images must have same dimensions");
@@ -74,10 +71,7 @@ morph.geoDilate = geoDilate;
 --    resultImg - The image after applying geodesic erosion
 --
 --------------------------------------------------------------------------------
-local function geoErode( markerImg, maskFile, filterWidth, filterHeight )
-  --Open specified mask file
-  local maskImg = image.open( maskFile );
-  
+local function geoErode( markerImg, maskImg, filterWidth, filterHeight )
   --Ensure mask and marker have same dimensions
   if markerImg.width ~= maskImg.width or markerImg.height ~= maskImg.height then
     viz.message("Error","Mask and marker images must have same dimensions");
@@ -108,10 +102,7 @@ morph.geoErode = geoErode;
 --    resultImg - The image after applying reconstruction by erosion
 --
 --------------------------------------------------------------------------------
-local function recDilate( markerImg, maskFile, filterWidth, filterHeight )
-  --Open specified mask file
-  local maskImg = image.open( maskFile );
-  
+local function recDilate( markerImg, maskImg, filterWidth, filterHeight )
   --Ensure mask and marker have same dimensions
   if markerImg.width ~= maskImg.width or markerImg.height ~= maskImg.height then
     viz.message("Error","Mask and marker images must have same dimensions");
@@ -142,10 +133,7 @@ morph.recDilate = recDilate;
 --    resultImg - The image after applying reconstruction by erosion
 --
 --------------------------------------------------------------------------------
-local function recErode( markerImg, maskFile, filterWidth, filterHeight )
-  --Open specified mask file
-  local maskImg = image.open( maskFile );
-  
+local function recErode( markerImg, maskImg, filterWidth, filterHeight )
   --Ensure mask and marker have same dimensions
   if markerImg.width ~= maskImg.width or markerImg.height ~= maskImg.height then
     viz.message("Error","Mask and marker images must have same dimensions");
